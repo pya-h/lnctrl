@@ -1,0 +1,248 @@
+import Algebra from ".";
+import { round, isDigit } from "../calculus";
+
+class Complex extends Algebra {
+    constructor(preal, pimage, params = {}) {
+        super(preal, { symbol: "j", type: "complex", b: pimage, ...params });
+    }
+
+    hasMultiTerms = () =>
+        this.plus || (this.a.toString() !== "0" && this.b.toString() !== "0");
+
+    toString = (parenthesis = false) => {
+        if(this.isZero())
+            return "0";
+        const rl = this.a;
+        let formula = parenthesis && this.hasMultiTerms() ? "(" : "";
+        if (rl !== 0)
+            formula +=
+                rl instanceof Algebra
+                    ? rl.toString(rl.hasMultiTerms())
+                    : round(rl);
+        let im = this.b;
+        if (im !== 0) {
+            //if (im < 0 || (im instanceof Algebra)) { im = im.negation()
+            if (im < 0) {
+                im *= -1;
+                formula += " - ";
+            } else if (rl !== 0) formula += " + ";
+
+            formula += this.symbol;
+            if (im !== 1)
+                formula +=
+                    im instanceof Algebra
+                        ? im.toString(im.hasMultiTerms())
+                        : round(im);
+        }
+        if (this.plus) formula += this.join(); // if there's a next term: casscade toString() calls
+
+        return parenthesis ? formula + ")" : formula;
+    }; // a + jb
+
+    real = () => this.a;
+    imaginary = () => this.b;
+
+    copy = (linkPrevious = false) =>
+        new Complex(this.a, this.b, {
+            dot: this.dot,
+            plus: this.plus,
+            previous: linkPrevious ? this.previous : null,
+            input: this.input,
+        });
+
+    conjugate = () =>
+        new Complex(
+            this.a,
+            this.b instanceof Algebra ? this.b.negation() : -this.b
+        );
+
+    negation = () =>
+        new Complex(
+            this.a instanceof Algebra ? this.a.negation() : -this.a,
+            this.b instanceof Algebra ? this.b.negation() : -this.b
+        );
+
+    magnitude$2 = () => this.a ** 2 + this.b ** 2;
+
+    magnitude = () => (this.a ** 2 + this.b ** 2) ** 0.5;
+
+    isReal = () => this.b === 0;
+
+    hasSameTypeWith = (x) =>
+        (this.isReal() && x.isReal()) || (!this.isReal() && !x.isReal()); // both full imaginray or both real
+    realify = () => new Complex(this.a, 0); // return a simple real value in Complex object format (for methods that only accept Complex values)
+
+    add = (operand) => {
+        let Re = null,
+            Im = null;
+        if (operand instanceof Complex) {
+            if (this.a instanceof Algebra) Re = this.a.add(operand.real());
+            else if (operand.real() instanceof Algebra)
+                Re = operand.real().add(this.a);
+            else Re = this.a + operand.real();
+
+            if (this.b instanceof Algebra) Im = this.b.add(operand.imaginary());
+            else if (operand.imaginary() instanceof Algebra)
+                Im = operand.imaginary().add(this.b);
+            else Im = this.b + operand.imaginary();
+        } else {
+            if (this.a instanceof Algebra) Re = this.a.add(operand);
+            else if (operand instanceof Algebra) Re = operand.add(this.a);
+            else Re = this.a + operand;
+
+            Im = this.b;
+        }
+        return new Complex(Re, Im);
+    };
+
+    substract = (operand) => this.add(operand.negation());
+
+    equals = (operand) => {
+        if (operand instanceof Complex) {
+            // two complex number are equal to eachother if both thier real parts are the same, and their imaginary parts are the same
+            let realPartsEqual = false;
+            if (this.a instanceof Algebra)
+                realPartsEqual = this.a.equals(operand.real());
+            else if (operand.real() instanceof Algebra)
+                realPartsEqual = operand.real().equals(this.a);
+            else realPartsEqual = this.a === operand.real();
+            if (!realPartsEqual) return false;
+
+            if (this.b instanceof Algebra)
+                return this.b.equals(operand.imaginary());
+            else if (operand.imaginary() instanceof Algebra)
+                return operand.imaginary().equals(this.b);
+            return this.b === operand.imaginary();
+        }
+
+        // if operand is not a complex number then the only way it can be equal with this object of Complex,
+        // is for this object to have a zero imaginary part:
+        return (
+            this.isReal() &&
+            (operand instanceof Algebra
+                ? operand.equals(this.a)
+                : operand === this.a)
+        );
+    };
+
+    isConjugateWith = (operand) => this.conjugate().equals(operand);
+    multiply = (operand) => {
+        let Re = [],
+            Im = [];
+        if (operand instanceof Complex) {
+            // first term
+            if (this.a instanceof Algebra) {
+                Re.push(this.a.multiply(operand.real()));
+                Im.push(this.a.multiply(operand.imaginary()));
+            } else {
+                Re.push(
+                    operand.a instanceof Algebra
+                        ? operand.a.multiply(this.a)
+                        : operand.a * this.a
+                );
+
+                Im.push(
+                    operand.b instanceof Algebra
+                        ? operand.b.multiply(this.a)
+                        : this.a * operand.b
+                );
+            }
+
+            // second term
+            if (this.b instanceof Algebra) {
+                Re.push(this.b.multiply(operand.imaginary()));
+                Im.push(this.b.multiply(operand.real()));
+            } else {
+                Re.push(
+                    operand.b instanceof Algebra
+                        ? operand.b.multiply(this.b)
+                        : operand.b * this.b
+                );
+
+                Im.push(
+                    operand.a instanceof Algebra
+                        ? operand.a.multiply(this.b)
+                        : this.b * operand.a
+                );
+            }
+            return new Complex(Re[0] - Re[1], Im[0] + Im[1]);
+        } else {
+            Re =
+                this.a instanceof Algebra
+                    ? this.a.multiply(operand)
+                    : operand instanceof Algebra
+                    ? operand.multiply(this.a)
+                    : this.a * operand;
+
+            Im =
+                this.b instanceof Algebra
+                    ? this.b.multiply(operand)
+                    : operand instanceof Algebra
+                    ? operand.multiply(this.b)
+                    : this.b * operand;
+        
+            }
+        return new Complex(Re, Im);
+    };
+
+    devide = (denominator) => {
+        if (denominator instanceof Complex) {
+            const result =  this.multiply(denominator.conjugate()).devide(
+                denominator.magnitude$2()
+                );
+            // CHECK THIS
+            if(isNaN(result.real()))
+                result.setA(0);
+            if(isNaN(result.imaginary()))
+                result.setB(0);
+            return result;
+        } else if (denominator instanceof Algebra) {
+            // USE super().devide ?
+            return this.copy(); // for now to avoid craches
+        } else return this.multiply(1 / denominator); // number
+    };
+
+    raiseTo = (power) => {
+        let result = this.copy(true);
+        // for now power must be integr
+        if (Math.floor(power) === power)
+            for (let i = 1; i < power; i++) {
+                result = result.multiply(this);
+            }
+
+        return result;
+    };
+
+    devideInverse = (k) =>
+        (k instanceof Algebra ? k : new Complex(k, 0)).devide(this);
+
+    static extract = (strNumber) => {
+        // extract a string to a complex object
+
+        strNumber = strNumber.replace(/\s/g, "");
+        let i = strNumber[0] === "-" || strNumber[0] === "+" ? 1 : 0;
+        let real = 0;
+        if (strNumber[i] !== "j") {
+            for (; i < strNumber.length && isDigit(strNumber[i]); i++);
+            real = Number(strNumber.slice(0, i) || 0);
+        }
+
+        let sign = 1;
+        for (
+            ;
+            i < strNumber.length &&
+            (strNumber[i] === "j" ||
+                strNumber[i] === "+" ||
+                strNumber[i] === "-");
+            i++
+        )
+            if (strNumber[i] === "-") sign = -1;
+
+        const img = Number(strNumber.slice(i, strNumber.length) || 0);
+        return new Complex(real, sign * img);
+    };
+
+    isZero = () => this.a === 0 && this.b === 0;
+}
+
+export default Complex;

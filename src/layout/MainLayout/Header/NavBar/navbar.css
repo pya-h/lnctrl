@@ -1,0 +1,26 @@
+.nav-bar-item {
+    text-decoration: none;
+    padding: 15px;
+    color: blueviolet;
+    -moz-transition: all 0.15s ease-in-out;
+        transition: all 0.15s ease-in-out;
+}
+
+.nav-bar-item:hover {
+    
+    padding-top: 0.4rem;
+    
+}
+
+.nav-bar-item:focus, .nav-bar-item:active {
+    color: #18BC9C;
+    border: 2px solid #18BC9C; 
+    border-radius: 0.5rem; 
+    padding-top: 0.4rem;
+    background-color: transparent;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+  }
+
+  

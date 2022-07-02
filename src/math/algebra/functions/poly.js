@@ -20,6 +20,8 @@ export default class Poly extends Algebra {
             input: this.input,
         });
 
+    degree = () => this.a.length - 1;
+    
     valueAt = (t) => {
         if (typeof t === "number") return Algebra.polynomialValueAt(this.a, t);
         else if (t instanceof Complex) {
@@ -77,4 +79,30 @@ export default class Poly extends Algebra {
         if (result.plus) result.plus = result.plus.derivative();
         return result;
     };
+
+
+    expression = () => {
+        if (this.a instanceof Array) {
+            const n = this.a.length - 1;
+            if (
+                !n ||
+                !this.a.slice(0, n).filter((ci) => ci.toString() !== "0").length
+            )
+                return this.a[n].toString();
+            return this.a
+                .map((a_i, i) =>
+                    a_i
+                        ? Algebra.coefy(a_i, i, n) +
+                          (i < n
+                              ? this.symbol +
+                                (i < n - 1
+                                    ? "^" + (n - i).toString()
+                                    : "")
+                              : "")
+                        : ""
+                )
+                .join(""); // joins all the coefficients, symbols, etc all together as for polynomal functions
+        }
+        return this.a.toString();
+    }
 }

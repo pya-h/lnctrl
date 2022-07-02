@@ -21,8 +21,8 @@ const RootLocus = () => {
     const [rawNumerator, $rawNumerator] = useState("1");
     const [rawDenominator, $rawDenominator] = useState("1 5 12");
 
-    const [k_min, $k_min] = useState(0);
-    const [k_max, $k_max] = useState(5);
+    const [k_min, $k_min] = useState(-100);
+    const [k_max, $k_max] = useState(100);
     // gradiant of u(t) is 0 and unit ramp is one
     const [systems, $systems] = useState([]);
     const [traces, $traces] = useState([]);

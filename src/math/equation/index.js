@@ -9,12 +9,15 @@ export default class Equation {
     constructor(exp, symbol = null) {
         if (exp instanceof Poly) {
             this.expression = exp.expression();
+            this.algebra = exp.copy();
             this.symbol = exp.symbol;
         } else if (exp instanceof Algebra) {
-            this.exp = exp.toString();
+            this.expression = exp.toString();
+            this.algebra = exp.copy();
             this.symbol = this.exp.symbol;
         } else if (typeof exp === "string") {
-            this.exp = exp;
+            this.expression = exp;
+            this.algebra = null
         }
 
         this.symbol = symbol;
@@ -60,7 +63,7 @@ export default class Equation {
     };
 
     approximate = (
-        method = Equation.Methods.durandKerner,
+        method = Equation.Methods.newton,
         N = 10,
         boundary = 1000
     ) => {
@@ -88,23 +91,59 @@ export default class Equation {
             if (a0 && an !== 0) boundary = Math.abs(a0 / an);
 
             for (let x0 = -boundary; x0 <= boundary; x0++) {
-                let x = method(this.expression, x0, N);
+                let x = method(this.algebra, x0, N);
                 if (!isNaN(x)) {
                     const rx = round(x);
                     if (isUnique(rx)) allRoots.push(rx);
                 }
-                x = method(this.expression, new Complex(0, x0), N);
+                x = method(this.algebra, new Complex(0, x0), N);
                 if (isUniqueComplex(x)) allRoots.push(x);
             }
         }
         return allRoots;
     };
     // approximation methods
+    durandKerner = (N = 20) => {
+        if (this.algebra instanceof Algebra) {
+            const f = this.algebra.$;
+            const n = this.algebra.degree();
+            let guess;
+            do {
+                guess = new Complex(Math.random(), Math.random());
+            } while (guess.isReal());
+            const roots = Array(n)
+                .fill(0)
+                .map((_) => []);
+            
+            roots[0].push(new Complex(1, 0));
+            for (let i = 1; i < n; i++)
+                roots[i][0] = guess.multiply(roots[i - 1][0]);
+            for (let iter = 0; iter < N; iter++) {
+                for (let i = 0; i < n; i++) {
+                    const xiN = roots[i][iter].copy();
+                    let sndTermDen = new Complex(1, 0);
+                    for (let j = 0; j < n; j++) {
+                        if (i !== j) {
+                            const xjN = roots[j][roots[j].length - 1];
+                            sndTermDen = sndTermDen.multiply(
+                                xiN.substract(xjN)
+                            );
+                        }
+                    }
+                    let sndTerm = f(xiN).devide(sndTermDen);
+                    // USING PUSH MAY SLOW DOWN THE ALGORITHM
+                    roots[i].push(xiN.substract(sndTerm));
+                }
+            }
+            return roots.map((r) => r[r.length - 1]);
+        }
+    };
+
     static Methods = {
         // needs work!
-        newton: (polyf, x0 = 0, N = 20) => {
-            const f = polyf.$;
-            const df = polyf.derivative().$;
+        newton: (algebraf, x0 = 0, N = 20) => {
+            const f = algebraf.$;
+            const df = algebraf.derivative().$;
             const xs = Array(N + 1).fill(0);
             const dfx0 = df(x0);
             if (dfx0 && (!(dfx0 instanceof Complex) || !dfx0.isZero())) {
@@ -135,42 +174,6 @@ export default class Equation {
                 return xs[xs.length - 1];
             }
             return NaN;
-        },
-
-        durandKerner: (polyf, N = 20) => {
-            if (polyf instanceof Algebra) {
-                const f = polyf.$;
-                const n = polyf.degree();
-                let guess;
-                do {
-                    guess = new Complex(Math.random(), Math.random());
-                } while (guess.isReal());
-                const roots = Array(n)
-                    .fill(0)
-                    .map((_) => []);
-
-                roots[0].push(new Complex(1, 0));
-                for (let i = 1; i < n; i++)
-                    roots[i][0] = guess.multiply(roots[i - 1][0]);
-                for (let iter = 0; iter < N; iter++) {
-                    for (let i = 0; i < n; i++) {
-                        const xiN = roots[i][iter].copy();
-                        let sndTermDen = new Complex(1, 0);
-                        for (let j = 0; j < n; j++) {
-                            if (i !== j) {
-                                const xjN = roots[j][roots[j].length - 1];
-                                sndTermDen = sndTermDen.multiply(
-                                    xiN.substract(xjN)
-                                );
-                            }
-                        }
-                        let sndTerm = f(xiN).devide(sndTermDen);
-                        roots[i].push(xiN.substract(sndTerm));
-                    }
-                }
-                console.table(roots.map((r) => r[r.length - 1].toString()));
-                return roots;
-            }
         },
         // needs work!
         middlePoint: (

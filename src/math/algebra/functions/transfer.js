@@ -357,7 +357,7 @@ export default class TransferFunction extends Fraction {
     $ = (t) => this.laplaceInverse().$(t); // valueOf function in certain point; I used character $ in many places as,
     // acronym for "set" in setters, so $ here means that set the t ( or x or whatever) with a certain point
 
-    rootLocus = (k_min, k_max, N = 1000) => {
+    rootLocus = (k_min, k_max, N = 100) => {
         // return root locus values for plotting
         /* let dk = (k_max - k_min) / N; //time step size
         while (dk >= 1) {
@@ -365,17 +365,73 @@ export default class TransferFunction extends Fraction {
             dk = (k_max - k_min) / N; //time step size
         }*/
         // TEMPORARY:
-        let  dk = 1;
-
-        const reals = [], imaginaries = [];
+        let dk = 1;
+        const a = this.getA(), // numerator
+            b = this.getB(); // denominator => a / b
+        const na = a.length,
+            nb = b.length;
+        const reals = [],
+            imaginaries = [];
         for (let k = k_min; k <= k_max; k += dk) {
-            const roots = new Equation(this.denominator().add(this.numerator().multiply(k))).roots();
-            for(const root of roots){
-                if(root instanceof Complex){
+            // in this piece: using short form codes and using objects is set to minimum
+            // because root locus is time consuming and putting all the codes in one main loop is better
+            // const delta = b.add(a.multiply(k));
+            let delta = null;
+            // USE ARRAY DIRECT PROCESS FOR FASTER RESPONSE
+            // NUM + K * DEN
+            let expression = "";
+            if (na <= nb) {
+                delta = Array(nb);
+                const offsetB = nb - na;
+                for (
+                    let i = 0;
+                    i < offsetB;
+                    delta[i] = b[i],
+                        expression +=
+                            (delta[i] >= 0 ? "+" : "") +
+                            `${delta[i]}x^${nb - i - 1}`,
+                        i++
+                );
+                for (
+                    let i = 0, ib = offsetB;
+                    i < na;
+                    delta[ib] = b[ib] + k * a[i],
+                        expression +=
+                            (delta[ib] >= 0 ? "+" : "") +
+                            `${delta[ib]}x^${na - i - 1}`,
+                        i++,
+                        ib++
+                );
+            } else {
+                delta = Array(na);
+                const offsetA = na - nb;
+                for (
+                    let i = 0;
+                    i < offsetA;
+                    delta[i] = b[i],
+                        expression +=
+                            (delta[i] >= 0 ? "+" : "") +
+                            `${delta[i]}x^${na - i - 1}`,
+                        i++
+                );
+                for (
+                    let i = 0, ib = offsetA;
+                    i < nb;
+                    delta[ib] = b[ib] + k * a[i],
+                        expression +=
+                            (delta[ib] >= 0 ? "+" : "") +
+                            `${delta[ib]}x^${nb - i - 1}`,
+                        i++,
+                        ib++
+                );
+            }
+            // const roots = new Equation(new Poly(delta)).roots();
+            const roots = new Equation(expression).roots();
+            for (const root of roots) {
+                if (root instanceof Complex) {
                     reals.push(root.real());
                     imaginaries.push(root.imaginary());
-                }
-                else {
+                } else {
                     reals.push(root);
                     imaginaries.push(0);
                 }

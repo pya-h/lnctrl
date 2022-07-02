@@ -19,7 +19,7 @@ const stepResponse = (tf, index = undefined) =>
 
 const RootLocus = () => {
     const [rawNumerator, $rawNumerator] = useState("1");
-    const [rawDenominator, $rawDenominator] = useState("1 1");
+    const [rawDenominator, $rawDenominator] = useState("1 5 12");
 
     const [k_min, $k_min] = useState(0);
     const [k_max, $k_max] = useState(5);

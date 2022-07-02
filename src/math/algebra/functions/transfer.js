@@ -357,17 +357,19 @@ export default class TransferFunction extends Fraction {
     $ = (t) => this.laplaceInverse().$(t); // valueOf function in certain point; I used character $ in many places as,
     // acronym for "set" in setters, so $ here means that set the t ( or x or whatever) with a certain point
 
-    rootLocus = (k_min, k_max, N = 100) => {
+    rootLocus = (k_min, k_max, N = 1000) => {
         // return root locus values for plotting
-        let dk = (k_max - k_min) / N; //time step size
+        /* let dk = (k_max - k_min) / N; //time step size
         while (dk >= 1) {
             N *= 10;
             dk = (k_max - k_min) / N; //time step size
-        }
+        }*/
+        // TEMPORARY:
+        let  dk = 1;
 
         const reals = [], imaginaries = [];
         for (let k = k_min; k <= k_max; k += dk) {
-            const roots = new Equation(this.denominator().add(this.numerator().multiply(k))).approximate();
+            const roots = new Equation(this.denominator().add(this.numerator().multiply(k))).roots();
             for(const root of roots){
                 if(root instanceof Complex){
                     reals.push(root.real());

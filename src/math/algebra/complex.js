@@ -2,7 +2,7 @@ import Algebra from ".";
 import { round, isDigit } from "../calculus";
 
 class Complex extends Algebra {
-    constructor(preal, pimage, params = {}) {
+    constructor(preal, pimage = 0, params = {}) {
         super(preal, { symbol: "j", type: "complex", b: pimage, ...params });
     }
 

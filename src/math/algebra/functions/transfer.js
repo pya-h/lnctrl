@@ -365,21 +365,24 @@ export default class TransferFunction extends Fraction {
             dk = (k_max - k_min) / N; //time step size
         }*/
         // TEMPORARY:
-        let dk = 1;
+        let dk = 0.05;
         const a = this.getA(), // numerator
             b = this.getB(); // denominator => a / b
-        const na = a.length,
-            nb = b.length;
+        const na = a.length - 1,
+            nb = b.length - 1;
         const reals = [],
             imaginaries = [];
+
+        const newTerm = Equation.GetAlgebriteTerm;
+
         for (let k = k_min; k <= k_max; k += dk) {
             // in this piece: using short form codes and using objects is set to minimum
             // because root locus is time consuming and putting all the codes in one main loop is better
             // const delta = b.add(a.multiply(k));
-            let delta = null;
+            let delta = null,
+                expression = "";
             // USE ARRAY DIRECT PROCESS FOR FASTER RESPONSE
             // NUM + K * DEN
-            let expression = "";
             if (na <= nb) {
                 delta = Array(nb);
                 const offsetB = nb - na;
@@ -387,18 +390,24 @@ export default class TransferFunction extends Fraction {
                     let i = 0;
                     i < offsetB;
                     delta[i] = b[i],
-                        expression +=
-                            (delta[i] >= 0 ? "+" : "") +
-                            `${delta[i]}x^${nb - i - 1}`,
+                        expression += newTerm(
+                            nb - i,
+                            delta[i],
+                            i,
+                            this.symbol
+                        ),
                         i++
                 );
                 for (
                     let i = 0, ib = offsetB;
-                    i < na;
+                    i <= na;
                     delta[ib] = b[ib] + k * a[i],
-                        expression +=
-                            (delta[ib] >= 0 ? "+" : "") +
-                            `${delta[ib]}x^${na - i - 1}`,
+                        expression += newTerm(
+                            na - i,
+                            delta[ib],
+                            ib,
+                            this.symbol
+                        ),
                         i++,
                         ib++
                 );
@@ -409,30 +418,37 @@ export default class TransferFunction extends Fraction {
                     let i = 0;
                     i < offsetA;
                     delta[i] = b[i],
-                        expression +=
-                            (delta[i] >= 0 ? "+" : "") +
-                            `${delta[i]}x^${na - i - 1}`,
+                        expression += newTerm(
+                            na - i,
+                            delta[i],
+                            i,
+                            this.symbol
+                        ),
                         i++
                 );
                 for (
                     let i = 0, ib = offsetA;
-                    i < nb;
+                    i <= nb;
                     delta[ib] = b[ib] + k * a[i],
-                        expression +=
-                            (delta[ib] >= 0 ? "+" : "") +
-                            `${delta[ib]}x^${nb - i - 1}`,
+                        expression += newTerm(
+                            nb - i,
+                            delta[ib],
+                            ib,
+                            this.symbol
+                        ),
                         i++,
                         ib++
                 );
             }
             // const roots = new Equation(new Poly(delta)).roots();
             const roots = new Equation(expression).roots();
-            for (const root of roots) {
-                if (root instanceof Complex) {
-                    reals.push(root.real());
-                    imaginaries.push(root.imaginary());
+
+            for (let i = 0; i < roots.length; i++) {
+                if (roots[i] instanceof Complex) {
+                    reals.push(roots[i].real());
+                    imaginaries.push(roots[i].imaginary());
                 } else {
-                    reals.push(root);
+                    reals.push(roots[i]);
                     imaginaries.push(0);
                 }
             }

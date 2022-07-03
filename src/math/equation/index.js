@@ -2,27 +2,67 @@ import Algebra from "../algebra/index";
 import { isDigit, precision, round } from "math/calculus";
 import Complex from "math/algebra/complex";
 import Poly from "../algebra/functions/poly";
+import { ConsoleView } from "react-device-detect";
 const Algebrite = require("algebrite");
 
 export default class Equation {
     static zeroPrecision = round(10 ** -precision.get());
-    constructor(exp, symbol = null) {
+    constructor(exp, symbol = "x") {
         if (exp instanceof Poly) {
             this.expression = exp.expression();
             this.algebra = exp.copy();
             this.symbol = exp.symbol;
+            this.degree = exp.degree();
         } else if (exp instanceof Algebra) {
             this.expression = exp.toString();
             this.algebra = exp.copy();
             this.symbol = this.exp.symbol;
+            this.degree = undefined; // unknown
+        } else if (exp instanceof Array) {
+            this.algebra = new Poly(exp);
+            this.symbol = symbol;
+            this.expression = "";
+            const n = exp.length - 1;
+            this.degree = n;
+            for (
+                let i = 0;
+                i < exp.length;
+                this.expression += Equation.GetAlgebriteTerm(
+                    n - i,
+                    exp[i],
+                    i,
+                    symbol
+                ),
+                    i++
+            );
         } else if (typeof exp === "string") {
             this.expression = exp;
-            this.algebra = null
+            this.algebra = null;
+            this.symbol = symbol;
         }
 
         this.symbol = symbol;
     }
 
+    static GetAlgebriteTerm = (termDegree, coef, index, symbol) => {
+        if (coef === +coef) {
+            // means that coef is not a string
+            const intExpI = coef | 0;
+            if (intExpI !== coef) {
+                // means that coef is a float number
+                Algebrite.run(`a${index} = ${coef}`);
+                return (
+                    (coef >= 0 ? "+" : "") +
+                    `a${index}*${symbol}^${termDegree}`
+                );
+            } else
+                return (
+                    (intExpI >= 0 ? "+" : "") + `${intExpI}${symbol}^${termDegree}`
+                );
+        }
+        // here it means coef is a string like '11/2' or '1/4', ...
+        return `${coef}${symbol}^${termDegree}`;
+    };
     roots = () => {
         // for factorable equations use: algebrite.roots
         let x = Algebrite.nroots(this.expression)
@@ -114,7 +154,7 @@ export default class Equation {
             const roots = Array(n)
                 .fill(0)
                 .map((_) => []);
-            
+
             roots[0].push(new Complex(1, 0));
             for (let i = 1; i < n; i++)
                 roots[i][0] = guess.multiply(roots[i - 1][0]);

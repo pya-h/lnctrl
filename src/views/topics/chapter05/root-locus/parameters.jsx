@@ -1,7 +1,8 @@
-import { Grid } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import CoordinateSystem from "views/input-boxes/CoordinateSystem";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
+import { gridSpacing } from "store/constant";
 
 const startLebels = [
     "$$Num = [$$",
@@ -20,9 +21,10 @@ const RootLocusParameters = ({
     k_max,
     $k_min,
     $k_max,
+    updatePlot,
 }) => {
     const grids = 10;
-    
+
     return (
         <SubCard
             darkBorder
@@ -33,36 +35,25 @@ const RootLocusParameters = ({
                 height: "100%",
             }}
         >
-            <Grid spacing={0.6} container direction="row">
+            <Grid spacing={gridSpacing} container direction="row">
                 <SimpleParametersList
-                    parameters={[ rawNumerator, rawDenominator, k_min, k_max]}
-                    setters={[ $rawNumerator, $rawDenominator, $k_min, $k_max]}
+                    parameters={[rawNumerator, rawDenominator, k_min, k_max]}
+                    setters={[$rawNumerator, $rawDenominator, $k_min, $k_max]}
                     labels={startLebels}
                     units={endLabels}
                 />
-
-                <Grid sx={{ mt: 1 }} md={12} sm={4} xs={6} item>
-                    <p style={{ textAlign: "center" }}>
-                        محدوده ی بهره را مشخص کنید
-                    </p>
-
-                    <CoordinateSystem
-                        point={{
-                            y: 0,
-                            x: k_min,
-                            select: ({ x }) => {
-                                if (x) $k_min(x);
-                            },
+                <Grid md={12} sm={4} xs={6} item>
+                    <Button
+                        onClick={updatePlot}
+                        style={{
+                            width: "100%",
+                            textTransform: "none",
+                            background: "coral",
                         }}
-                        extra={{
-                            y: 0,
-                            x: k_max,
-                            select: ({ x }) => {
-                                if (x && x >= k_min) $k_max(x);
-                            },
-                        }}
-                        options={{ pointSize: 20, grids}}
-                   />
+                        variant="contained"
+                    >
+                        مشاهده
+                    </Button>
                 </Grid>
             </Grid>
         </SubCard>

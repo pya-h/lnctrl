@@ -21,13 +21,10 @@ const RootLocus = () => {
     const [rawNumerator, $rawNumerator] = useState("1");
     const [rawDenominator, $rawDenominator] = useState("1 5 12");
 
-    const [k_min, $k_min] = useState(-100);
-    const [k_max, $k_max] = useState(100);
+    const [k_min, $k_min] = useState(0);
+    const [k_max, $k_max] = useState(50);
     // gradiant of u(t) is 0 and unit ramp is one
-    const [systems, $systems] = useState([]);
-    const [traces, $traces] = useState([]);
-    const [thickness, $thickness] = useState(1.0); // graph line thickness
-    const [isGraphCatured, $graphCaptured] = useState(false);
+    const [trace, $trace] = useState({ x: [], y: [] });
     const [G_s, $G_s] = useState(null);
     const [GInfo, $GInfo] = useState("");
 
@@ -44,82 +41,26 @@ const RootLocus = () => {
         );
     }, [rawNumerator, rawDenominator]);
 
-    const capture = () => {
-        const capturedSystems = [...systems];
-        const index = capturedSystems.findIndex((sys) => G_s.equals(sys.G_s));
-        if (index === -1) {
-            // if current system has not been captured before => then capture it; o.w. its not needed
-            capturedSystems.push({
-                G_s,
-                thickness,
-                legend: "$$_{" + (systems.length + 1).toString() + "}$$",
-            });
-            $systems(capturedSystems);
-            $graphCaptured(true);
-        }
-    };
-    useEffect(() => {
+    const updatePlot = () => {
         if (G_s) {
             // $GInfo(new Describer(G_s));
             const [x, y] = G_s.rootLocus(k_min, k_max);
             $response(stepResponse(G_s));
-            // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
-            // so that the traces will be loaded with new conditions
-            const all = systems.map((e, index) => {
-                const [xi, yi] = calculus.pointify(
-                    e.G_s.$,
-                    Number(k_min),
-                    Number(k_max)
-                ); // N: 100
-
-                return {
-                    x: xi,
-                    y: yi,
-                    // z: is3DPlotEnabled ? Array(xi.length).fill(0) : null,
-                    line: {
-                        // color: e.color...
-                        width: e.thickness,
-                    },
-                    // color,
-                    type: "scatter",
-                    mode: 'markers',
-                    name: e.legend,
-                };
+            $trace({
+                x,
+                y,
+                // color,
+                type: "scatter",
+                mode: "markers",
+                name: `root-locus`,
             });
-
-            if (systems.findIndex((sys) => G_s.equals(sys.G_s)) === -1)
-                // if current system isnt in traces list => add it temperory to plot
-                all.push({
-                    x,
-                    y,
-                    // color,
-                    line: {
-                        // color:'rgb(17, 157, 255)'
-                        width: thickness,
-                    },
-                    type: "scatter",
-                    mode: 'markers',
-                   
-                    name: `c(t)`,
-                });
-
-            $traces(all);
         }
-    }, [G_s, k_min, k_max, thickness, systems]);
-
-    useEffect(() => {
-        $graphCaptured(false);
-    }, [rawNumerator, rawDenominator]);
-
-    const update = (changes) => {
-        if (changes) $thickness(changes.thickness);
-        //and so...
     };
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
                 <h2 className="chapter-section-title">
-                    طراحی سیستم با استفاده از مشخصات میرایی سیستم{" "}
+                    مکان هندسی قطب های سیستم
                 </h2>
             </Grid>
             <Grid item spacing={gridSpacing}>
@@ -144,28 +85,7 @@ const RootLocus = () => {
                                 container
                                 direction="row"
                             >
-                                {systems instanceof Array &&
-                                    systems.map((sys, index) => {
-                                        const formula = stepResponse(
-                                            sys.G_s,
-                                            index + 1
-                                        );
-
-                                        return (
-                                            <Grid
-                                                style={{ fontSize: "18px" }}
-                                                xs={12}
-                                                item
-                                            >
-                                                <MathJax>{formula}</MathJax>
-                                            </Grid>
-                                        );
-                                    })}
-                                {!isGraphCatured && (
-                                    <Grid style={{ fontSize: "18px" }} xs={12}>
-                                        <MathJax>{response}</MathJax>
-                                    </Grid>
-                                )}
+                                <MathJax>{response}</MathJax>
                             </Grid>
                         </SubCard>
                     </Grid>
@@ -196,47 +116,14 @@ const RootLocus = () => {
                                     $rawDenominator={$rawDenominator}
                                     $k_min={$k_min}
                                     $k_max={$k_max}
+                                    updatePlot={updatePlot}
                                 />
                             </Grid>
                         </Grid>
                         <Grid md={8} sm={12} xs={12} item>
-                            <SubCard>
-                                <GraphMenu
-                                    capture={capture}
-                                    formulaFileName={
-                                        "Water Tank Level Equations _ " +
-                                        [
-                                            ...systems.map((sys) => sys.legend),
-                                        ].join() +
-                                        ".png"
-                                    }
-                                    graphFileName={
-                                        [
-                                            ...systems.map(
-                                                (sys) =>
-                                                    `${
-                                                        sys.legend
-                                                    }{rawNumerator=_rawDenominator=_k=${
-                                                        sys.k
-                                                    }_in=${
-                                                        sys.inputSignal
-                                                            ? "ramp"
-                                                            : "step"
-                                                    }}`
-                                            ),
-                                        ].join(", ") + ".png"
-                                    }
-                                    reset={() => $systems([])}
-                                    update={(changes) => update(changes)}
-                                />
-                            </SubCard>
-                            <hr />
                             <Grid lg={12} md={12} sm={12} xs={12} item>
                                 <SubCard>
-                                    <GraphBox
-                                        title="پاسخ پله"
-                                        traces={traces}
-                                    />
+                                    <GraphBox title="مکان هندسی" traces={[trace]} />
                                 </SubCard>
                             </Grid>
                             <hr />

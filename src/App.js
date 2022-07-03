@@ -12,10 +12,8 @@ import themes from "themes";
 // project imports
 import NavigationScroll from "layout/NavigationScroll";
 import { MathJaxContext } from "better-react-mathjax";
-
 const App = () => {
     const customization = useSelector((state) => state.customization);
-    
     return (
         <StyledEngineProvider injectFirst>
             <ThemeProvider theme={themes(customization)}>

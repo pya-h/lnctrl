@@ -67,6 +67,7 @@ export const stringToArray = (raw) =>
         .filter((el) => el && !isNaN(el))
         .map((el) => Number(el));
 
+export const isFloat = x => x === +x && x !== (x|0);
 export const evaluate = (raw) => {
     // evaluate basic math operations in string
     // when pressing = we can convert the expression to final value
@@ -133,6 +134,7 @@ const calculus = {
     LTI,
     precision,
     round,
+    isFloat,
     pointify,
     strictPrecisionFormat,
     linspace,

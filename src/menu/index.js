@@ -1,7 +1,7 @@
 // assets
 import { IconBike, IconPalette, IconShadow, IconWindmill } from "@tabler/icons";
 import { routes } from "config";
-import tools from "toolshed/tools";
+import {path} from "toolshed";
 import CropLandscapeIcon from "@mui/icons-material/CropLandscape";
 import DataArrayIcon from "@mui/icons-material/DataArray";
 import HubIcon from "@mui/icons-material/Hub";
@@ -30,7 +30,7 @@ const load = (pathname) => {
         children: [],
         load,
     };
-    const hierarchy = tools.path.hierarchy(pathname);
+    const hierarchy = path.hierarchy(pathname);
     if (hierarchy[0] === `${routes.chapter}02`)
         topics = {
             id: "topics",

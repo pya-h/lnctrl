@@ -7,6 +7,7 @@ import Poly from "./poly";
 import { Cos, Sin } from "./trigonometric";
 import { round } from "math/calculus/index";
 import Equation from "math/equation";
+import { makeProgress } from "toolshed";
 
 export default class TransferFunction extends Fraction {
     static Specials = {
@@ -116,6 +117,17 @@ export default class TransferFunction extends Fraction {
                 this.t_rise = dampingCharasteristics.t_rise;
             }
         }
+        // Pusher.logToConsole = true;
+
+        // this.pusher = new Pusher("1c51665eca5798a19215", {
+        //     cluster: "ap2"
+        // });
+        // this.channel = this.pusher.subscribe("private-progress");
+        // // this.channel.bind("client-update-progress", function(data){
+        // //     // const {progress} = (data);
+        // //     // setProgress(progress);
+        // //     console.log(data);
+        // // });
     }
     static sortRoots = (rt) =>
         rt.sort((ri, rj) =>
@@ -357,13 +369,10 @@ export default class TransferFunction extends Fraction {
     $ = (t) => this.laplaceInverse().$(t); // valueOf function in certain point; I used character $ in many places as,
     // acronym for "set" in setters, so $ here means that set the t ( or x or whatever) with a certain point
 
-    rootLocus = (k_min, k_max, N = 100) => {
+    rootLocus = async (k_min, k_max, progressBarObject) => {
         // return root locus values for plotting
-        /* let dk = (k_max - k_min) / N; //time step size
-        while (dk >= 1) {
-            N *= 10;
-            dk = (k_max - k_min) / N; //time step size
-        }*/
+
+        // channel.trigger("client-update-progress", {progress: 10});
         // TEMPORARY:
         let dk = 0.05;
         const a = this.getA(), // numerator
@@ -372,9 +381,9 @@ export default class TransferFunction extends Fraction {
             nb = b.length - 1;
         const reals = [],
             imaginaries = [];
-
+        const percentageScale = 100 / (k_max - k_min);
+        // channel.bind("pusher:subscription_succeeded", function(data) {
         const newTerm = Equation.GetAlgebriteTerm;
-
         for (let k = k_min; k <= k_max; k += dk) {
             // in this piece: using short form codes and using objects is set to minimum
             // because root locus is time consuming and putting all the codes in one main loop is better
@@ -390,12 +399,7 @@ export default class TransferFunction extends Fraction {
                     let i = 0;
                     i < offsetB;
                     delta[i] = b[i],
-                        expression += newTerm(
-                            nb - i,
-                            delta[i],
-                            i,
-                            this.symbol
-                        ),
+                        expression += newTerm(nb - i, delta[i], i, this.symbol),
                         i++
                 );
                 for (
@@ -418,12 +422,7 @@ export default class TransferFunction extends Fraction {
                     let i = 0;
                     i < offsetA;
                     delta[i] = b[i],
-                        expression += newTerm(
-                            na - i,
-                            delta[i],
-                            i,
-                            this.symbol
-                        ),
+                        expression += newTerm(na - i, delta[i], i, this.symbol),
                         i++
                 );
                 for (
@@ -443,6 +442,8 @@ export default class TransferFunction extends Fraction {
             // const roots = new Equation(new Poly(delta)).roots();
             const roots = new Equation(expression).roots();
 
+            await makeProgress(progressBarObject, k * percentageScale);
+
             for (let i = 0; i < roots.length; i++) {
                 if (roots[i] instanceof Complex) {
                     reals.push(roots[i].real());
@@ -453,6 +454,7 @@ export default class TransferFunction extends Fraction {
                 }
             }
         }
+        await makeProgress(progressBarObject, 100);
         return [reals, imaginaries];
     };
 }

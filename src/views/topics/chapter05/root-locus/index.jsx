@@ -4,7 +4,6 @@ import RootLocusLecture from "./lecture";
 import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "math/calculus";
 import { useState, useEffect } from "react";
-import GraphMenu from "math/GraphMenu";
 import { Grid } from "@mui/material";
 import GraphBox from "math/GraphBox";
 import { MathJax } from "better-react-mathjax";
@@ -13,6 +12,7 @@ import TransferFunction from "math/algebra/functions/transfer";
 import { gridSpacing } from "store/constant";
 import Describer from "math/describer";
 import MainCard from "views/ui-component/cards/MainCard";
+import { makeProgress } from "toolshed";
 
 const stepResponse = (tf, index = undefined) =>
     "$$ " + tf.label("G", index) + " $$";
@@ -27,9 +27,8 @@ const RootLocus = () => {
     const [trace, $trace] = useState({ x: [], y: [] });
     const [G_s, $G_s] = useState(null);
     const [GInfo, $GInfo] = useState("");
-
     const [response, $response] = useState(null);
-
+    const [responseTime, setResponseTime] = useState(null); //the time that takes for plotting rootlocus
     //update
     useEffect(() => {
         // k * num / den
@@ -41,19 +40,35 @@ const RootLocus = () => {
         );
     }, [rawNumerator, rawDenominator]);
 
-    const updatePlot = () => {
-        if (G_s) {
-            // $GInfo(new Describer(G_s));
-            const [x, y] = G_s.rootLocus(k_min, k_max);
-            $response(stepResponse(G_s));
-            $trace({
-                x,
-                y,
-                // color,
-                type: "scatter",
-                mode: "markers",
-                name: `root-locus`,
-            });
+    const updatePlot = async () => {
+        try {
+            // const updateProgressBar =
+            if (G_s) {
+                // $GInfo(new Describer(G_s));
+                const progressBar = document.getElementById("progressbar");
+                const startTime = new Date();
+                const [x, y] = await G_s.rootLocus(
+                    k_min,
+                    k_max,
+                    progressBar // send progress bar element to root locus for showing progres and preventing the browser from locking
+                );
+                const endTime = new Date();
+                $response(stepResponse(G_s));
+                $trace({
+                    x,
+                    y,
+                    type: "scatter",
+                    mode: "markers",
+                    name: `root-locus`,
+                });
+                setResponseTime((+endTime - +startTime) / 1000);
+
+                setTimeout(async () => {
+                    await makeProgress(progressBar, 0);
+                }, [1000]);
+            }
+        } catch (ex) {
+            console.log(ex);
         }
     };
     return (
@@ -117,13 +132,17 @@ const RootLocus = () => {
                                     $k_min={$k_min}
                                     $k_max={$k_max}
                                     updatePlot={updatePlot}
+                                    responseTime={responseTime}
                                 />
                             </Grid>
                         </Grid>
                         <Grid md={8} sm={12} xs={12} item>
                             <Grid lg={12} md={12} sm={12} xs={12} item>
                                 <SubCard>
-                                    <GraphBox title="مکان هندسی" traces={[trace]} />
+                                    <GraphBox
+                                        title="مکان هندسی"
+                                        traces={[trace]}
+                                    />
                                 </SubCard>
                             </Grid>
                             <hr />

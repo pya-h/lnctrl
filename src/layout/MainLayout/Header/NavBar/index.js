@@ -4,7 +4,7 @@ import { routes } from "config";
 import { useTheme } from "@emotion/react";
 import "./navbar.css";
 import { useLocation } from "react-router";
-import tools from "toolshed/tools";
+import {path} from "toolshed";
 import { useEffect, useState } from "react";
 
 const NavBar = () => {
@@ -14,12 +14,12 @@ const NavBar = () => {
     const [currentChapter, setCurrentChapter] = useState("/");
 
     useEffect(() => {
-        const current = tools.path.hierarchy("test = ",`${routes.root}${routes.chapter}02/${routes.hydraulic_systems_modeling}`);
+        const current = path.hierarchy("test = ",`${routes.root}${routes.chapter}02/${routes.hydraulic_systems_modeling}`);
         // console.log(current[0]);
         setCurrentChapter(current[0]);
         // setActive(
-        //     tools.path.hierarchy(pathname)[0] ===
-        //         tools.path.hierarchy(chapter.link)[0]
+        //     path.hierarchy(pathname)[0] ===
+        //         path.hierarchy(chapter.link)[0]
         // );
     }, [pathname]);
     const theme = useTheme();
@@ -43,8 +43,8 @@ const NavBar = () => {
     const updateActivityCheck = (chapter) => {
 
         // setActive(
-        //     tools.path.hierarchy(pathname)[0] ===
-        //         tools.path.hierarchy(chapter.link)[0]
+        //     path.hierarchy(pathname)[0] ===
+        //         path.hierarchy(chapter.link)[0]
         // );
     };
     return (
@@ -58,7 +58,7 @@ const NavBar = () => {
         >
             {chapterList.map((chapter) => (
                 <NavLink
-                    isActive={() => tools.path.hierarchy(chapter.link)[0] === currentChapter}
+                    isActive={() => path.hierarchy(chapter.link)[0] === currentChapter}
                     // onActiveStyle={{ color: "#18BC9C" }}
                     onClick={() => updateActivityCheck(chapter)}
                     className="nav-bar-item"

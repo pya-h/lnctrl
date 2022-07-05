@@ -12,8 +12,11 @@ import themes from "themes";
 // project imports
 import NavigationScroll from "layout/NavigationScroll";
 import { MathJaxContext } from "better-react-mathjax";
+import TransferFunction from 'math/algebra/functions/transfer';
+
 const App = () => {
     const customization = useSelector((state) => state.customization);
+    console.log(new TransferFunction([1], [1, 2]).amplitude(2).toString());
     return (
         <StyledEngineProvider injectFirst>
             <ThemeProvider theme={themes(customization)}>

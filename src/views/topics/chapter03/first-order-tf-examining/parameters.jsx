@@ -2,6 +2,7 @@ import { Grid, Button } from "@mui/material";
 import CoordinateSystem from "views/input-boxes/CoordinateSystem";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
+import { gridSpacing } from '../../../../store/constant';
 
 const parameterFormulas = [
     "$$a = $$",
@@ -58,7 +59,7 @@ const FOTFParameters = ({
                     </Button>
                 </Grid>
             </Grid>
-            <Grid spacing={0.6} container direction="row">
+            <Grid spacing={gridSpacing} container direction="row">
             
                 <SimpleParametersList parameters={[a, k, t_i, t_f]} setters={[$a, $k, $t_i, $t_f]} labels={parameterFormulas} units={parameterUnits} />
                 

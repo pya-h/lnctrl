@@ -22,7 +22,6 @@ export const path = {
 export const makeProgress = async (progressBar, progress) => {
     const progressValue = (progress | 0);
     if (progressValue % 5 === 0) {
-        // updateProgress(k);
         progressBar.style.width = `${progressValue}%`;
         progressBar.innerHTML = `${progressValue}%`;
         await preventBrowserLock();

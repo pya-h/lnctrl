@@ -24,6 +24,21 @@ const pointify = (f, ti, tf, N = 1000) => {
     const ys = ts.map((t) => f(t));
     return [ts, ys];
 };
+export const complexPointify = (fcomplex, ti, tf, N = 1000) => {
+    // returns (x, y) as for x + jy => for complex returning functions like frequency responses
+    let dt = (tf - ti) / N; //time step size
+    while (dt >= 1) {
+        N *= 10;
+        dt = (tf - ti) / N; //time step size
+    }
+    const xc = Array(N + 1), yc = Array(N + 1);
+    for(let ts = ti, i = 0; ts <= tf; ts += dt, i++){
+        const ycomplex = fcomplex(ts);
+        xc[i] = ycomplex.real();
+        yc[i] = ycomplex.imaginary();
+    }
+    return [xc, yc];
+};
 
 export const strictPrecisionFormat = (num) => {
     if (num) {
@@ -136,6 +151,7 @@ const calculus = {
     round,
     isFloat,
     pointify,
+    complexPointify,
     strictPrecisionFormat,
     linspace,
     droof,

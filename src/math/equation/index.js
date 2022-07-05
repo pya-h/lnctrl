@@ -2,7 +2,6 @@ import Algebra from "../algebra/index";
 import { isDigit, precision, round } from "math/calculus";
 import Complex from "math/algebra/complex";
 import Poly from "../algebra/functions/poly";
-import { ConsoleView } from "react-device-detect";
 const Algebrite = require("algebrite");
 
 export default class Equation {

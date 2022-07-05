@@ -38,7 +38,7 @@ const load = (pathname) => {
             type: "group",
             children: [
                 {
-                    id: "ch02intro",
+                    id: `${routes.chapter}02`,
                     title: "Introduction",
                     type: "item",
                     url: `${routes.chapter}02`,
@@ -46,7 +46,7 @@ const load = (pathname) => {
                     breadcrumbs: false,
                 },
                 {
-                    id: "hydraulics",
+                    id: routes.hydraulic_systems_modeling,
                     title: "Hydraulic system",
                     type: "item",
                     url: `${routes.chapter}02/${routes.hydraulic_systems_modeling}`,
@@ -54,7 +54,7 @@ const load = (pathname) => {
                     breadcrumbs: false,
                 },
                 {
-                    id: "mechanics",
+                    id: routes.mechanic_systems_modeling,
                     title: "Mechanical system",
                     type: "item",
                     url: `${routes.chapter}02/${routes.mechanic_systems_modeling}`,
@@ -62,7 +62,7 @@ const load = (pathname) => {
                     breadcrumbs: false,
                 },
                 {
-                    id: "space_state",
+                    id: routes.space_state_equations,
                     title: "State-space equations",
                     type: "item",
                     url: `${routes.chapter}02/${routes.space_state_equations}`,
@@ -70,7 +70,7 @@ const load = (pathname) => {
                     breadcrumbs: false,
                 },
                 {
-                    id: "block_diagrams_algebra",
+                    id: routes.block_diagrams_algebra,
                     title: "Block Diagram Algebra",
                     type: "item",
                     url: `${routes.chapter}02/${routes.block_diagrams_algebra}`,
@@ -78,7 +78,7 @@ const load = (pathname) => {
                     breadcrumbs: false,
                 },
                 {
-                    id: "sfg_algebra",
+                    id: routes.sfg_algebra,
                     title: "Signal flow graph algebra",
                     type: "item",
                     url: `${routes.chapter}02/${routes.sfg_algebra}`,
@@ -94,7 +94,7 @@ const load = (pathname) => {
             type: "group",
             children: [
                 {
-                    id: "ch03intro",
+                    id: `${routes.chapter}03`,
                     title: "Introduction",
                     type: "item",
                     url: `${routes.chapter}03`,
@@ -102,7 +102,7 @@ const load = (pathname) => {
                     breadcrumbs: false,
                 },
                 {
-                    id: "fst_order_tf",
+                    id: routes.fst_order_tf,
                     title: "Study of First-Order Transfer Functions",
                     type: "item",
                     url: `${routes.chapter}03/${routes.fst_order_tf}`,
@@ -110,7 +110,7 @@ const load = (pathname) => {
                     breadcrumbs: false,
                 },
                 {
-                    id: "snd_order_tf",
+                    id: routes.snd_order_tf,
                     title: "Study of Second-Order Transfer Functions",
                     type: "item",
                     url: `${routes.chapter}03/${routes.snd_order_tf}`,
@@ -118,7 +118,7 @@ const load = (pathname) => {
                     breadcrumbs: false,
                 },
                 {
-                    id: "design_by_char",
+                    id: routes.design_by_characteristics,
                     title: "System Design via Specifications",
                     type: "item",
                     url: `${routes.chapter}03/${routes.design_by_characteristics}`,
@@ -134,7 +134,7 @@ const load = (pathname) => {
             type: "group",
             children: [
                 {
-                    id: "ch04intro",
+                    id: `${routes.chapter}04`,
                     title: "Introduction",
                     type: "item",
                     url: `${routes.chapter}04`,
@@ -142,7 +142,7 @@ const load = (pathname) => {
                     breadcrumbs: false,
                 },
                 {
-                    id: "hurwitz_criterion",
+                    id: routes.hurwitz_criterion,
                     title: "Hurwitz stability criterion",
                     type: "item",
                     url: `${routes.chapter}04/${routes.hurwitz_criterion}`,
@@ -150,7 +150,7 @@ const load = (pathname) => {
                     breadcrumbs: false,
                 },
                 {
-                    id: "routh_hurwitz_criterion",
+                    id: routes.routh_hurwitz_criterion,
                     title: "Routh-Hurwitz Stability Criterion",
                     type: "item",
                     url: `${routes.chapter}04/${routes.routh_hurwitz_criterion}`,
@@ -166,7 +166,7 @@ const load = (pathname) => {
                 type: "group",
                 children: [
                     {
-                        id: "ch05intro",
+                        id: `${routes.chapter}05`,
                         title: "Introduction",
                         type: "item",
                         url: `${routes.chapter}05`,
@@ -174,10 +174,35 @@ const load = (pathname) => {
                         breadcrumbs: false,
                     },
                     {
-                        id: "hurwitz_criterion",
+                        id: routes.root_locus,
                         title: "Root locus",
                         type: "item",
                         url: `${routes.chapter}05/${routes.root_locus}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
+                    
+                ],
+            };
+        else if (hierarchy[0] === `${routes.chapter}06`)
+            topics = {
+                id: "topics",
+                title: "Topics",
+                type: "group",
+                children: [
+                    {
+                        id: `${routes.chapter}06`,
+                        title: "Introduction",
+                        type: "item",
+                        url: `${routes.chapter}06`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
+                    {
+                        id: routes.circuit_frequency_response,
+                        title: "Frequency response",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.circuit_frequency_response}`,
                         icon: icons.IconBike,
                         breadcrumbs: false,
                     },

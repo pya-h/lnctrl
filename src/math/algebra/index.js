@@ -1,4 +1,3 @@
-import { CollectionsOutlined } from "@mui/icons-material";
 import NotScalarError from "errors/algebra/NotScalarError";
 import StandardInputSignal from "math/input-signals";
 import { round, strictPrecisionFormat } from "../calculus";
@@ -42,8 +41,8 @@ class Algebra {
         else if (parameter instanceof Algebra) {
             return parameter.copy();
         } else if (typeof parameter === "number") return round(parameter);
+        else if(typeof parameter === 'string') return parameter;
         else if (!parameter) return 0;
-        console.log(parameter);
         throw new NotScalarError(parameter);
     };
     setA = (a) => {
@@ -592,6 +591,10 @@ class Algebra {
     substract = (operand) => this.add(operand.negation());
 
     devide = (operand) => {
+        if(operand === +operand)
+            // scaler
+            return this.multiply(1 / Number(operand));
+        
         // u need to handle Complex objects as Algebra using their type to recognize them
         if (operand instanceof Algebra) {
             // operand algebra or complex
@@ -600,11 +603,16 @@ class Algebra {
             // second at the simplest state of the terms,
             // construct a new Algebra of "frac" type
             return this.copy(); // for now just to avoid crashes
-        } else {
-            // scaler
-            return this.multiply(1 / operand);
-        }
+        } 
     };
+
+    devideInverse = (k) =>{
+        if(k === +k){
+            return new Algebra([k], {symbol: this.symbol, type: "frac", b: [1]});
+        }
+        else if(k instanceof Algebra)
+            return k.devide(this);
+    }
 
     laplace = () => {};
 

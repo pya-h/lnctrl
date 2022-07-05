@@ -12,7 +12,7 @@ import { makeProgress } from "toolshed";
 export default class TransferFunction extends Fraction {
     static Specials = {
         $1: (k, a) =>
-            new TransferFunction([k], [1, -a]).setRoots([], [a]).setOrder(1),
+            new TransferFunction([k], [1, a]).setRoots([], [-a]).setOrder(1),
         $2: (k, a, b = a instanceof Complex ? a.conjugate : a) => {
             // k / (s + a)(s + b) => must be converted to => k / (s2 + 2(a+b)s + ab)
             let aplusb =
@@ -359,15 +359,56 @@ export default class TransferFunction extends Fraction {
     errors = () => {
         const sGs = this.multiply(new Poly([1, 0], "s"));
         const s2Gs = sGs.multiply(new Poly([1, 0], "s"));
-        console.log(sGs);
         return {
             Ks: round(this.lim(0)),
             Kr: round(sGs.lim(0)),
             Ka: round(s2Gs.lim(0)),
         };
     };
-    $ = (t) => this.laplaceInverse().$(t); // valueOf function in certain point; I used character $ in many places as,
+    // $ = (t) => this.laplaceInverse().$(t); // valueOf function in certain point; I used character $ in many places as,
     // acronym for "set" in setters, so $ here means that set the t ( or x or whatever) with a certain point
+
+    amplitude = (w) => {
+        // w === omega
+        const jw = new Complex(0, w);
+        const num = this.numerator().$(jw),
+            den = this.denominator().$(jw);
+
+        return num.magnitude() / den.magnitude();
+        // this is for find exact match of the devide function
+        // but im sure num and den are Complex so i directly stated the result
+
+        // if(num instanceof Complex)
+        //     return num.magnitude() / (den instanceof Complex ? den.magnitude : den).magnitude();
+        // if(den instanceof Complex)
+        //     return num instanceof Algebra ? num.devide(den.magnitude()) : num / den.magnitude();
+        // if(num instanceof Algebra)
+        //     return num.devide(den);
+        // if(den instanceof Algebra)
+        //     return den.devideInverse(num);
+        // // signal input?
+        // if(den)
+        //     return num / den;
+        // return NaN;
+    };
+
+    phase = (w) => {
+        const jw = new Complex(0, w);
+        const num = this.numerator().$(jw),
+            den = this.denominator().$(jw);
+        const numPhase = num.phase(),
+            denPhase = den.phase();
+        const definiteNumPhase = num.phase(),
+            definiteDenPhase = den.phase();
+
+        if (definiteDenPhase === denPhase && definiteNumPhase === numPhase)
+            return num.phase() - den.phase();
+        // else if(numPhase instanceof Algebra)
+        //     return
+        return NaN;
+    };
+
+    frequencyResponse = (w) => this.$(new Complex(0, w)); // G(jw)
 
     rootLocus = async (k_min, k_max, progressBarObject) => {
         // return root locus values for plotting

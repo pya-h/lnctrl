@@ -50,9 +50,16 @@ export default class Fraction extends Algebra {
         return this.setB(den);
     }
     valueAt = (t) => {
-        const num = Algebra.valueOf(this.a, t);
-        const den = Algebra.valueOf(this.b, t);
-        return num / den;
+        const num = this.numerator().$(t);
+        const den = this.denominator().$(t);
+        if(num instanceof Algebra)
+            return num.devide(den);
+        if(den instanceof Algebra)
+            return den.devideInverse(num);
+        if(den)
+            return num / den;
+        // THROW zero denominator ERROR 
+        return NaN;
     }
 
 }

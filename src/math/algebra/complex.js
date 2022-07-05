@@ -65,7 +65,17 @@ class Complex extends Algebra {
     magnitude$2 = () => this.a ** 2 + this.b ** 2;
 
     magnitude = () => (this.a ** 2 + this.b ** 2) ** 0.5;
-
+    
+    phase = () => {
+        const definiteA = +this.a, definiteB = +this.b;
+        if(this.a === definiteA && this.b === definiteB)
+            return Math.atan(definiteB / definiteA);
+        if(this.b instanceof Algebra)
+            return t => Math.atan(this.b.$(t) / (this.a instanceof Algebra ? this.a.$(t) : definiteA))
+        if(this.a instanceof Algebra)
+            return t => Math.atan(definiteB / this.a.$(t));
+        return NaN;
+    }
     isReal = () => this.b === 0;
 
     hasSameTypeWith = (x) =>

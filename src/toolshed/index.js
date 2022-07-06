@@ -19,9 +19,9 @@ export const path = {
         return [...decomposedPath];
     },
 };
-export const makeProgress = async (progressBar, progress) => {
+export const makeProgress = async (progressBar, progress, step = 5) => {
     const progressValue = (progress | 0);
-    if (progressValue % 5 === 0) {
+    if (progressValue % step === 0) {
         progressBar.style.width = `${progressValue}%`;
         progressBar.innerHTML = `${progressValue}%`;
         await preventBrowserLock();

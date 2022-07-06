@@ -14,7 +14,9 @@ const routes = {
     hurwitz_criterion: "hurwitz_criterion",
     routh_hurwitz_criterion: "routh_hurwitz_criterion",
     root_locus: "root_locus",
-    circuit_frequency_response: "circuit_freq_res",
+    rc_filter_frequency_response: "rc_filter_freq_res",
+    frequency_response: "freq_res",
+    bode_plot: 'bode_plot'
 };
 
 const error_codes = {

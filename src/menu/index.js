@@ -199,14 +199,29 @@ const load = (pathname) => {
                         breadcrumbs: false,
                     },
                     {
-                        id: routes.circuit_frequency_response,
-                        title: "Frequency response",
+                        id: routes.rc_filter_frequency_response,
+                        title: "Frequency response of the RC filter",
                         type: "item",
-                        url: `${routes.chapter}06/${routes.circuit_frequency_response}`,
+                        url: `${routes.chapter}06/${routes.rc_filter_frequency_response}`,
                         icon: icons.IconBike,
                         breadcrumbs: false,
                     },
-                    
+                    {
+                        id: routes.frequency_response,
+                        title: "Frequency response",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.frequency_response}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
+                    {
+                        id: routes.bode_plot,
+                        title: "Bode plot",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.bode_plot}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
                 ],
             };
     return {

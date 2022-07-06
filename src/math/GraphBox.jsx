@@ -2,7 +2,7 @@ import React from "react";
 import Plot from "react-plotly.js";
 
 const GraphBox = ({ traces, title, width, height = 500 }) => {
-    const temp_layout = {
+    /*const temp_layout = {
         xaxis: {
             zeroline: true,
             rangemode: "tozero",
@@ -25,7 +25,7 @@ const GraphBox = ({ traces, title, width, height = 500 }) => {
             tickwidth: 4,
             tickcolor: "#000",
         },
-    };
+    };*/
 
     return (
         <Plot
@@ -43,9 +43,12 @@ const GraphBox = ({ traces, title, width, height = 500 }) => {
                 },
                 xaxis: {
                     rangemode: "tozero",
+                    zeroline: true
                 },
                 yaxis: {
                     rangemode: "tozero",
+                    zeroline: true
+
                 },
                 height,
                 title,

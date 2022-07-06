@@ -34,7 +34,7 @@ const sections = [
     {
         title: 'فصل ششم',
         subtitle: 'پاسخ فرکانسی',
-        link: `${routes.root}${routes.chapter}05/${routes.root_locus}`
+        link: `${routes.root}${routes.chapter}06/${routes.rc_filter_frequency_response}`
 
     },
     {

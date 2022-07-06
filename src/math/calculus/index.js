@@ -1,3 +1,4 @@
+import {preventBrowserLock } from "toolshed";
 import LTI from "./lti";
 import ODE from "./ode";
 import theorems from "./theorems";
@@ -24,19 +25,35 @@ const pointify = (f, ti, tf, N = 1000) => {
     const ys = ts.map((t) => f(t));
     return [ts, ys];
 };
-export const complexPointify = (fcomplex, ti, tf, N = 1000) => {
+export const complexPointify = async (fcomplex, ti, tf, N = 1000) => {
     // returns (x, y) as for x + jy => for complex returning functions like frequency responses
     let dt = (tf - ti) / N; //time step size
-    while (dt >= 1) {
+
+    while (dt >= 0.01) {
         N *= 10;
         dt = (tf - ti) / N; //time step size
     }
-    const xc = Array(N + 1), yc = Array(N + 1);
-    for(let ts = ti, i = 0; ts <= tf; ts += dt, i++){
+    const xc = Array(N + 1),
+        yc = Array(N + 1);
+    for (let ts = ti, i = 0; ts <= tf; ts += dt, i++) {
         const ycomplex = fcomplex(ts);
+        if(i % 1000 === 0)
+            await preventBrowserLock();
         xc[i] = ycomplex.real();
         yc[i] = ycomplex.imaginary();
     }
+
+    // for(let i = 0; i < N + 1; i++){
+    //     for(let j = i + 1; j < N + 1; j++){
+    //         if(xc[j] < xc[i]){
+    //             const tx = xc[j], ty = yc[j];
+    //             xc[j] = xc[i];
+    //             yc[j] = yc[i];
+    //             xc[i] = tx;
+    //             yc[i] = ty;
+    //         }
+    //     }
+    // }
     return [xc, yc];
 };
 
@@ -82,68 +99,54 @@ export const stringToArray = (raw) =>
         .filter((el) => el && !isNaN(el))
         .map((el) => Number(el));
 
-export const isFloat = x => x === +x && x !== (x|0);
+export const isFloat = (x) => x === +x && x !== (x | 0);
 export const evaluate = (raw) => {
     // evaluate basic math operations in string
     // when pressing = we can convert the expression to final value
     // const inlineOperators = ['+', '-', '*', '/', '^'];
-    // const separators = /\+|-|\*|^|\//;           
+    // const separators = /\+|-|\*|^|\//;
     const terms = raw.split(/,| /).filter((el) => el && el !== "");
-    if(isNaN(terms[0]))
-        return NaN;
+    if (isNaN(terms[0])) return NaN;
     // IMPLEMENT PARENTHESIS AS WELL ************************
-    for(let i = 0; i < terms.length; i++){
-        if(terms[i] === '^'){
-            if(i + 1 < terms.length){
+    for (let i = 0; i < terms.length; i++) {
+        if (terms[i] === "^") {
+            if (i + 1 < terms.length) {
                 terms[i - 1] **= Number(terms[i + 1]);
                 terms.splice(i, 2);
-            }
-            else
-                terms.splice(i, 1);
+            } else terms.splice(i, 1);
         }
     }
-    for(let i = 0; i < terms.length; i++){
-        if(terms[i] === '*'){
-            if(i + 1 < terms.length){
+    for (let i = 0; i < terms.length; i++) {
+        if (terms[i] === "*") {
+            if (i + 1 < terms.length) {
                 terms[i - 1] *= Number(terms[i + 1]);
                 terms.splice(i, 2);
-            }
-            else
-                terms.splice(i, 1);
-        }
-        else if(terms[i] === '/'){
-            if(i + 1 < terms.length){
+            } else terms.splice(i, 1);
+        } else if (terms[i] === "/") {
+            if (i + 1 < terms.length) {
                 terms[i - 1] /= Number(terms[i + 1]);
                 terms.splice(i, 2);
-            }
-            else
-                terms.splice(i, 1);
+            } else terms.splice(i, 1);
         }
     }
 
-    for(let i = 0; i < terms.length; i++){
-        if(terms[i] === '+'){
-            if(i + 1 < terms.length){
+    for (let i = 0; i < terms.length; i++) {
+        if (terms[i] === "+") {
+            if (i + 1 < terms.length) {
                 terms[i - 1] += Number(terms[i + 1]);
                 terms.splice(i, 2);
-            }
-            else
-                terms.splice(i, 1);
-        }
-        else if(terms[i] === '-'){
-            if(i + 1 < terms.length){
+            } else terms.splice(i, 1);
+        } else if (terms[i] === "-") {
+            if (i + 1 < terms.length) {
                 terms[i - 1] -= Number(terms[i + 1]);
                 terms.splice(i, 2);
-            }
-            else
-                terms.splice(i, 1);
+            } else terms.splice(i, 1);
         }
     }
-    
-    if(terms.length === 1)
-        return Number(terms[0]);
+
+    if (terms.length === 1) return Number(terms[0]);
     return NaN;
-}
+};
 const calculus = {
     ODE,
     LTI,

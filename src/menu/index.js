@@ -199,14 +199,29 @@ const load = (pathname) => {
                         breadcrumbs: false,
                     },
                     {
-                        id: routes.circuit_frequency_response,
-                        title: "پاسخ فرکانسی",
+                        id: routes.rc_filter_frequency_response,
+                        title: "پاسخ فرکانسی فیلتر RC",
                         type: "item",
-                        url: `${routes.chapter}06/${routes.circuit_frequency_response}`,
+                        url: `${routes.chapter}06/${routes.rc_filter_frequency_response}`,
                         icon: icons.IconBike,
                         breadcrumbs: false,
                     },
-                    
+                    {
+                        id: routes.frequency_response,
+                        title: "پاسخ فرکانسی",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.frequency_response}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
+                    {
+                        id: routes.bode_plot,
+                        title: "نمودار بود",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.bode_plot}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
                 ],
             };
     return {

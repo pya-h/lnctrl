@@ -410,6 +410,8 @@ export default class TransferFunction extends Fraction {
 
     frequencyResponse = (w) => this.$(new Complex(0, w)); // G(jw)
 
+    bode = w => 20 * Math.log(this.amplitude(w));
+    
     rootLocus = async (k_min, k_max, progressBarObject) => {
         // return root locus values for plotting
 

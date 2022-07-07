@@ -42,7 +42,7 @@ const WaterTankLevelExample = () => {
     const [diffEquation, setDiffEquation] = useState(null);
     const [thickness, setThickness] = useState(1.0); // graph line thickness
     const [isGraphCatured, setGraphCaptured] = useState(false);
-
+    const [N, $N] = useState(1000);
     const [is3DPlotEnabled, set3DPlotEnabled] = useState(false);
 
     const toggle3DPlot = () => set3DPlotEnabled(!is3DPlotEnabled);
@@ -69,30 +69,15 @@ const WaterTankLevelExample = () => {
     };
 
     useEffect(() => {
-        // Euiler (an approximation method):
-        // const [x, y] = calculus.ODE.euiler(1,
-        //     Number(ti),
-        //     Number(tf),
-        //     {y0: Number(hi),
-        //     fyt: (t, f) => Number(-f / (R * C).toFixed(2) + Qin / C)}
-        // );
-
-        const h_t = calculus.ODE.cc1ode(R * C, 1, R * Qin, hi);
-        const [x, y] = calculus.pointify(h_t, Number(ti), Number(tf)); // N: 100
+        const h_t = calculus.ODE.cc1ode(+R * +C, 1, +R * +Qin, +hi);
+        const [x, y] = calculus.pointify(h_t, +ti, +tf, +N);
 
         setDeltaX(x[1] - x[0]);
         selectY(y); // currentY = y
         setDiffEquation(hydraulicSystemEquation(R, C, Qin));
         const all = systems.map((e, index) => {
-            // const [xi, yi] = calculus.ODE.euiler(
-            //     Number(ti),
-            //     Number(tf),
-            //     Number(e.hi),
-            //     1000,
-            //     (t, f) => Number(-f / (e.R * e.C) + e.Qin / e.C)
-            // );
             const hi_t = calculus.ODE.cc1ode(e.R * e.C, 1, e.R * e.Qin, e.hi);
-            const [xi, yi] = calculus.pointify(hi_t, ti, tf); // N: 100
+            const [xi, yi] = calculus.pointify(hi_t, ti, tf, +N); 
             return {
                 x: xi,
                 y: yi,
@@ -101,7 +86,6 @@ const WaterTankLevelExample = () => {
                     // color: e.color...
                     width: e.thickness,
                 },
-                // color,
                 type: "scatter" + (is3DPlotEnabled ? "3d" : ""),
                 name: e.legend,
                 mode: "lines",
@@ -118,19 +102,16 @@ const WaterTankLevelExample = () => {
                 x,
                 y,
                 z: is3DPlotEnabled ? Array(x.length).fill(0) : null,
-                // color,
                 line: {
-                    // color:'rgb(17, 157, 255)'
                     width: thickness,
                 },
                 type: "scatter" + (is3DPlotEnabled ? "3d" : ""),
-
                 mode: "lines",
                 name: `${symbols.out}(${symbols.in})`,
             });
 
         setTraces(all);
-    }, [R, C, Qin, ti, tf, hi, is3DPlotEnabled, thickness, systems]);
+    }, [R, C, Qin, ti, tf, hi, is3DPlotEnabled, thickness, systems, N]);
 
     useEffect(() => {
         setGraphCaptured(false);
@@ -213,6 +194,8 @@ const WaterTankLevelExample = () => {
                             setQin={setQin}
                             setTi={setTi}
                             setTf={setTf}
+                            N={N}
+                            $N={$N}
                         />
                     </Grid>
                     <Grid sx={{ marginTop: "3%" }} xs={12}>

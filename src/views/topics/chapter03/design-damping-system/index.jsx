@@ -40,7 +40,7 @@ const DesignSystemByCharacteristics = () => {
     const [C_t, $C_t] = useState(null);
     const [G_s, $G_s] = useState(null);
     const [GInfo, $GInfo] = useState("");
-
+    const [N, $N] = useState(1000);
     const [response, $response] = useState(null);
 
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
@@ -53,8 +53,8 @@ const DesignSystemByCharacteristics = () => {
         if (index === -1) {
             // if current system has not been captured before => then capture it; o.w. its not needed
             capturedSystems.push({
-                M_p: Number(M_p),
-                t_rise: Number(t_rise),
+                M_p: +M_p,
+                t_rise: +t_rise,
                 G_s,
                 C_t,
                 thickness,
@@ -70,16 +70,13 @@ const DesignSystemByCharacteristics = () => {
         }
     };
     useEffect(() => {
-        let gtf = TransferFunction.Specials.$design(
-            Number(t_rise),
-            Number(M_p)
-        );
+        let gtf = TransferFunction.Specials.$design(+t_rise, +M_p);
         const tstep = gtf.step();
         $G_s(gtf);
         if (gtf) {
             $C_t(tstep);
             $GInfo(new Describer(gtf));
-            const [x, y] = calculus.pointify(tstep.$, Number(t_i), Number(t_f)); // N: 100
+            const [x, y] = calculus.pointify(tstep.$, +t_i, +t_f, +N);
             $response(stepResponse(gtf));
             // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
             // so that the traces will be loaded with new conditions
@@ -92,9 +89,10 @@ const DesignSystemByCharacteristics = () => {
 
                 const [xi, yi] = calculus.pointify(
                     tgtf.step().$,
-                    Number(t_i),
-                    Number(t_f)
-                ); // N: 100
+                    +t_i,
+                    +t_f,
+                    +N
+                );
 
                 return {
                     x: xi,
@@ -132,7 +130,7 @@ const DesignSystemByCharacteristics = () => {
 
             $traces(all);
         }
-    }, [M_p, t_rise, t_i, t_f, is3DPlotEnabled, thickness, systems]);
+    }, [M_p, t_rise, t_i, t_f, is3DPlotEnabled, thickness, systems, N]);
 
     useEffect(() => {
         $graphCaptured(false);
@@ -224,6 +222,8 @@ const DesignSystemByCharacteristics = () => {
                                     $t_rise={$t_rise}
                                     $t_i={$t_i}
                                     $t_f={$t_f}
+                                    N={N}
+                                    $N={$N}
                                 />
                             </Grid>
                         </Grid>

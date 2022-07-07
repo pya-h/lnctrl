@@ -12,6 +12,7 @@ const parameterFormulas = [
     "$$v_i = $$",
     "$$t_i = $$",
     "$$t_f = $$",
+    "$$N = $$"
 ];
 const parameterUnits = [
     "$$Kg$$",
@@ -22,6 +23,7 @@ const parameterUnits = [
     "$$\\frac{m}{s}$$",
     "$$sec$$",
     "$$sec$$",
+    null
 ];
 
 const MassSpringDamperParameters = ({
@@ -43,6 +45,8 @@ const MassSpringDamperParameters = ({
     $t_i,
     $t_f,
     $output,
+    N,
+    $N
 }) => {
     const [out, $out] = useState(null);
 
@@ -62,8 +66,8 @@ const MassSpringDamperParameters = ({
         >
             <Grid spacing={0.6} container direction="row">
                 <SimpleParametersList
-                    parameters={[m, c, k, F_t, x_i, v_i, t_i, t_f]}
-                    setters={[$m, $c, $k, $F_t, $x_i, $v_i, $t_i, $t_f]}
+                    parameters={[m, c, k, F_t, x_i, v_i, t_i, t_f, N]}
+                    setters={[$m, $c, $k, $F_t, $x_i, $v_i, $t_i, $t_f, $N]}
                     labels={parameterFormulas}
                     units={parameterUnits}
                 />

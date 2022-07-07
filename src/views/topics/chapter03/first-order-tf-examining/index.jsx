@@ -115,6 +115,7 @@ const FirstOrderTransferFunctionExamining = () => {
     const [thickness, $thickness] = useState(1.0); // graph line thickness
     const [isGraphCatured, $graphCaptured] = useState(false);
     const [is3DPlotEnabled, $3DPlotEnabled] = useState(false);
+    const [N, $N] = useState(1000);
 
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
 
@@ -122,15 +123,13 @@ const FirstOrderTransferFunctionExamining = () => {
         const capturedSystems = [...systems];
         const index = capturedSystems.findIndex(
             (sys) =>
-                sys.a === Number(a) &&
-                sys.k === Number(k) &&
-                sys.inputSignal === inputSignal
+                sys.a === +a && sys.k === +k && sys.inputSignal === inputSignal
         );
         if (index === -1) {
             // if current system has not been captured before => then capture it; o.w. its not needed
             capturedSystems.push({
-                a: Number(a),
-                k: Number(k),
+                a: +a,
+                k: +k,
                 inputSignal,
                 thickness,
                 legend:
@@ -149,13 +148,13 @@ const FirstOrderTransferFunctionExamining = () => {
         let g_t = null;
         if (!inputSignal) {
             // step
-            g_t = calculus.LTI.step(1, Number(k), Number(a));
-            $response(stepResponse(Number(k), Number(a)));
+            g_t = calculus.LTI.step(1, +k, +a);
+            $response(stepResponse(+k, +a));
         } else {
-            g_t = calculus.LTI.ramp(1, Number(k), Number(a));
-            $response(rampResponse(Number(k), Number(a)));
+            g_t = calculus.LTI.ramp(1, +k, +a);
+            $response(rampResponse(+k, +a));
         }
-        const [x, y] = calculus.pointify(g_t, Number(t_i), Number(t_f), 1000); // N: 100
+        const [x, y] = calculus.pointify(g_t, +t_i, +t_f, +N); 
         // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
         // so that the traces will be loaded with new conditions
         const all = systems.map((e, index) => {
@@ -167,12 +166,7 @@ const FirstOrderTransferFunctionExamining = () => {
             } else {
                 g_t = calculus.LTI.ramp(1, e.k, e.a);
             }
-            const [xi, yi] = calculus.pointify(
-                g_t,
-                Number(t_i),
-                Number(t_f),
-                1000
-            ); // N: 100
+            const [xi, yi] = calculus.pointify(g_t, +t_i, +t_f, +N); 
 
             return {
                 x: xi,
@@ -191,9 +185,7 @@ const FirstOrderTransferFunctionExamining = () => {
 
         const index = systems.findIndex(
             (sys) =>
-                sys.a === Number(a) &&
-                sys.k === Number(k) &&
-                sys.inputSignal === inputSignal
+                sys.a === +a && sys.k === +k && sys.inputSignal === inputSignal
         );
         if (index === -1)
             // if current system isnt in traces list => add it temperory to plot
@@ -212,7 +204,7 @@ const FirstOrderTransferFunctionExamining = () => {
             });
 
         $traces(all);
-    }, [a, k, t_i, t_f, inputSignal, is3DPlotEnabled, thickness, systems]);
+    }, [a, k, t_i, t_f, inputSignal, is3DPlotEnabled, thickness, systems, N]);
 
     useEffect(() => {
         $graphCaptured(false);
@@ -316,6 +308,8 @@ const FirstOrderTransferFunctionExamining = () => {
                                     $t_f={$t_f}
                                     inputSignal={inputSignal}
                                     $inputSignal={$inputSignal}
+                                    N={N}
+                                    $N={$N}
                                 />
                             </Grid>
                         </Grid>

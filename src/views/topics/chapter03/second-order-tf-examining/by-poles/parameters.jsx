@@ -10,8 +10,9 @@ const parameterFormulas = [
     "$$k = $$",
     "$$t_i = $$",
     "$$t_f = $$",
+    "$$N = $$"
 ];
-const parameterUnits = [null, null, null, "$$sec$$", "$$sec$$"];
+const parameterUnits = [null, null, null, "$$sec$$", "$$sec$$", null];
 
 const SOTFByPolesInputs = ({
     k,
@@ -24,6 +25,8 @@ const SOTFByPolesInputs = ({
     t_f,
     $t_i,
     $t_f,
+    N,
+    $N
 }) => {
     const grids = 10;
 
@@ -65,13 +68,14 @@ const SOTFByPolesInputs = ({
         >
             <Grid spacing={0.6} container direction="row">
                 <SimpleParametersList
-                    parameters={[alpha, beta, k, t_i, t_f]}
+                    parameters={[alpha, beta, k, t_i, t_f, N]}
                     setters={[
                         alphaTextBoxOnChange,
                         betaTextBoxOnChange,
                         $k,
                         $t_i,
                         $t_f,
+                        $N
                     ]}
                     labels={parameterFormulas}
                     units={parameterUnits}

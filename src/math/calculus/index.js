@@ -1,4 +1,4 @@
-import {preventBrowserLock } from "toolshed";
+import { preventBrowserLock } from "toolshed";
 import LTI from "./lti";
 import ODE from "./ode";
 
@@ -37,8 +37,7 @@ export const complexPointify = async (fcomplex, ti, tf, N = 1000) => {
         yc = Array(N + 1);
     for (let ts = ti, i = 0; ts <= tf; ts += dt, i++) {
         const ycomplex = fcomplex(ts);
-        if(i % 1000 === 0)
-            await preventBrowserLock();
+        if (i % 1000 === 0) await preventBrowserLock();
         xc[i] = ycomplex.real();
         yc[i] = ycomplex.imaginary();
     }
@@ -57,7 +56,16 @@ export const complexPointify = async (fcomplex, ti, tf, N = 1000) => {
     return [xc, yc];
 };
 
-export const systemToTrace = (f, in_min, in_max, thickness, legend, _3d, N = 1000, mode="lines") => {
+export const systemToTrace = (
+    f,
+    in_min,
+    in_max,
+    thickness,
+    legend,
+    _3d,
+    N = 1000,
+    mode = "lines"
+) => {
     // in === t, w, x, etc.
     const [x, y] = pointify(f, in_min, in_max, N);
     return {
@@ -102,7 +110,7 @@ const linspace = (min, max, step) => {
 };
 
 export const round = (x, decimalPrecision = precision.get()) =>
-    Number(Math.round(x + "e" + decimalPrecision) + "e-" + decimalPrecision);
+    +(Math.round(x + "e" + decimalPrecision) + "e-" + decimalPrecision);
 
 // decimal roof
 const droof = (num) => 10 * Math.trunc((num + 10) / 10); // number: abcd => [floor] abc0 < abcd < ab(c+1)0 [roof]
@@ -115,7 +123,7 @@ export const stringToArray = (raw) =>
     raw
         .split(/,| /)
         .filter((el) => el && !isNaN(el))
-        .map((el) => Number(el));
+        .map((el) => +el);
 
 export const isFloat = (x) => x === +x && x !== (x | 0);
 export const evaluate = (raw) => {
@@ -129,7 +137,7 @@ export const evaluate = (raw) => {
     for (let i = 0; i < terms.length; i++) {
         if (terms[i] === "^") {
             if (i + 1 < terms.length) {
-                terms[i - 1] **= Number(terms[i + 1]);
+                terms[i - 1] **= +terms[i + 1];
                 terms.splice(i, 2);
             } else terms.splice(i, 1);
         }
@@ -137,12 +145,12 @@ export const evaluate = (raw) => {
     for (let i = 0; i < terms.length; i++) {
         if (terms[i] === "*") {
             if (i + 1 < terms.length) {
-                terms[i - 1] *= Number(terms[i + 1]);
+                terms[i - 1] *= +terms[i + 1];
                 terms.splice(i, 2);
             } else terms.splice(i, 1);
         } else if (terms[i] === "/") {
             if (i + 1 < terms.length) {
-                terms[i - 1] /= Number(terms[i + 1]);
+                terms[i - 1] /= +terms[i + 1];
                 terms.splice(i, 2);
             } else terms.splice(i, 1);
         }
@@ -151,18 +159,18 @@ export const evaluate = (raw) => {
     for (let i = 0; i < terms.length; i++) {
         if (terms[i] === "+") {
             if (i + 1 < terms.length) {
-                terms[i - 1] += Number(terms[i + 1]);
+                terms[i - 1] += +terms[i + 1];
                 terms.splice(i, 2);
             } else terms.splice(i, 1);
         } else if (terms[i] === "-") {
             if (i + 1 < terms.length) {
-                terms[i - 1] -= Number(terms[i + 1]);
+                terms[i - 1] -= +terms[i + 1];
                 terms.splice(i, 2);
             } else terms.splice(i, 1);
         }
     }
 
-    if (terms.length === 1) return Number(terms[0]);
+    if (terms.length === 1) return +terms[0];
     return NaN;
 };
 const calculus = {
@@ -181,7 +189,7 @@ const calculus = {
     stringToArray,
     evaluate,
     systemToTrace,
-    RadianToDegree
+    RadianToDegree,
 };
 
 export default calculus;

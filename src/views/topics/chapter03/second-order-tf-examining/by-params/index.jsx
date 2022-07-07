@@ -39,7 +39,7 @@ const SOTFExamineByParams = () => {
     const [C_t, $C_t] = useState(null);
     const [G_s, $G_s] = useState(null);
     const [GInfo, $GInfo] = useState("");
-
+    const [N, $N] = useState(1000);
     const [response, $response] = useState(null);
 
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
@@ -76,7 +76,7 @@ const SOTFExamineByParams = () => {
         if (gtf) {
             $C_t(tstep);
             $GInfo(new Describer(gtf));
-            const [x, y] = calculus.pointify(tstep.$, Number(t_i), Number(t_f)); // N: 100
+            const [x, y] = calculus.pointify(tstep.$, +t_i, +t_f, +N);
             $response(stepResponse(gtf));
             // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
             // so that the traces will be loaded with new conditions
@@ -87,11 +87,7 @@ const SOTFExamineByParams = () => {
                     [1, 2 * e.zeta * e.w_n, w_n2]
                 );
 
-                const [xi, yi] = calculus.pointify(
-                    tgtf.step().$,
-                    Number(t_i),
-                    Number(t_f)
-                ); // N: 100
+                const [xi, yi] = calculus.pointify(tgtf.step().$, +t_i, +t_f, +N);
 
                 return {
                     x: xi,
@@ -109,7 +105,7 @@ const SOTFExamineByParams = () => {
             });
 
             const index = systems.findIndex(
-                (sys) => w_n === sys.w_n && zeta === sys.zeta
+                (sys) => +w_n === sys.w_n && +zeta === sys.zeta
             );
             if (index === -1)
                 // if current system isnt in traces list => add it temperory to plot
@@ -129,7 +125,7 @@ const SOTFExamineByParams = () => {
 
             $traces(all);
         }
-    }, [w_n, zeta, t_i, t_f, is3DPlotEnabled, thickness, systems]);
+    }, [w_n, zeta, t_i, t_f, is3DPlotEnabled, thickness, systems, N]);
 
     useEffect(() => {
         $graphCaptured(false);
@@ -215,6 +211,8 @@ const SOTFExamineByParams = () => {
                             $zeta={$zeta}
                             $t_i={$t_i}
                             $t_f={$t_f}
+                            N={N}
+                            $N={$N}
                         />
                     </Grid>
                 </Grid>

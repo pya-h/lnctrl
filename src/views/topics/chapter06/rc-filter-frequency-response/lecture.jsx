@@ -3,7 +3,7 @@ import { Grid } from "@mui/material";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
 import rc_filter_circuit from './visual/rc_filter_circuit.png';
-const firstOrderTransferFunctionFormFormula = "$$G(s) = \\frac{k}{s + a}$$";
+const RCFilterTransferFunctionFormFormula = "$$G(s) = \\frac{k}{s + a}$$";
 
 const RCFilterFrequencyResponseLecture = () => {
     return (
@@ -12,20 +12,13 @@ const RCFilterFrequencyResponseLecture = () => {
             darkBorder={true}
             sx={{ direction: "ltr" }}
         >
-            <Grid className="lecture-text" item>
-                <p>
-                    These transfer functions are of the following form:
-                </p>
-            </Grid>
-            <Grid item>
-                <MathJax>{firstOrderTransferFunctionFormFormula}</MathJax>
-            </Grid>
+            
             <Grid className="lecture-text" item>
                 <h1 style={{ marginTop: "5%", marginBottom: "3%" }}>
-                    Steady-State Response
+                    Frequency Response of the RC Filter
                 </h1>
                 <p>
-                    The diagram of a simple LTI system is as follows:
+                    The circuit of this filter is as follows:
                 </p>
             </Grid>
             <Grid item>
@@ -35,7 +28,14 @@ const RCFilterFrequencyResponseLecture = () => {
                     alt="Image loading failed"
                 />
             </Grid>
-           
+            <Grid className="lecture-text" item>
+                <p>
+                    And its transfer function is of the following form:
+                </p>
+            </Grid>
+            <Grid item>
+                <MathJax>{RCFilterTransferFunctionFormFormula}</MathJax>
+            </Grid>
         </SubCard>
     );
 };

@@ -222,6 +222,14 @@ const load = (pathname) => {
                         icon: icons.IconBike,
                         breadcrumbs: false,
                     },
+                    {
+                        id: routes.nyquist_plot,
+                        title: "نمودار نایکوئیست",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.nyquist_plot}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
                 ],
             };
     return {

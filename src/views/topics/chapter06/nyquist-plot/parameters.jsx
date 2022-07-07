@@ -9,10 +9,11 @@ const parameterFormulas = [
     "$$Den = [$$",
     "$$\\omega_{min} = $$",
     "$$\\omega_{max} = $$",
+    "$$N = $$"
 ];
-const parameterUnits = ["$$]$$", "$$]$$", "$$Hz$$", "$$Hz$$"];
+const parameterUnits = ["$$]$$", "$$]$$", "$$Hz$$", "$$Hz$$", null];
 
-const FrequencyResponseParameters = ({
+const NyquistPlotParameters = ({
     rawNumerator,
     rawDenominator,
     $rawNumerator,
@@ -23,6 +24,8 @@ const FrequencyResponseParameters = ({
     $w_max,
     phaseInRadianScale,
     setPhaseInRadianScale,
+    N,
+    $N,
     responseTime,
 }) => {
     return (
@@ -37,8 +40,8 @@ const FrequencyResponseParameters = ({
         >
             <Grid spacing={gridSpacing} container direction="row">
                 <SimpleParametersList
-                    parameters={[rawNumerator, rawDenominator, w_min, w_max]}
-                    setters={[$rawNumerator, $rawDenominator, $w_min, $w_max]}
+                    parameters={[rawNumerator, rawDenominator, w_min, w_max, N]}
+                    setters={[$rawNumerator, $rawDenominator, $w_min, $w_max, $N]}
                     labels={parameterFormulas}
                     units={parameterUnits}
                 />
@@ -72,7 +75,7 @@ const FrequencyResponseParameters = ({
                 {responseTime && (
                     <Grid xs={12} sx={{ mt: 1 }} item>
                         <p style={{ textAlign: "center", color: "coral" }}>
-                            مدت زمان عملیات: {responseTime} ثانیه
+                            مدت زمان عملیات: {responseTime}
                         </p>
                     </Grid>
                 )}
@@ -81,4 +84,4 @@ const FrequencyResponseParameters = ({
     );
 };
 
-export default FrequencyResponseParameters;
+export default NyquistPlotParameters;

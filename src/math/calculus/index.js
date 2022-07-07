@@ -1,9 +1,9 @@
 import {preventBrowserLock } from "toolshed";
 import LTI from "./lti";
 import ODE from "./ode";
-import theorems from "./theorems";
 
 const defaultMathPrecision = 4;
+export const RadianToDegree = 180 / Math.PI;
 
 export const precision = {
     get: () => localStorage.getItem("precision") || defaultMathPrecision, // digits allowed after dcimal point (private)
@@ -55,6 +55,24 @@ export const complexPointify = async (fcomplex, ti, tf, N = 1000) => {
     //     }
     // }
     return [xc, yc];
+};
+
+export const systemToTrace = (f, in_min, in_max, thickness, legend, _3d, N = 1000, mode="lines") => {
+    // in === t, w, x, etc.
+    const [x, y] = pointify(f, in_min, in_max, N);
+    return {
+        x,
+        y,
+        z: _3d ? Array(x.length).fill(0) : null,
+        // color,
+        line: {
+            // color:'rgb(17, 157, 255)'
+            width: thickness,
+        },
+        type: "scatter" + (_3d ? "3d" : ""),
+        mode,
+        name: `$$${legend}$$`,
+    };
 };
 
 export const strictPrecisionFormat = (num) => {
@@ -162,7 +180,8 @@ const calculus = {
     isDigit,
     stringToArray,
     evaluate,
-    theorems,
+    systemToTrace,
+    RadianToDegree
 };
 
 export default calculus;

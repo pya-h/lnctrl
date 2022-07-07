@@ -26,17 +26,17 @@ const NavBar = () => {
     const chapterList = [
         { title: "سرفصل ها", link: "/" },
         {
-            title: "فصل دوم",
+            title: "فصل ۲",
             link: `${routes.root}${routes.chapter}02/${routes.hydraulic_systems_modeling}`,
         },
         {
-            title: "فصل سوم",
+            title: "فصل ۳",
             link: `${routes.root}${routes.chapter}03/${routes.fst_order_tf}`,
         },
-        { title: "فصل چهارم", link: `${routes.root}${routes.chapter}04/${routes.hurwitz_criterion}` },
-        { title: "فصل پنجم", link: `${routes.root}${routes.chapter}05/${routes.root_locus}` },
-        { title: "فصل ششم", link: `${routes.root}${routes.chapter}06/${routes.rc_filter_frequency_response}` },
-        { title: "فصل هفتم", link: `${routes.root}${routes.chapter}07` },
+        { title: "فصل ۴", link: `${routes.root}${routes.chapter}04/${routes.hurwitz_criterion}` },
+        { title: "فصل ۵", link: `${routes.root}${routes.chapter}05/${routes.root_locus}` },
+        { title: "فصل ۶", link: `${routes.root}${routes.chapter}06/${routes.rc_filter_frequency_response}` },
+        { title: "فصل ۷", link: `${routes.root}${routes.chapter}07` },
 
         { title: "ابزار", link: "/toolbox" },
     ];
@@ -57,6 +57,7 @@ const NavBar = () => {
             }}
         >
             {chapterList.map((chapter) => (
+                
                 <NavLink
                     isActive={() => path.hierarchy(chapter.link)[0] === currentChapter}
                     // onActiveStyle={{ color: "#18BC9C" }}

@@ -16,7 +16,9 @@ const routes = {
     root_locus: "root_locus",
     rc_filter_frequency_response: "rc_filter_freq_res",
     frequency_response: "freq_res",
-    bode_plot: 'bode_plot'
+    bode_plot: 'bode_plot',
+    nyquist_plot: 'nyquist_plot',
+
 };
 
 const error_codes = {

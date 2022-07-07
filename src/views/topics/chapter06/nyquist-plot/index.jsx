@@ -6,16 +6,15 @@ import GraphMenu from "math/GraphMenu";
 import { Grid } from "@mui/material";
 import GraphBox from "math/GraphBox";
 import { MathJax } from "better-react-mathjax";
-import FrequencyResponseParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
 import { makeProgress } from "toolshed";
+import NyquistPlotParameters from './parameters';
 const symbols = {
     in: "jw",
     out: "H",
 };
-const radianToDegreeScaleConstant = 180 / Math.PI;
 
 const makeTrace = (x, y, thickness, legend, _3d, mode = "lines") => {
     return {
@@ -32,12 +31,8 @@ const makeTrace = (x, y, thickness, legend, _3d, mode = "lines") => {
         name: `$$${legend}$$`,
     };
 };
-const toTrace = (f, w_min, w_max, thickness, legend, _3d, N = 1000) => {
-    const [x, y] = calculus.pointify(f, w_min, w_max, N);
-    return makeTrace(x, y, thickness, legend, _3d);
-};
 
-const FrequencyResponse = () => {
+const NyquistPlot = () => {
     const [rawNumerator, $rawNumerator] = useState("1");
     const [rawDenominator, $rawDenominator] = useState("1 1");
     const [H_s, $H_s] = useState(null);
@@ -45,12 +40,7 @@ const FrequencyResponse = () => {
     const [w_max, $w_max] = useState(10);
     // gradiant of u(t) is 0 and unit ramp is one
     const [systems, $systems] = useState([]);
-    const [traces, $traces] = useState({
-        whole: [],
-        phase: [],
-        amplitude: [],
-        degreePhase: [],
-    });
+    const [traces, $traces] = useState([]);
     const [response, $response] = useState(null);
     const [thickness, $thickness] = useState(1.0); // graph line thickness
     const [isGraphCatured, $graphCaptured] = useState(false);
@@ -88,109 +78,52 @@ const FrequencyResponse = () => {
                 const h_s = new TransferFunction(num, den);
                 $H_s(h_s);
                 $response("$$" + h_s.label("H") + "$$");
+                setResponseTime('درحال محاسبه');
                 // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
                 // so that the traces will be loaded with new conditions
                 let repeatedSystem = false;
-                const all = {
-                    amplitude: Array(systems.length),
-                    phase: Array(systems.length),
-                    degreePhase: Array(systems.length),
-                    whole: Array(systems.length),
-                };
                 const startTime = new Date();
-
-                for (let i = 0; i < systems.length; i++) {
-                    all.amplitude[i] = toTrace(
-                        systems[i].H_s.amplitude,
-                        +w_min,
-                        +w_max,
-                        systems[i].thickness,
-                        systems[i].legend,
-                        is3DPlotEnabled,
-                        N
-                    );
-                    all.phase[i] = toTrace(
-                        systems[i].H_s.phase,
-                        +w_min,
-                        +w_max,
-                        systems[i].thickness,
-                        systems[i].legend,
-                        is3DPlotEnabled,
-                        N
-                    );
-                    all.degreePhase[i] = { ...all.phase[i] };
-                    all.degreePhase[i].y = all.degreePhase[i].y.map(
-                        (yi) => yi * radianToDegreeScaleConstant
-                    );
+                const all = systems.map(async (sys, i) => {
                     const [x, y] = await calculus.complexPointify(
-                        systems[i].H_s.frequencyResponse,
+                        sys.H_s.nyquist,
                         +w_min,
                         +w_max,
-                        N
+                        +N
                     );
-                    all.whole[i] = makeTrace(
-                        x,
-                        y,
-                        systems[i].thickness,
-                        systems[i].legend,
-                        is3DPlotEnabled,
-                        "lines"
-                    );
-
-                    if (h_s.equals(systems[i].H_s)) repeatedSystem = true;
+                    if (h_s.equals(sys.H_s)) repeatedSystem = true;
                     await makeProgress(
                         progressBarElement,
                         (100 * i) / (systems.length + 1)
                     );
-                }
-
+                    return makeTrace(
+                        x,
+                        y,
+                        sys.thickness,
+                        sys.legend,
+                        is3DPlotEnabled,
+                        "lines"
+                    );
+                });
                 if (!repeatedSystem) {
                     // if current system isnt in traces list => add it temperory to plot
 
-                    const [x, y] = await calculus.complexPointify(
-                        h_s.frequencyResponse,
+                    let [x, y] = await calculus.complexPointify(
+                        h_s.nyquist,
                         +w_min,
                         +w_max,
-                        N
+                        +N
                     );
-
-                    const whole = makeTrace(
-                            x,
-                            y,
-                            thickness,
-                            `${symbols.out}(${symbols.in})`,
-                            is3DPlotEnabled,
-                            "lines"
-                        ),
-                        amps = toTrace(
-                            h_s.amplitude,
-                            +w_min,
-                            +w_max,
-                            thickness,
-                            `${symbols.out}(${symbols.in})`,
-                            is3DPlotEnabled,
-                            N
-                        ),
-                        phase = toTrace(
-                            h_s.phase,
-                            +w_min,
-                            +w_max,
-                            thickness,
-                            `${symbols.out}(${symbols.in})`,
-                            is3DPlotEnabled,
-                            N
-                        );
-                    const degreePhase = { ...phase };
-                    degreePhase.y = degreePhase.y.map(
-                        (yi) => yi * radianToDegreeScaleConstant
+                    const newsys = makeTrace(
+                        x,
+                        y,
+                        thickness,
+                        `${symbols.out}(${symbols.in})`,
+                        is3DPlotEnabled,
+                        "lines"
                     );
-
-                    all.whole.push(whole);
-                    all.phase.push(phase);
-                    all.degreePhase.push(degreePhase);
-                    all.amplitude.push(amps);
+                    all.push(newsys);
                     const endTime = new Date();
-                    setResponseTime((+endTime - +startTime) / 1000);
+                    setResponseTime(((+endTime - +startTime) / 1000) + " ثانیه");
                 }
                 await makeProgress(progressBarElement, 100);
 
@@ -283,7 +216,7 @@ const FrequencyResponse = () => {
                             container
                         >
                             <Grid xs={12}>
-                                <FrequencyResponseParameters
+                                <NyquistPlotParameters
                                     rawNumerator={rawNumerator}
                                     rawDenominator={rawDenominator}
                                     $rawNumerator={$rawNumerator}
@@ -297,6 +230,8 @@ const FrequencyResponse = () => {
                                         setPhaseInRadianScale
                                     }
                                     responseTime={responseTime}
+                                    N={N}
+                                    $N={$N}
                                 />
                             </Grid>
                         </Grid>
@@ -336,38 +271,13 @@ const FrequencyResponse = () => {
                                     <Grid lg={12} md={12} sm={12} xs={12} item>
                                         <GraphBox
                                             title="پاسخ فرکانسی"
-                                            traces={traces.whole}
+                                            traces={traces}
                                         />
                                     </Grid>
                                 </SubCard>
                             </Grid>
                         </Grid>
-                        <Grid lg={12} md={12} sm={12} xs={12} item>
-                            <SubCard>
-                                <Grid
-                                    spacing={gridSpacing}
-                                    direction="row"
-                                    container
-                                >
-                                    <Grid lg={6} md={6} sm={12} xs={12} item>
-                                        <GraphBox
-                                            title="اندازه"
-                                            traces={traces.amplitude}
-                                        />
-                                    </Grid>
-                                    <Grid lg={6} md={6} sm={12} xs={12} item>
-                                        <GraphBox
-                                            title="فاز"
-                                            traces={
-                                                phaseInRadianScale
-                                                    ? traces.phase
-                                                    : traces.degreePhase
-                                            }
-                                        />
-                                    </Grid>
-                                </Grid>
-                            </SubCard>
-                        </Grid>
+                        
                     </Grid>
                 </Grid>
             </Grid>
@@ -375,4 +285,4 @@ const FrequencyResponse = () => {
     );
 };
 
-export default FrequencyResponse;
+export default NyquistPlot;

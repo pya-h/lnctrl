@@ -8,6 +8,7 @@ import { routes } from 'config';
 const RCFilterFrequencyResponseExample = Loadable(lazy(() => import('views/topics/chapter06/rc-filter-frequency-response')));
 const FrequencyResponse = Loadable(lazy(() => import('views/topics/chapter06/frequency-response')));
 const BodePlot = Loadable(lazy(() => import('views/topics/chapter06/bode-plot')));
+const NyquistPlot = Loadable(lazy(() => import('views/topics/chapter06/nyquist-plot')));
 // ==============================|| MAIN ROUTING ||============================== //
 const CH06Routes = {
     path:  `${routes.root}${routes.chapter}06`,
@@ -24,6 +25,10 @@ const CH06Routes = {
         {
             path:  `${routes.root}${routes.chapter}06/${routes.bode_plot}`,
             element: <BodePlot />
+        },
+        {
+            path:  `${routes.root}${routes.chapter}06/${routes.nyquist_plot}`,
+            element: <NyquistPlot />
         },
     ]
 };

@@ -10,15 +10,15 @@ class Complex extends Algebra {
         this.plus || (this.a.toString() !== "0" && this.b.toString() !== "0");
 
     toString = (parenthesis = false) => {
-        if(this.isZero())
+        if (this.isZero())
             return "0";
         const rl = this.a;
         let formula = parenthesis && this.hasMultiTerms() ? "(" : "";
         if (rl !== 0)
             formula +=
-                rl instanceof Algebra
-                    ? rl.toString(rl.hasMultiTerms())
-                    : round(rl);
+            rl instanceof Algebra ?
+            rl.toString(rl.hasMultiTerms()) :
+            round(rl);
         let im = this.b;
         if (im !== 0) {
             //if (im < 0 || (im instanceof Algebra)) { im = im.negation()
@@ -30,9 +30,9 @@ class Complex extends Algebra {
             formula += this.symbol;
             if (im !== 1)
                 formula +=
-                    im instanceof Algebra
-                        ? im.toString(im.hasMultiTerms())
-                        : round(im);
+                im instanceof Algebra ?
+                im.toString(im.hasMultiTerms()) :
+                round(im);
         }
         if (this.plus) formula += this.join(); // if there's a next term: casscade toString() calls
 
@@ -65,15 +65,16 @@ class Complex extends Algebra {
     magnitude$2 = () => this.a ** 2 + this.b ** 2;
 
     magnitude = () => (this.a ** 2 + this.b ** 2) ** 0.5;
-    
+
     phase = () => {
-        const definiteA = +this.a, definiteB = +this.b;
-        if(this.a === definiteA && this.b === definiteB)
-            return Math.atan(definiteB / definiteA);
-        if(this.b instanceof Algebra)
-            return t => Math.atan(this.b.$(t) / (this.a instanceof Algebra ? this.a.$(t) : definiteA))
-        if(this.a instanceof Algebra)
-            return t => Math.atan(definiteB / this.a.$(t));
+        const definiteA = +this.a,
+            definiteB = +this.b;
+        if (this.a === definiteA && this.b === definiteB)
+            return Math.atan2(definiteB, definiteA);
+        if (this.b instanceof Algebra)
+            return t => Math.atan2(this.b.$(t), (this.a instanceof Algebra ? this.a.$(t) : definiteA))
+        if (this.a instanceof Algebra)
+            return t => Math.atan2(definiteB, this.a.$(t));
         return NaN;
     }
     isReal = () => this.b === 0;
@@ -129,9 +130,9 @@ class Complex extends Algebra {
         // is for this object to have a zero imaginary part:
         return (
             this.isReal() &&
-            (operand instanceof Algebra
-                ? operand.equals(this.a)
-                : operand === this.a)
+            (operand instanceof Algebra ?
+                operand.equals(this.a) :
+                operand === this.a)
         );
     };
 
@@ -146,15 +147,15 @@ class Complex extends Algebra {
                 Im.push(this.a.multiply(operand.imaginary()));
             } else {
                 Re.push(
-                    operand.a instanceof Algebra
-                        ? operand.a.multiply(this.a)
-                        : operand.a * this.a
+                    operand.a instanceof Algebra ?
+                    operand.a.multiply(this.a) :
+                    operand.a * this.a
                 );
 
                 Im.push(
-                    operand.b instanceof Algebra
-                        ? operand.b.multiply(this.a)
-                        : this.a * operand.b
+                    operand.b instanceof Algebra ?
+                    operand.b.multiply(this.a) :
+                    this.a * operand.b
                 );
             }
 
@@ -164,46 +165,46 @@ class Complex extends Algebra {
                 Im.push(this.b.multiply(operand.real()));
             } else {
                 Re.push(
-                    operand.b instanceof Algebra
-                        ? operand.b.multiply(this.b)
-                        : operand.b * this.b
+                    operand.b instanceof Algebra ?
+                    operand.b.multiply(this.b) :
+                    operand.b * this.b
                 );
 
                 Im.push(
-                    operand.a instanceof Algebra
-                        ? operand.a.multiply(this.b)
-                        : this.b * operand.a
+                    operand.a instanceof Algebra ?
+                    operand.a.multiply(this.b) :
+                    this.b * operand.a
                 );
             }
             return new Complex(Re[0] - Re[1], Im[0] + Im[1]);
         } else {
             Re =
-                this.a instanceof Algebra
-                    ? this.a.multiply(operand)
-                    : operand instanceof Algebra
-                    ? operand.multiply(this.a)
-                    : this.a * operand;
+                this.a instanceof Algebra ?
+                this.a.multiply(operand) :
+                operand instanceof Algebra ?
+                operand.multiply(this.a) :
+                this.a * operand;
 
             Im =
-                this.b instanceof Algebra
-                    ? this.b.multiply(operand)
-                    : operand instanceof Algebra
-                    ? operand.multiply(this.b)
-                    : this.b * operand;
-        
-            }
+                this.b instanceof Algebra ?
+                this.b.multiply(operand) :
+                operand instanceof Algebra ?
+                operand.multiply(this.b) :
+                this.b * operand;
+
+        }
         return new Complex(Re, Im);
     };
 
     devide = (denominator) => {
         if (denominator instanceof Complex) {
-            const result =  this.multiply(denominator.conjugate()).devide(
+            const result = this.multiply(denominator.conjugate()).devide(
                 denominator.magnitude$2()
-                );
+            );
             // CHECK THIS
-            if(isNaN(result.real()))
+            if (isNaN(result.real()))
                 result.setA(0);
-            if(isNaN(result.imaginary()))
+            if (isNaN(result.imaginary()))
                 result.setB(0);
             return result;
         } else if (denominator instanceof Algebra) {
@@ -238,13 +239,10 @@ class Complex extends Algebra {
         }
 
         let sign = 1;
-        for (
-            ;
-            i < strNumber.length &&
+        for (; i < strNumber.length &&
             (strNumber[i] === "j" ||
                 strNumber[i] === "+" ||
-                strNumber[i] === "-");
-            i++
+                strNumber[i] === "-"); i++
         )
             if (strNumber[i] === "-") sign = -1;
 

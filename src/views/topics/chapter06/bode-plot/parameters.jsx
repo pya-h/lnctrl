@@ -8,8 +8,9 @@ const parameterFormulas = [
     "$$Den = [$$",
     "$$\\omega_{min} = $$",
     "$$\\omega_{max} = $$",
+    "$$N = $$"
 ];
-const parameterUnits = ["$$]$$", "$$]$$", "$$Hz$$", "$$Hz$$"];
+const parameterUnits = ["$$]$$", "$$]$$", "$$Hz$$", "$$Hz$$", null];
 
 const BodePlotParameters = ({
     rawNumerator,
@@ -22,6 +23,8 @@ const BodePlotParameters = ({
     $w_max,
     phaseInRadianScale,
     setPhaseInRadianScale,
+    N,
+    $N
 }) => {
     return (
         <SubCard
@@ -35,8 +38,8 @@ const BodePlotParameters = ({
         >
             <Grid spacing={gridSpacing} container direction="row">
                 <SimpleParametersList
-                    parameters={[rawNumerator, rawDenominator, w_min, w_max]}
-                    setters={[$rawNumerator, $rawDenominator, $w_min, $w_max]}
+                    parameters={[rawNumerator, rawDenominator, w_min, w_max, N]}
+                    setters={[$rawNumerator, $rawDenominator, $w_min, $w_max, $N]}
                     labels={parameterFormulas}
                     units={parameterUnits}
                 />

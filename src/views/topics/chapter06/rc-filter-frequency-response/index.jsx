@@ -16,27 +16,6 @@ const symbols = {
     in: "jw",
     out: "H",
 };
-const radianToDegreeScaleConstant = 180 / Math.PI;
-
-const makeTrace = (x, y, thickness, legend, _3d, mode = "lines") => {
-    return {
-        x,
-        y,
-        z: _3d ? Array(x.length).fill(0) : null,
-        // color,
-        line: {
-            // color:'rgb(17, 157, 255)'
-            width: thickness,
-        },
-        type: "scatter" + (_3d ? "3d" : ""),
-        mode,
-        name: `$$${legend}$$`,
-    };
-};
-const toTrace = (f, w_min, w_max, thickness, legend, _3d, N = 1000) => {
-    const [x, y] = calculus.pointify(f, w_min, w_max, N);
-    return makeTrace(x, y, thickness, legend, _3d);
-};
 
 const RCFilterFrequencyResponseExample = () => {
     const [R, $R] = useState(0.001);
@@ -93,7 +72,7 @@ const RCFilterFrequencyResponseExample = () => {
             };
 
             for (let i = 0; i < systems.length; i++) {
-                all.amplitude[i] = toTrace(
+                all.amplitude[i] = calculus.systemToTrace(
                     systems[i].H_s.amplitude,
                     +w_min,
                     +w_max,
@@ -102,7 +81,7 @@ const RCFilterFrequencyResponseExample = () => {
                     is3DPlotEnabled,
                     +N
                 );
-                all.phase[i] = toTrace(
+                all.phase[i] = calculus.systemToTrace(
                     systems[i].H_s.phase,
                     +w_min,
                     +w_max,
@@ -113,14 +92,14 @@ const RCFilterFrequencyResponseExample = () => {
                 );
                 all.degreePhase[i] = { ...all.phase[i] };
                 all.degreePhase[i].y = all.degreePhase[i].y.map(
-                    (yi) => yi * radianToDegreeScaleConstant
+                    (yi) => yi * calculus.RadianToDegree
                 );
                 if (h_s.equals(systems[i].H_s)) repeatedSystem = true;
             }
 
             if (!repeatedSystem) {
                 // if current system isnt in traces list => add it temperory to plot
-                const amps = toTrace(
+                const amps = calculus.systemToTrace(
                         h_s.amplitude,
                         +w_min,
                         +w_max,
@@ -129,7 +108,7 @@ const RCFilterFrequencyResponseExample = () => {
                         is3DPlotEnabled,
                         +N
                     ),
-                    phase = toTrace(
+                    phase = calculus.systemToTrace(
                         h_s.phase,
                         +w_min,
                         +w_max,
@@ -140,7 +119,7 @@ const RCFilterFrequencyResponseExample = () => {
                     );
                 const degreePhase = { ...phase };
                 degreePhase.y = degreePhase.y.map(
-                    (yi) => yi * radianToDegreeScaleConstant
+                    (yi) => yi * calculus.RadianToDegree
                 );
 
                 all.phase.push(phase);

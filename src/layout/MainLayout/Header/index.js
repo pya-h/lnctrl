@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { useTheme } from '@mui/material/styles';
 import { Avatar, Box, ButtonBase } from '@mui/material';
 
-import NotificationSection from './NotificationSection';
 import { IconMenu2 } from '@tabler/icons';
 import NavBar from './NavBar';
 
@@ -16,7 +15,7 @@ const Header = ({ handleRightDrawerToggle }) => {
             {/* logo & toggler button */}
             <Box
                 sx={{
-                    width: 228,
+                    width: 50,
                     display: 'flex',
                     [theme.breakpoints.down('md')]: {
                         width: 'auto'
@@ -46,7 +45,6 @@ const Header = ({ handleRightDrawerToggle }) => {
                 </ButtonBase>
             </Box>
 
-            <NotificationSection />
             <NavBar />
             
             {/* notification & profile */}

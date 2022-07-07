@@ -26,17 +26,17 @@ const NavBar = () => {
     const chapterList = [
         { title: "Topics", link: "/" },
         {
-            title: "Chapter Two",
+            title: "Chapter 2",
             link: `${routes.root}${routes.chapter}02/${routes.hydraulic_systems_modeling}`,
         },
         {
-            title: "Chapter Three",
+            title: "Chapter 3",
             link: `${routes.root}${routes.chapter}03/${routes.fst_order_tf}`,
         },
-        { title: "Chapter Four", link: `${routes.root}${routes.chapter}04/${routes.hurwitz_criterion}` },
-        { title: "Chapter Five", link: `${routes.root}${routes.chapter}05/${routes.root_locus}` },
-        { title: "Chapter Six", link: `${routes.root}${routes.chapter}06/${routes.rc_filter_frequency_response}` },
-        { title: "Chapter Seven", link: `${routes.root}${routes.chapter}07` },
+        { title: "Chapter 4", link: `${routes.root}${routes.chapter}04/${routes.hurwitz_criterion}` },
+        { title: "Chapter 5", link: `${routes.root}${routes.chapter}05/${routes.root_locus}` },
+        { title: "Chapter 6", link: `${routes.root}${routes.chapter}06/${routes.rc_filter_frequency_response}` },
+        { title: "Chapter 7", link: `${routes.root}${routes.chapter}07` },
 
         { title: "Tools", link: "/toolbox" },
     ];
@@ -57,6 +57,7 @@ const NavBar = () => {
             }}
         >
             {chapterList.map((chapter) => (
+                
                 <NavLink
                     isActive={() => path.hierarchy(chapter.link)[0] === currentChapter}
                     // onActiveStyle={{ color: "#18BC9C" }}

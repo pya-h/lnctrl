@@ -10,7 +10,7 @@ import { MathJax } from "better-react-mathjax";
 import RootLocusParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
 import { gridSpacing } from "store/constant";
-import Describer from "math/describer";
+// import Describer from "math/describer";
 import MainCard from "views/ui-component/cards/MainCard";
 import { makeProgress } from "toolshed";
 
@@ -26,7 +26,7 @@ const RootLocus = () => {
     // gradiant of u(t) is 0 and unit ramp is one
     const [trace, $trace] = useState({ x: [], y: [] });
     const [G_s, $G_s] = useState(null);
-    const [GInfo, $GInfo] = useState("");
+    // const [GInfo, $GInfo] = useState("");
     const [response, $response] = useState(null);
     const [responseTime, setResponseTime] = useState(null); //the time that takes for plotting rootlocus
     //update
@@ -146,9 +146,9 @@ const RootLocus = () => {
                                 </SubCard>
                             </Grid>
                             <hr />
-                            <Grid lg={12} md={12} sm={12} xs={12} item>
+                            {/* <Grid lg={12} md={12} sm={12} xs={12} item>
                                 {GInfo && <GInfo.Explain />}
-                            </Grid>
+                            </Grid> */}
                         </Grid>
                     </Grid>
                 </Grid>

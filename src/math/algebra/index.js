@@ -161,18 +161,23 @@ class Algebra {
         if (exp && this.type === exp.type && this.symbol === exp.symbol) {
             // check if this and exp are sumable
             // check .dot s:
+            let isUnifiable = true;
             if (this.dot || exp.dot)
-                return this.dot && this.dot.unifiable(exp.dot);
-
+                isUnifiable = this.dot && this.dot.unifiable(exp.dot);
+            
+            console.log("first: ", this.toString());
+            console.log("first: ", exp.toString());
             if (this.b instanceof Array && exp.b instanceof Array) {
                 if (this.b.length === exp.b.length) {
                     const sameOnes = this.b.filter(
                         (item, idx) => item === exp.b[idx]
                     );
-                    return this.b.length === sameOnes.length;
+                    return isUnifiable && this.b.length === sameOnes.length;
                 }
             }
-            return exp.b === this.b;
+            else if(this.b instanceof Algebra)
+                return isUnifiable && this.b.equals(exp.b);
+            return isUnifiable && exp.b === this.b;
         }
         return false;
     };

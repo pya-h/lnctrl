@@ -405,11 +405,11 @@ export default class TransferFunction extends Fraction {
 
     bode = w => 20 * Math.log10(this.amplitude(w));
 
-    rootLocus = async(k_min, k_max, progressBarObject) => {
+    rootLocus = async(k_min, k_max, progressBarObject, N = 1000) => {
         // return root locus values for plotting
 
         // TEMPORARY:
-        let dk = 0.05;
+        let dk = (k_max - k_min) / N;
         const a = this.getA(), // numerator
             b = this.getB(); // denominator => a / b
         const na = a.length - 1,

@@ -72,12 +72,13 @@ const NyquistPlot = () => {
         (async () => {
             try {
                 const num = calculus.stringToArray(rawNumerator),
-                    den = calculus.stringToArray(rawDenominator);
+                den = calculus.stringToArray(rawDenominator);
                 const progressBarElement =
-                    document.getElementById("fr_progressbar");
+                document.getElementById("fr_progressbar");
                 const h_s = new TransferFunction(num, den);
                 $H_s(h_s);
                 $response("$$" + h_s.label("H") + "$$");
+                await makeProgress(progressBarElement, 0);
                 setResponseTime('درحال محاسبه');
                 // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
                 // so that the traces will be loaded with new conditions

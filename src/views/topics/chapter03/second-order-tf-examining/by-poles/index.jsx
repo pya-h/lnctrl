@@ -13,7 +13,7 @@ import Complex from "math/algebra/complex";
 import Algebra from "math/algebra/index";
 import TransferFunction from "math/algebra/functions/transfer";
 import { gridSpacing } from "store/constant";
-import Describer from 'math/describer';
+import Describer from "math/describer";
 
 const stepResponse = (tf, c_t = tf.step(), index = undefined) =>
     "$$\\begin{cases} " +
@@ -42,7 +42,7 @@ const SOTFExamineByPoles = () => {
     const [C_t, $C_t] = useState(null);
     const [G_s, $G_s] = useState(null);
     const [GInfo, $GInfo] = useState("");
-
+    const [N, $N] = useState(1000);
     const [response, $response] = useState(null);
 
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
@@ -51,7 +51,8 @@ const SOTFExamineByPoles = () => {
     const capture = () => {
         const capturedSystems = [...systems];
         const index = capturedSystems.findIndex(
-            (sys) => alpha.equals(sys.alpha) && beta.equals(sys.beta) && sys.k === k
+            (sys) =>
+                alpha.equals(sys.alpha) && beta.equals(sys.beta) && sys.k === k
         );
         if (index === -1) {
             // if current system has not been captured before => then capture it; o.w. its not needed
@@ -76,35 +77,32 @@ const SOTFExamineByPoles = () => {
 
     useEffect(() => {
         let gtf = TransferFunction.Specials.$2(
-            Number(k),
+            +k,
             alpha instanceof Algebra ? alpha.negation() : -alpha,
             beta instanceof Algebra ? beta.negation() : -beta
         );
         const tstep = gtf.step();
-        $G_s(gtf);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
+        $G_s(gtf);
         if (gtf && alpha.hasSameTypeWith(beta)) {
             $C_t(tstep);
             $GInfo(new Describer(gtf));
-            const [x, y] = calculus.pointify(
-                tstep.$,
-                Number(t_i),
-                Number(t_f)
-            ); // N: 100
+            const [x, y] = calculus.pointify(tstep.$, +t_i, +t_f, +N); 
             $response(stepResponse(gtf));
             // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
             // so that the traces will be loaded with new conditions
             const all = systems.map((e, index) => {
                 let tgtf = TransferFunction.Specials.$2(
-                    Number(e.k),
+                    +e.k,
                     e.alpha instanceof Algebra ? e.alpha.negation() : -e.alpha,
                     e.beta instanceof Algebra ? e.beta.negation() : -e.beta
                 );
-                
+
                 const [xi, yi] = calculus.pointify(
                     tgtf.step().$,
-                    Number(t_i),
-                    Number(t_f)
-                ); // N: 100
+                    +t_i,
+                    +t_f,
+                    +N
+                ); 
 
                 return {
                     x: xi,
@@ -122,7 +120,10 @@ const SOTFExamineByPoles = () => {
             });
 
             const index = systems.findIndex(
-                (sys) => alpha.equals(sys.alpha) && beta.equals(sys.beta) && sys.k === k
+                (sys) =>
+                    alpha.equals(sys.alpha) &&
+                    beta.equals(sys.beta) &&
+                    sys.k === k
             );
             if (index === -1)
                 // if current system isnt in traces list => add it temperory to plot
@@ -142,7 +143,7 @@ const SOTFExamineByPoles = () => {
 
             $traces(all);
         }
-    }, [alpha, beta, k, t_i, t_f, is3DPlotEnabled, thickness, systems]);
+    }, [alpha, beta, k, t_i, t_f, is3DPlotEnabled, thickness, systems, N]);
 
     useEffect(() => {
         $graphCaptured(false);
@@ -174,16 +175,25 @@ const SOTFExamineByPoles = () => {
                         container
                         direction="row"
                     >
-                        {systems instanceof Array &&  systems.map((sys, index) => {
-                            const formula = stepResponse(sys.G_s, sys.C_t, index + 1);
-                            console.log(sys.C_t, sys.G_s)
+                        {systems instanceof Array &&
+                            systems.map((sys, index) => {
+                                const formula = stepResponse(
+                                    sys.G_s,
+                                    sys.C_t,
+                                    index + 1
+                                );
+                                console.log(sys.C_t, sys.G_s);
 
-                            return (
-                                <Grid style={{ fontSize: "18px" }} xs={12} item>
-                                    <MathJax>{formula}</MathJax>
-                                </Grid>
-                            );
-                        })}
+                                return (
+                                    <Grid
+                                        style={{ fontSize: "18px" }}
+                                        xs={12}
+                                        item
+                                    >
+                                        <MathJax>{formula}</MathJax>
+                                    </Grid>
+                                );
+                            })}
                         {!isGraphCatured && (
                             <Grid style={{ fontSize: "18px" }} xs={12}>
                                 <MathJax>{response}</MathJax>
@@ -221,6 +231,8 @@ const SOTFExamineByPoles = () => {
                             $k={$k}
                             $t_i={$t_i}
                             $t_f={$t_f}
+                            N={N}
+                            $N={$N}
                         />
                     </Grid>
                 </Grid>

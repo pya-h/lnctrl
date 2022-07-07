@@ -8,8 +8,9 @@ const parameterFormulas = [
     "$$\\zeta = $$",
     "$$t_i = $$",
     "$$t_f = $$",
+    "$$N = $$"
 ];
-const parameterUnits = [null, null, "$$sec$$", "$$sec$$"];
+const parameterUnits = [null, null, "$$sec$$", "$$sec$$", null];
 
 const SOTFByParamsInputs = ({
     w_n,
@@ -20,6 +21,8 @@ const SOTFByParamsInputs = ({
     t_f,
     $t_i,
     $t_f,
+    N,
+    $N
 }) => {
     const grids = 10;
     const checkSetW_N = (value) => value && $w_n(value);
@@ -35,12 +38,13 @@ const SOTFByParamsInputs = ({
         >
             <Grid spacing={0.6} container direction="row">
                 <SimpleParametersList
-                    parameters={[w_n, zeta, t_i, t_f]}
+                    parameters={[w_n, zeta, t_i, t_f, N]}
                     setters={[
                         checkSetW_N,
                         $zeta,
                         $t_i,
                         $t_f,
+                        $N
                     ]}
                     labels={parameterFormulas}
                     units={parameterUnits}

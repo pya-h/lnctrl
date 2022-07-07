@@ -10,8 +10,9 @@ const startLebels = [
     "$$Den = [$$",
     "$$k_{min} = $$",
     "$$k_{max} = $$",
+    "$$N = $$",
 ];
-const endLabels = ["$$]$$", "$$]$$", null, null];
+const endLabels = ["$$]$$", "$$]$$", null, null, null];
 
 const RootLocusParameters = ({
     rawNumerator,
@@ -23,7 +24,9 @@ const RootLocusParameters = ({
     $k_min,
     $k_max,
     updatePlot,
-    responseTime
+    responseTime,
+    N,
+    $N,
 }) => (
     <SubCard
         darkBorder
@@ -36,8 +39,8 @@ const RootLocusParameters = ({
     >
         <Grid spacing={gridSpacing} container direction="row">
             <SimpleParametersList
-                parameters={[rawNumerator, rawDenominator, k_min, k_max]}
-                setters={[$rawNumerator, $rawDenominator, $k_min, $k_max]}
+                parameters={[rawNumerator, rawDenominator, k_min, k_max, N]}
+                setters={[$rawNumerator, $rawDenominator, $k_min, $k_max, $N]}
                 labels={startLebels}
                 units={endLabels}
             />
@@ -57,9 +60,13 @@ const RootLocusParameters = ({
             <Grid xs={12} sx={{ mt: 1 }} item>
                 <ProgressBar id="progressbar" />
             </Grid>
-            {responseTime && <Grid xs={12} sx={{ mt: 1 }} item>
-                <p style={{textAlign: 'center', color: 'coral'}}>مدت زمان عملیات: {responseTime} ثانیه</p> 
-            </Grid>}
+            {responseTime && (
+                <Grid xs={12} sx={{ mt: 1 }} item>
+                    <p style={{ textAlign: "center", color: "coral" }}>
+                        مدت زمان عملیات: {responseTime} ثانیه
+                    </p>
+                </Grid>
+            )}
         </Grid>
     </SubCard>
 );

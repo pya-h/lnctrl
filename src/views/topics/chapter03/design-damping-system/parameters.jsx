@@ -8,8 +8,9 @@ const parameterFormulas = [
     "$$t_{rise} = $$",
     "$$t_i = $$",
     "$$t_f = $$",
+    "$$N = $$"
 ];
-const parameterUnits = ["%", "$$sec$$", "$$sec$$", "$$sec$$"];
+const parameterUnits = ["%", "$$sec$$", "$$sec$$", "$$sec$$", null];
 
 const DesignSystemByCharsParameters = ({
     M_p,
@@ -20,6 +21,8 @@ const DesignSystemByCharsParameters = ({
     t_f,
     $t_i,
     $t_f,
+    N,
+    $N
 }) => {
     const grids = 1;
     const checkRiseTime = (value) => value >= 0 && $t_rise(value);
@@ -36,8 +39,8 @@ const DesignSystemByCharsParameters = ({
         >
             <Grid spacing={0.6} container direction="row">
                 <SimpleParametersList
-                    parameters={[ M_p, t_rise, t_i, t_f]}
-                    setters={[ checkOvershoot, checkRiseTime, $t_i, $t_f]}
+                    parameters={[ M_p, t_rise, t_i, t_f, N]}
+                    setters={[ checkOvershoot, checkRiseTime, $t_i, $t_f, $N]}
                     labels={parameterFormulas}
                     units={parameterUnits}
                 />

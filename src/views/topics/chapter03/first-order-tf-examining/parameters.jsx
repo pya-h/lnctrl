@@ -9,8 +9,9 @@ const parameterFormulas = [
     "$$k = $$",
     "$$t_i = $$",
     "$$t_f = $$",
+    "$$N = $$"
 ];
-const parameterUnits = [null, null, "$$sec$$", "$$sec$$"];
+const parameterUnits = [null, null, "$$sec$$", "$$sec$$", null];
 
 const FOTFParameters = ({
     k,
@@ -23,6 +24,8 @@ const FOTFParameters = ({
     $t_f,
     inputSignal,
     $inputSignal,
+    N,
+    $N
 }) => {
     const grids = 10;
     const selectRealPart = (point) => {
@@ -61,7 +64,7 @@ const FOTFParameters = ({
             </Grid>
             <Grid spacing={gridSpacing} container direction="row">
             
-                <SimpleParametersList parameters={[a, k, t_i, t_f]} setters={[$a, $k, $t_i, $t_f]} labels={parameterFormulas} units={parameterUnits} />
+                <SimpleParametersList parameters={[a, k, t_i, t_f, N]} setters={[$a, $k, $t_i, $t_f, $N]} labels={parameterFormulas} units={parameterUnits} />
                 
                 <Grid sx={{ mt: 1 }} md={12} sm={4} xs={6} item>
                     <p style={{textAlign: 'center'}}>محل قطب را انتخاب کنید</p>

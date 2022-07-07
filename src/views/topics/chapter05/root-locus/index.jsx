@@ -29,6 +29,7 @@ const RootLocus = () => {
     // const [GInfo, $GInfo] = useState("");
     const [response, $response] = useState(null);
     const [responseTime, setResponseTime] = useState(null); //the time that takes for plotting rootlocus
+    const [N, $N] = useState(1000);
     //update
     useEffect(() => {
         // k * num / den
@@ -48,9 +49,10 @@ const RootLocus = () => {
                 const progressBar = document.getElementById("progressbar");
                 const startTime = new Date();
                 const [x, y] = await G_s.rootLocus(
-                    k_min,
-                    k_max,
-                    progressBar // send progress bar element to root locus for showing progres and preventing the browser from locking
+                    +k_min,
+                    +k_max,
+                    progressBar, // send progress bar element to root locus for showing progres and preventing the browser from locking
+                    +N
                 );
                 const endTime = new Date();
                 $response(stepResponse(G_s));
@@ -133,6 +135,8 @@ const RootLocus = () => {
                                     $k_max={$k_max}
                                     updatePlot={updatePlot}
                                     responseTime={responseTime}
+                                    N={N}
+                                    $N={$N}
                                 />
                             </Grid>
                         </Grid>

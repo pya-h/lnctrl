@@ -59,6 +59,7 @@ const MassSpringDamperExample = () => {
     const [isGraphCatured, setGraphCaptured] = useState(false);
     const [output, $output] = useState(null); // y or null as x(t) | dy as v(t) | d2y as a(t)
     const [is3DPlotEnabled, set3DPlotEnabled] = useState(false);
+    const [N, $N] = useState(1000);
 
     const toggle3DPlot = () => set3DPlotEnabled(!is3DPlotEnabled);
 
@@ -66,26 +67,31 @@ const MassSpringDamperExample = () => {
         const capturedSystems = [...systems];
         const index = capturedSystems.findIndex(
             (sys) =>
-                sys.v_i === Number(v_i) &&
-                sys.x_i === Number(x_i) &&
-                sys.m === Number(m) &&
-                sys.c === Number(c) &&
-                sys.k === Number(k) &&
+                sys.v_i === +v_i &&
+                sys.x_i === +x_i &&
+                sys.m === +m &&
+                sys.c === +c &&
+                sys.k === +k &&
                 sys.F_t === F_t &&
                 sys.output === output
         );
         if (index === -1) {
             // if current system has not been captured before => then capture it; o.w. its not needed
             capturedSystems.push({
-                x_i: Number(x_i),
-                v_i: Number(v_i),
-                m: Number(m),
-                c: Number(c),
-                k: Number(k),
+                x_i: +x_i,
+                v_i: +v_i,
+                m: +m,
+                c: +c,
+                k: +k,
                 F_t,
                 output,
                 thickness,
-                legend: '$$' + symbols.out(output) + '_{' + (systems.length + 1).toString() + '}$$',
+                legend:
+                    "$$" +
+                    symbols.out(output) +
+                    "_{" +
+                    (systems.length + 1).toString() +
+                    "}$$",
             });
             setSystems(capturedSystems);
             setGraphCaptured(true);
@@ -93,13 +99,19 @@ const MassSpringDamperExample = () => {
     };
 
     useEffect(() => {
-        const fyt = (t, x, v) => Number((F_t - Number(c) * v - Number(k) * x) / Number(m));
-        const [x, y, dy] = calculus.ODE.euiler(2, t_i, t_f, {
-            y0: Number(x_i),
-            dy_dt0: Number(v_i),
-            fyt,
-            output,
-        }); // solve the diff eq by the eiuler method for 2nd order differential equations
+        const fyt = (t, x, v) => Number((F_t - +c * v - +k * x) / +m);
+        const [x, y, dy] = calculus.ODE.euiler(
+            2,
+            t_i,
+            t_f,
+            {
+                y0: +x_i,
+                dy_dt0: +v_i,
+                fyt,
+                output,
+            },
+            +N
+        ); // solve the diff eq by the eiuler method for 2nd order differential equations
 
         if (output && output.toLowerCase() === "d2y")
             for (
@@ -114,12 +126,18 @@ const MassSpringDamperExample = () => {
         // so that the traces will be loaded with new conditions
         const all = systems.map((e, index) => {
             const fyt = (t, x, v) => Number((e.F_t - e.c * v - e.k * x) / e.m);
-            let [xi, yi, dyi] = calculus.ODE.euiler(2, t_i, t_f, {
-                y0: e.x_i,
-                dy_dt0: e.v_i,
-                fyt,
-                output: e.output,
-            }); // solve the diff eq by the eiuler method for 2nd order differential equations (N: >=100)
+            let [xi, yi, dyi] = calculus.ODE.euiler(
+                2,
+                t_i,
+                t_f,
+                {
+                    y0: e.x_i,
+                    dy_dt0: e.v_i,
+                    fyt,
+                    output: e.output,
+                },
+                +N
+            ); // solve the diff eq by the eiuler method for 2nd order differential equations (N: >=100)
 
             if (e.output && e.output.toLowerCase() === "d2y")
                 // using for loop inside a .map method causes error ; so i used xi.map
@@ -142,11 +160,11 @@ const MassSpringDamperExample = () => {
 
         const index = systems.findIndex(
             (sys) =>
-                sys.v_i === Number(v_i) &&
-                sys.x_i === Number(x_i) &&
-                sys.m === Number(m) &&
-                sys.c === Number(c) &&
-                sys.k === Number(k) &&
+                sys.v_i === +v_i &&
+                sys.x_i === +x_i &&
+                sys.m === +m &&
+                sys.c === +c &&
+                sys.k === +k &&
                 sys.F_t === F_t &&
                 sys.output === output
         );
@@ -180,6 +198,7 @@ const MassSpringDamperExample = () => {
         is3DPlotEnabled,
         thickness,
         systems,
+        N,
     ]);
 
     useEffect(() => {
@@ -284,6 +303,8 @@ const MassSpringDamperExample = () => {
                             $t_i={$t_i}
                             $t_f={$t_f}
                             $output={$output}
+                            N={N}
+                            $N={$N}
                         />
                     </Grid>
                 </Grid>

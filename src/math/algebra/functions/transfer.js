@@ -408,7 +408,7 @@ export default class TransferFunction extends Fraction {
         return NaN;
     };
 
-    frequencyResponse = (w) => this.$(new Complex(0, w)); // G(jw)
+    nyquist = (w) => this.$(new Complex(0, w)); // G(jw)
 
     bode = w => 20 * Math.log(this.amplitude(w));
     

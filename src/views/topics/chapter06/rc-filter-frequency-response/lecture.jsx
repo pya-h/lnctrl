@@ -3,7 +3,7 @@ import { Grid } from "@mui/material";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
 import rc_filter_circuit from './visual/rc_filter_circuit.png';
-const RCFilterTransferFunctionFormFormula = "$$G(s) = \\frac{k}{s + a}$$";
+const RCFilterTransferFunctionFormFormula = "$$G(s) = \\frac{k}{1 + RCs}$$";
 
 const RCFilterFrequencyResponseLecture = () => {
     return (

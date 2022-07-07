@@ -3,7 +3,7 @@ import { Grid } from "@mui/material";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
 import rc_filter_circuit from './visual/rc_filter_circuit.png';
-const firstOrderTransferFunctionFormFormula = "$$G(s) = \\frac{k}{s + a}$$";
+const RCFilterTransferFunctionFormFormula = "$$G(s) = \\frac{k}{s + a}$$";
 
 const RCFilterFrequencyResponseLecture = () => {
     return (
@@ -12,22 +12,13 @@ const RCFilterFrequencyResponseLecture = () => {
             darkBorder={true}
             sx={{ direction: "rtl" }}
         >
-            <Grid className="lecture-text" item>
-                <p>
-                    &nbsp; &nbsp; &nbsp; &nbsp; این توابع تبدیل به فرم زیر می
-                    باشند:
-                </p>
-            </Grid>
-            <Grid item>
-                <MathJax>{firstOrderTransferFunctionFormFormula}</MathJax>
-            </Grid>
+            
             <Grid className="lecture-text" item>
                 <h1 style={{ marginTop: "5%", marginBottom: "3%" }}>
-                    &nbsp;پاسخ حالت ماندگار
+                    &nbsp;پاسخ فرکانسی فیلتر RC
                 </h1>
                 <p>
-                    &nbsp; &nbsp; &nbsp; &nbsp; دیاگرام یک سیستم LTI ساده بصورت
-                    زیر می باشد:
+                    &nbsp; &nbsp; &nbsp; &nbsp; مدار این فیلتر به شکل زیر می باشد:
                 </p>
             </Grid>
             <Grid item>
@@ -37,7 +28,15 @@ const RCFilterFrequencyResponseLecture = () => {
                     alt="بارگذاری تصویر با مشکل مواجه شد"
                 />
             </Grid>
-           
+            <Grid className="lecture-text" item>
+                <p>
+                    &nbsp; &nbsp; &nbsp; &nbsp; و تابع تبدیل آن به فرم زیر می
+                    باشد:
+                </p>
+            </Grid>
+            <Grid item>
+                <MathJax>{RCFilterTransferFunctionFormFormula}</MathJax>
+            </Grid>
         </SubCard>
     );
 };

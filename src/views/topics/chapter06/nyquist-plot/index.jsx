@@ -10,6 +10,7 @@ import FrequencyResponseParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
+import { makeProgress } from "toolshed";
 const symbols = {
     in: "jw",
     out: "H",
@@ -45,6 +46,7 @@ const FrequencyResponse = () => {
     // gradiant of u(t) is 0 and unit ramp is one
     const [systems, $systems] = useState([]);
     const [traces, $traces] = useState({
+        whole: [],
         phase: [],
         amplitude: [],
         degreePhase: [],
@@ -55,6 +57,7 @@ const FrequencyResponse = () => {
     const [is3DPlotEnabled, $3DPlotEnabled] = useState(false);
     const [phaseInRadianScale, setPhaseInRadianScale] = useState(true); // for degree => 180 / PI, for radian scale => 1.0
     const [N, $N] = useState(1000);
+    const [responseTime, setResponseTime] = useState(null);
 
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
 
@@ -76,81 +79,126 @@ const FrequencyResponse = () => {
     };
 
     useEffect(() => {
-        try {
-            const num = calculus.stringToArray(rawNumerator),
-                den = calculus.stringToArray(rawDenominator);
-            const h_s = new TransferFunction(num, den);
-            $H_s(h_s);
-            $response("$$" + h_s.label("H") + "$$");
-            // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
-            // so that the traces will be loaded with new conditions
-            let repeatedSystem = false;
-            const all = {
-                amplitude: Array(systems.length),
-                phase: Array(systems.length),
-                degreePhase: Array(systems.length),
-            };
+        (async () => {
+            try {
+                const num = calculus.stringToArray(rawNumerator),
+                    den = calculus.stringToArray(rawDenominator);
+                const progressBarElement =
+                    document.getElementById("fr_progressbar");
+                const h_s = new TransferFunction(num, den);
+                $H_s(h_s);
+                $response("$$" + h_s.label("H") + "$$");
+                // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
+                // so that the traces will be loaded with new conditions
+                let repeatedSystem = false;
+                const all = {
+                    amplitude: Array(systems.length),
+                    phase: Array(systems.length),
+                    degreePhase: Array(systems.length),
+                    whole: Array(systems.length),
+                };
+                const startTime = new Date();
 
-            for (let i = 0; i < systems.length; i++) {
-                all.amplitude[i] = toTrace(
-                    systems[i].H_s.amplitude,
-                    +w_min,
-                    +w_max,
-                    systems[i].thickness,
-                    systems[i].legend,
-                    is3DPlotEnabled,
-                    +N
-                );
-                all.phase[i] = toTrace(
-                    systems[i].H_s.phase,
-                    +w_min,
-                    +w_max,
-                    systems[i].thickness,
-                    systems[i].legend,
-                    is3DPlotEnabled,
-                    +N
-                );
-                all.degreePhase[i] = { ...all.phase[i] };
-                all.degreePhase[i].y = all.degreePhase[i].y.map(
-                    (yi) => yi * radianToDegreeScaleConstant
-                );
-
-                if (h_s.equals(systems[i].H_s)) repeatedSystem = true;
-            }
-
-            if (!repeatedSystem) {
-                // if current system isnt in traces list => add it temperory to plot
-                const amps = toTrace(
-                        h_s.amplitude,
+                for (let i = 0; i < systems.length; i++) {
+                    all.amplitude[i] = toTrace(
+                        systems[i].H_s.amplitude,
                         +w_min,
                         +w_max,
-                        thickness,
-                        `${symbols.out}(${symbols.in})`,
+                        systems[i].thickness,
+                        systems[i].legend,
                         is3DPlotEnabled,
-                        +N
-                    ),
-                    phase = toTrace(
-                        h_s.phase,
-                        +w_min,
-                        +w_max,
-                        thickness,
-                        `${symbols.out}(${symbols.in})`,
-                        is3DPlotEnabled,
-                        +N
+                        N
                     );
-                const degreePhase = { ...phase };
-                degreePhase.y = degreePhase.y.map(
-                    (yi) => yi * radianToDegreeScaleConstant
-                );
-                all.phase.push(phase);
-                all.degreePhase.push(degreePhase);
-                all.amplitude.push(amps);
-            }
+                    all.phase[i] = toTrace(
+                        systems[i].H_s.phase,
+                        +w_min,
+                        +w_max,
+                        systems[i].thickness,
+                        systems[i].legend,
+                        is3DPlotEnabled,
+                        N
+                    );
+                    all.degreePhase[i] = { ...all.phase[i] };
+                    all.degreePhase[i].y = all.degreePhase[i].y.map(
+                        (yi) => yi * radianToDegreeScaleConstant
+                    );
+                    const [x, y] = await calculus.complexPointify(
+                        systems[i].H_s.frequencyResponse,
+                        +w_min,
+                        +w_max,
+                        N
+                    );
+                    all.whole[i] = makeTrace(
+                        x,
+                        y,
+                        systems[i].thickness,
+                        systems[i].legend,
+                        is3DPlotEnabled,
+                        "lines"
+                    );
 
-            $traces(all);
-        } catch (ex) {
-            console.log(ex);
-        }
+                    if (h_s.equals(systems[i].H_s)) repeatedSystem = true;
+                    await makeProgress(
+                        progressBarElement,
+                        (100 * i) / (systems.length + 1)
+                    );
+                }
+
+                if (!repeatedSystem) {
+                    // if current system isnt in traces list => add it temperory to plot
+
+                    const [x, y] = await calculus.complexPointify(
+                        h_s.frequencyResponse,
+                        +w_min,
+                        +w_max,
+                        N
+                    );
+
+                    const whole = makeTrace(
+                            x,
+                            y,
+                            thickness,
+                            `${symbols.out}(${symbols.in})`,
+                            is3DPlotEnabled,
+                            "lines"
+                        ),
+                        amps = toTrace(
+                            h_s.amplitude,
+                            +w_min,
+                            +w_max,
+                            thickness,
+                            `${symbols.out}(${symbols.in})`,
+                            is3DPlotEnabled,
+                            N
+                        ),
+                        phase = toTrace(
+                            h_s.phase,
+                            +w_min,
+                            +w_max,
+                            thickness,
+                            `${symbols.out}(${symbols.in})`,
+                            is3DPlotEnabled,
+                            N
+                        );
+                    const degreePhase = { ...phase };
+                    degreePhase.y = degreePhase.y.map(
+                        (yi) => yi * radianToDegreeScaleConstant
+                    );
+
+                    all.whole.push(whole);
+                    all.phase.push(phase);
+                    all.degreePhase.push(degreePhase);
+                    all.amplitude.push(amps);
+                    const endTime = new Date();
+                    setResponseTime((+endTime - +startTime) / 1000);
+                }
+                await makeProgress(progressBarElement, 100);
+
+                $traces(all);
+            } catch (ex) {
+                console.log(ex);
+            }
+        })();
     }, [
         rawNumerator,
         rawDenominator,
@@ -248,8 +296,7 @@ const FrequencyResponse = () => {
                                     setPhaseInRadianScale={
                                         setPhaseInRadianScale
                                     }
-                                    N={N}
-                                    $N={$N}
+                                    responseTime={responseTime}
                                 />
                             </Grid>
                         </Grid>
@@ -286,42 +333,40 @@ const FrequencyResponse = () => {
                             <hr />
                             <Grid lg={12} md={12} sm={12} xs={12} item>
                                 <SubCard>
-                                    <Grid
-                                        spacing={gridSpacing}
-                                        direction="row"
-                                        container
-                                    >
-                                        <Grid
-                                            lg={9}
-                                            md={9}
-                                            sm={12}
-                                            xs={12}
-                                            item
-                                        >
-                                            <GraphBox
-                                                title="اندازه"
-                                                traces={traces.amplitude}
-                                            />
-                                        </Grid>
-                                        <Grid
-                                            lg={9}
-                                            md={9}
-                                            sm={12}
-                                            xs={12}
-                                            item
-                                        >
-                                            <GraphBox
-                                                title="فاز"
-                                                traces={
-                                                    phaseInRadianScale
-                                                        ? traces.phase
-                                                        : traces.degreePhase
-                                                }
-                                            />
-                                        </Grid>
+                                    <Grid lg={12} md={12} sm={12} xs={12} item>
+                                        <GraphBox
+                                            title="پاسخ فرکانسی"
+                                            traces={traces.whole}
+                                        />
                                     </Grid>
                                 </SubCard>
                             </Grid>
+                        </Grid>
+                        <Grid lg={12} md={12} sm={12} xs={12} item>
+                            <SubCard>
+                                <Grid
+                                    spacing={gridSpacing}
+                                    direction="row"
+                                    container
+                                >
+                                    <Grid lg={6} md={6} sm={12} xs={12} item>
+                                        <GraphBox
+                                            title="اندازه"
+                                            traces={traces.amplitude}
+                                        />
+                                    </Grid>
+                                    <Grid lg={6} md={6} sm={12} xs={12} item>
+                                        <GraphBox
+                                            title="فاز"
+                                            traces={
+                                                phaseInRadianScale
+                                                    ? traces.phase
+                                                    : traces.degreePhase
+                                            }
+                                        />
+                                    </Grid>
+                                </Grid>
+                            </SubCard>
                         </Grid>
                     </Grid>
                 </Grid>

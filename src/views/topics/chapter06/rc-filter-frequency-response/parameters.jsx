@@ -8,8 +8,9 @@ const parameterFormulas = [
     "$$C = $$",
     "$$\\omega_{min} = $$",
     "$$\\omega_{max} = $$",
+    "$$N = $$"
 ];
-const parameterUnits = ["$$k\\Omega$$", "$$\\mu F$$", "$$Hz$$", "$$Hz$$"];
+const parameterUnits = ["$$k\\Omega$$", "$$\\mu F$$", "$$Hz$$", "$$Hz$$", null];
 
 const RCFilterFrequencyResponseParameters = ({
     R,
@@ -21,7 +22,9 @@ const RCFilterFrequencyResponseParameters = ({
     $w_min,
     $w_max,
     phaseInRadianScale,
-    setPhaseInRadianScale
+    setPhaseInRadianScale,
+    N,
+    $N
 }) => {
     // const grids = 10;
     // const selectR = (point) => {
@@ -43,7 +46,7 @@ const RCFilterFrequencyResponseParameters = ({
         >
             <Grid spacing={gridSpacing} container direction="row">
             
-                <SimpleParametersList parameters={[R, C, w_min, w_max]} setters={[$R, $C, $w_min, $w_max]} labels={parameterFormulas} units={parameterUnits} />
+                <SimpleParametersList parameters={[R, C, w_min, w_max, N]} setters={[$R, $C, $w_min, $w_max, $N]} labels={parameterFormulas} units={parameterUnits} />
                 <Grid xs={12} style={{paddingLeft: '3%'}} container>
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button

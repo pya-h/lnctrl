@@ -1,7 +1,7 @@
 import React from "react";
 import Plot from "react-plotly.js";
 
-const GraphBox = ({ traces, title, width, height = 500 }) => {
+const GraphBox = ({ traces, title, width, height = 500, logX }) => {
     /*const temp_layout = {
         xaxis: {
             zeroline: true,
@@ -43,7 +43,8 @@ const GraphBox = ({ traces, title, width, height = 500 }) => {
                 },
                 xaxis: {
                     rangemode: "tozero",
-                    zeroline: true
+                    zeroline: true,
+                    type: !logX ? "dec" : "log"
                 },
                 yaxis: {
                     rangemode: "tozero",

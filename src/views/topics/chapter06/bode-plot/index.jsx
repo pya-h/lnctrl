@@ -32,7 +32,7 @@ const makeTrace = (x, y, thickness, legend, _3d, mode = "lines") => {
     };
 };
 const toTrace = (f, w_min, w_max, thickness, legend, _3d, N = 1000) => {
-    const [x, y] = calculus.pointify(f, w_min, w_max, N);
+    let [x, y] = calculus.pointify(f, w_min, w_max, N);
     return makeTrace(x, y, thickness, legend, _3d);
 };
 
@@ -45,7 +45,6 @@ const BodePlot = () => {
     // gradiant of u(t) is 0 and unit ramp is one
     const [systems, $systems] = useState([]);
     const [traces, $traces] = useState({
-        whole: [],
         phase: [],
         amplitude: [],
         degreePhase: [],
@@ -284,6 +283,8 @@ const BodePlot = () => {
                                 <SubCard>
                                     <Grid lg={9} md={9} sm={12} xs={12} item>
                                         <GraphBox
+                                            logX={true}
+
                                             title="نمودار بود"
                                             traces={traces.amplitude}
                                         />
@@ -291,6 +292,7 @@ const BodePlot = () => {
                                     <Grid lg={9} md={9} sm={12} xs={12} item>
                                         <GraphBox
                                             title="فاز"
+                                            logX={true}
                                             traces={
                                                 phaseInRadianScale
                                                     ? traces.phase

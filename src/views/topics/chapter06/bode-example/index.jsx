@@ -10,15 +10,21 @@ import BodePlotParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
-import { preventBrowserLock } from 'toolshed';
+import { preventBrowserLock } from "toolshed";
+import BodePlotExampleLecture from "./lecture";
 const symbols = {
     in: "jw",
     out: "H",
 };
 
-const BodePlot = () => {
-    const [rawNumerator, $rawNumerator] = useState("1");
-    const [rawDenominator, $rawDenominator] = useState("1 1");
+const BodePlotExample = () => {
+    const [K, $K] = useState(1);
+    const [t_a, $t_a] = useState(0.1);
+    const [t_b, $t_b] = useState(0.2);
+    const [t_1, $t_1] = useState(0.3);
+    const [t_2, $t_2] = useState(0.4);
+    const [t_3, $t_3] = useState(0.5);
+    const [t_4, $t_4] = useState(0.6);
     const [H_s, $H_s] = useState(null);
     const [w_min, $w_min] = useState(0);
     const [w_max, $w_max] = useState(10);
@@ -68,7 +74,7 @@ const BodePlot = () => {
                     };
 
                     for (let i = 0; i < systems.length; i++) {
-                        if(i % 5 === 0) await preventBrowserLock();
+                        if (i % 5 === 0) await preventBrowserLock();
                         all.amplitude[i] = calculus.systemToTrace(
                             systems[i].H_s.bode,
                             +w_min,
@@ -86,7 +92,7 @@ const BodePlot = () => {
                             systems[i].legend,
                             is3DPlotEnabled,
                             N
-                        );
+                        ).map(phi => (phi + 360) % 360);
                         all.degreePhase[i] = { ...all.phase[i] };
                         all.degreePhase[i].y = all.degreePhase[i].y.map(
                             (yi) => yi * calculus.RadianToDegree
@@ -113,6 +119,7 @@ const BodePlot = () => {
                                 is3DPlotEnabled,
                                 N
                             );
+                        phase.y = phase.y.map(phi => ((phi - (2 * Math.PI)) % (2 * Math.PI)));
                         const degreePhase = { ...phase };
                         degreePhase.y = degreePhase.y.map(
                             (yi) => yi * calculus.RadianToDegree
@@ -141,18 +148,39 @@ const BodePlot = () => {
     };
     useEffect(() => {
         try {
-            const num = calculus.stringToArray(rawNumerator),
-                den = calculus.stringToArray(rawDenominator);
+            const k = +K,
+                ta = +t_a,
+                tb = +t_b;
+            const tau = [+t_1, +t_2, +t_3, +t_4];
+
+            const num = [k * ta * tb, k * (ta + tb), k],
+                den = Array(6).fill(0);
+            den[5] = 0;
+            den[4] = 1;
+            den[0] = 1;
+
+            for (let i = 0; i <= 3; i++) {
+                den[0] *= tau[i];
+
+                for (let j = i + 1; j <= 3; j++) {
+                    den[2] += tau[i] * tau[j];
+                }
+
+                den[3] += tau[i];
+            }
+            den[1] +=
+                (tau[0] + tau[1]) * tau[2] * tau[3] +
+                (tau[2] + tau[3]) * tau[0] * tau[1];
             const h_s = new TransferFunction(num, den);
             $H_s(h_s);
         } catch (ex) {
             console.log(ex);
         }
-    }, [rawNumerator, rawDenominator]);
+    }, [K, t_a, t_b, t_1, t_2, t_3, t_4]);
 
     useEffect(() => {
         $graphCaptured(false);
-    }, [rawNumerator, rawDenominator]);
+    }, [K, t_a, t_b, t_1, t_2, t_3, t_4]);
 
     const update = (changes) => {
         if (changes) $thickness(changes.thickness);
@@ -164,7 +192,18 @@ const BodePlot = () => {
                 <h2 className="chapter-section-title">Bode plot</h2>
             </Grid>
             <Grid item spacing={gridSpacing}>
-                <Grid container direction="column" spacing={1}>
+                <Grid container direction="column" spacing={gridSpacing}>
+                    <Grid
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            margin: "auto",
+                            direction: "ltr",
+                        }}
+                        item
+                    >
+                        <BodePlotExampleLecture />
+                    </Grid>
                     <Grid sx={{ margin: "auto", width: "100%" }} item>
                         <SubCard sx={{ direction: "ltr" }}>
                             <Grid
@@ -221,10 +260,20 @@ const BodePlot = () => {
                         >
                             <Grid xs={12}>
                                 <BodePlotParameters
-                                    rawNumerator={rawNumerator}
-                                    rawDenominator={rawDenominator}
-                                    $rawNumerator={$rawNumerator}
-                                    $rawDenominator={$rawDenominator}
+                                    K={K}
+                                    $K={$K}
+                                    t_a={t_a}
+                                    $t_a={$t_a}
+                                    t_b={t_b}
+                                    $t_b={$t_b}
+                                    t_1={t_1}
+                                    $t_1={$t_1}
+                                    t_2={t_2}
+                                    $t_2={$t_2}
+                                    t_3={t_3}
+                                    $t_3={$t_3}
+                                    t_4={t_4}
+                                    $t_4={$t_4}
                                     w_min={w_min}
                                     w_max={w_max}
                                     $w_min={$w_min}
@@ -300,4 +349,4 @@ const BodePlot = () => {
     );
 };
 
-export default BodePlot;
+export default BodePlotExample;

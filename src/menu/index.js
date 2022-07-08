@@ -223,6 +223,14 @@ const load = (pathname) => {
                         breadcrumbs: false,
                     },
                     {
+                        id: routes.bode_example,
+                        title: "An example of a Bode plot",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.bode_example}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
+                    {
                         id: routes.nyquist_plot,
                         title: "Nyquist plot",
                         type: "item",

@@ -147,7 +147,7 @@ const RCFilterFrequencyResponseExample = () => {
                 <h2 className="chapter-section-title">Frequency response of the RC filter</h2>
             </Grid>
             <Grid item spacing={gridSpacing}>
-                <Grid container direction="column" spacing={1}>
+                <Grid container direction="column" spacing={gridSpacing}>
                     <Grid
                         style={{
                             width: "100%",

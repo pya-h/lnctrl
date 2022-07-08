@@ -8,7 +8,7 @@ const RCFilterTransferFunctionFormFormula = "$$G(s) = \\frac{k}{1 + RCs}$$";
 const RCFilterFrequencyResponseLecture = () => {
     return (
         <SubCard
-            title="First-order transfer function"
+            title="Frequency response of the RC filter"
             darkBorder={true}
             sx={{ direction: "ltr" }}
         >

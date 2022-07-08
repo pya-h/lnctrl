@@ -6,9 +6,9 @@ import calculus from "../../../../math/calculus/index";
 import { useState, useEffect } from "react";
 import MassSpringDamperParameters from "./parameters";
 
-import GraphMenu from "math/GraphMenu";
+import GraphMenu from "views/plotter/GraphMenu";
 import { Grid } from "@mui/material";
-import GraphBox from "math/GraphBox";
+import GraphBox from "views/plotter/GraphBox";
 import { MathJax } from "better-react-mathjax";
 
 const mechanicSystemEquation = (m, c, k, F_t) =>
@@ -312,19 +312,6 @@ const MassSpringDamperExample = () => {
                     <SubCard>
                         <GraphMenu
                             capture={capture}
-                            formulaFileName={
-                                "Water Tank Level Equations _ " +
-                                [...systems.map((sys) => sys.legend)].join() +
-                                ".png"
-                            }
-                            graphFileName={
-                                [
-                                    ...systems.map(
-                                        (sys) =>
-                                            `${sys.legend}{m=${sys.m}_c=${sys.c}_k=${sys.k}_F(t)=${sys.F_t}_x_i=${sys.x_i}_v_i=${sys.v_i}} `
-                                    ),
-                                ].join(", ") + ".png"
-                            }
                             reset={() => setSystems([])}
                             update={(changes) => update(changes)}
                             toggle3DPlot={toggle3DPlot}

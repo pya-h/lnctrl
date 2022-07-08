@@ -18,6 +18,7 @@ const routes = {
     frequency_response: "freq_res",
     bode_plot: 'bode_plot',
     bode_example: 'bode_example',
+    delayed_systems: 'delayed_systems',
     nyquist_plot: 'nyquist_plot',
 
 };

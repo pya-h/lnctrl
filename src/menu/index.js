@@ -231,6 +231,14 @@ const load = (pathname) => {
                         breadcrumbs: false,
                     },
                     {
+                        id: routes.delayed_systems,
+                        title: "Time-delay systems",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.delayed_systems}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
+                    {
                         id: routes.nyquist_plot,
                         title: "Nyquist plot",
                         type: "item",

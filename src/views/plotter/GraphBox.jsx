@@ -28,7 +28,7 @@ const GraphBox = ({ traces, title, width, height = 500, logX }) => {
     };*/
 
     return (
-        <Plot
+        <Plot 
             style={{ textAlign: "center" }}
             //id="graphBox"
             data={traces}

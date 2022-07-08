@@ -6,10 +6,10 @@ import calculus from "../../../../math/calculus/index";
 import { useState, useEffect } from "react";
 import WaterTankParameters from "./parameters";
 
-import GraphMenu from "math/GraphMenu";
+import GraphMenu from "views/plotter/GraphMenu";
 import { Grid } from "@mui/material";
 import VisualWaterTank from "./visual/WaterTank";
-import GraphBox from "math/GraphBox";
+import GraphBox from "views/plotter/GraphBox";
 import { MathJax } from "better-react-mathjax";
 
 const hydraulicSystemEquation = (R, C, Qin) =>
@@ -212,19 +212,6 @@ const WaterTankLevelExample = () => {
                     <SubCard>
                         <GraphMenu
                             capture={capture}
-                            formulaFileName={
-                                "Water Tank Level Equations _ " +
-                                [...systems.map((sys) => sys.legend)].join() +
-                                ".png"
-                            }
-                            graphFileName={
-                                [
-                                    ...systems.map(
-                                        (sys) =>
-                                            `${sys.legend}{R=${sys.R}_C=${sys.C}_hi=${sys.hi}_Qin=${sys.Qin}} `
-                                    ),
-                                ].join(", ") + ".png"
-                            }
                             reset={() => setSystems([])}
                             update={(changes) => update(changes)}
                             toggle3DPlot={toggle3DPlot}

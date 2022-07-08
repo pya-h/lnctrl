@@ -8,18 +8,14 @@ import { gridSpacing } from "store/constant";
 const sotfExtremeMortalFormula =
     "$$ G(s) = \\frac{k}{(s + \\alpha) (s + \\beta)}" +
     mathjaxSpaces(3) +
-    "\\alpha,\\beta > 0," +
-    mathjaxSpaces(1) +
-    "\\alpha \\neq \\beta \\\\" +
+    "\\alpha,\\beta > 0, \\quad \\alpha \\neq \\beta \\\\" +
     "C(s) = \\frac{1}{s}G(s) = \\frac{k}{s(s + \\alpha) (s + \\beta)}" +
     "\\Longrightarrow c_{ss} = \\lim\\limits_{s \\to 0}sC(s) = \\frac{k}{\\alpha\\beta} \\\\" +
     "c(t) = (\\frac{k}{\\alpha\\beta} + \\frac{k}{\\alpha - \\beta} \\lgroup \\frac{e^{-\\alpha t}}{\\alpha} - \\frac{e^{-\\beta t}}{\\beta}\\rgroup)u(t)$$";
 const sotfCriticalFormula =
     "$$ G(s) = \\frac{k}{(s + \\alpha)^2}" +
     mathjaxSpaces(3) +
-    "\\alpha,\\beta > 0," +
-    mathjaxSpaces(1) +
-    "\\alpha = \\beta \\\\" +
+    "\\alpha,\\beta > 0, \\quad \\alpha = \\beta \\\\" +
     "C(s) = \\frac{1}{s}G(s) = \\frac{k}{s(s + \\alpha)^2}" +
     "\\Longrightarrow c_{ss} = \\lim\\limits_{s \\to 0}sC(s) = \\frac{k}{\\alpha^2} \\\\ " +
     "c(t) = (\\frac{k}{\\alpha^2} - \\frac{k}{\\alpha^2} \\lgroup 1 + \\alpha t\\rgroup)e^{-\\alpha t}u(t)$$";

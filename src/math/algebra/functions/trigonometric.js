@@ -6,6 +6,10 @@ import Fraction from "./fraction";
 export class Sin extends Algebra {
     constructor(A, w, teta = 0, symbol = "t", params = {}) {
         // Ae^wt
+        if(w === +w && w < 0){
+            w *= -1;
+            A *= -1;
+        }
         super(A, { symbol, type: "sin", b: w, teta, ...params });
     }
     copy = (linkPrevious = false) =>
@@ -34,6 +38,7 @@ export class Sin extends Algebra {
 export class Cos extends Algebra {
     constructor(A, w, teta = 0, symbol = "t", params = {}) {
         // Ae^wt
+        if(+w === w && w < 0) w *= -1; // cos(-w) = cos(w);
         super(A, { symbol, type: "cos", b: w, teta, ...params });
     }
     copy = (linkPrevious = false) =>

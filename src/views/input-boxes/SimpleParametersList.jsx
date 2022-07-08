@@ -1,6 +1,5 @@
 import { Grid, InputAdornment, TextField } from "@mui/material";
 import { MathJax } from "better-react-mathjax";
-import { evaluate } from "math/calculus";
 import { Fragment } from "react";
 
 const SimpleParametersList = ({ parameters, setters, labels, units }) => {

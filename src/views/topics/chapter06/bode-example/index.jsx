@@ -2,15 +2,15 @@
 import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus/index";
 import { useState, useEffect } from "react";
-import GraphMenu from "math/GraphMenu";
+import GraphMenu from "views/plotter/GraphMenu";
 import { Grid } from "@mui/material";
-import GraphBox from "math/GraphBox";
+import GraphBox from "views/plotter/GraphBox";
 import { MathJax } from "better-react-mathjax";
 import BodePlotParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
-import { preventBrowserLock } from "toolshed";
+import { browserLockBreaker } from "toolshed";
 import BodePlotExampleLecture from "./lecture";
 const symbols = {
     in: "jw",
@@ -27,7 +27,7 @@ const BodePlotExample = () => {
     const [t_4, $t_4] = useState(0.6);
     const [H_s, $H_s] = useState(null);
     const [w_min, $w_min] = useState(0);
-    const [w_max, $w_max] = useState(10);
+    const [w_max, $w_max] = useState(20);
     // gradiant of u(t) is 0 and unit ramp is one
     const [systems, $systems] = useState([]);
     const [traces, $traces] = useState({
@@ -74,7 +74,7 @@ const BodePlotExample = () => {
                     };
 
                     for (let i = 0; i < systems.length; i++) {
-                        if (i % 5 === 0) await preventBrowserLock();
+                        if (i % 5 === 0) await browserLockBreaker();
                         all.amplitude[i] = calculus.systemToTrace(
                             systems[i].H_s.bode,
                             +w_min,
@@ -82,7 +82,7 @@ const BodePlotExample = () => {
                             systems[i].thickness,
                             systems[i].legend,
                             is3DPlotEnabled,
-                            N
+                            +N
                         );
                         all.phase[i] = calculus.systemToTrace(
                             systems[i].H_s.phase,
@@ -91,8 +91,9 @@ const BodePlotExample = () => {
                             systems[i].thickness,
                             systems[i].legend,
                             is3DPlotEnabled,
-                            N
-                        ).map(phi => (phi + 360) % 360);
+                            +N
+                        )
+                        all.phase[i].y = all.phase[i].y.map(phi => ((phi - (2 * Math.PI)) % (2 * Math.PI)));
                         all.degreePhase[i] = { ...all.phase[i] };
                         all.degreePhase[i].y = all.degreePhase[i].y.map(
                             (yi) => yi * calculus.RadianToDegree
@@ -101,14 +102,14 @@ const BodePlotExample = () => {
                     }
 
                     if (!repeatedSystem) {
-                        const amps = calculus.systemToTrace(
+                        const amp = calculus.systemToTrace(
                                 H_s.bode,
                                 +w_min,
                                 +w_max,
                                 thickness,
                                 `${symbols.out}(${symbols.in})`,
                                 is3DPlotEnabled,
-                                N
+                                +N
                             ),
                             phase = calculus.systemToTrace(
                                 H_s.phase,
@@ -117,7 +118,7 @@ const BodePlotExample = () => {
                                 thickness,
                                 `${symbols.out}(${symbols.in})`,
                                 is3DPlotEnabled,
-                                N
+                                +N
                             );
                         phase.y = phase.y.map(phi => ((phi - (2 * Math.PI)) % (2 * Math.PI)));
                         const degreePhase = { ...phase };
@@ -126,7 +127,7 @@ const BodePlotExample = () => {
                         );
                         all.phase.push(phase);
                         all.degreePhase.push(degreePhase);
-                        all.amplitude.push(amps);
+                        all.amplitude.push(amp);
                     }
                     $traces(all);
                 } catch (err) {
@@ -292,27 +293,6 @@ const BodePlotExample = () => {
                             <SubCard>
                                 <GraphMenu
                                     capture={capture}
-                                    formulaFileName={
-                                        "Water Tank Level Equations _ " +
-                                        [
-                                            ...systems.map((sys) => sys.legend),
-                                        ].join() +
-                                        ".png"
-                                    }
-                                    graphFileName={
-                                        [
-                                            ...systems.map(
-                                                (sys) =>
-                                                    `${sys.legend}{alpha=${
-                                                        sys.a
-                                                    }_k=${sys.k}_in=${
-                                                        sys.inputSignal
-                                                            ? "ramp"
-                                                            : "step"
-                                                    }}`
-                                            ),
-                                        ].join(", ") + ".png"
-                                    }
                                     reset={() => $systems([])}
                                     update={(changes) => update(changes)}
                                     toggle3DPlot={toggle3DPlot}

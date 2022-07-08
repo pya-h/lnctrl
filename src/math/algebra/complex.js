@@ -25,7 +25,11 @@ class Complex extends Algebra {
             if (im < 0) {
                 im *= -1;
                 formula += " - ";
-            } else if (rl !== 0) formula += " + ";
+            } else if(im instanceof Algebra && im.getA() < 0){
+                im.setA(-im.getA());
+                formula += " - ";
+            } 
+            else if (rl !== 0) formula += " + ";
 
             formula += this.symbol;
             if (im !== 1)

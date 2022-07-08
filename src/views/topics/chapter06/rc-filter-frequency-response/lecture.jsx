@@ -8,7 +8,7 @@ const RCFilterTransferFunctionFormFormula = "$$G(s) = \\frac{k}{1 + RCs}$$";
 const RCFilterFrequencyResponseLecture = () => {
     return (
         <SubCard
-            title="تابع تبدیل مرتبه یک"
+            title="پاسخ فرکانسی فیلتر RC"
             darkBorder={true}
             sx={{ direction: "rtl" }}
         >

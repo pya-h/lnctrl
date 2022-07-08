@@ -1,5 +1,3 @@
-import RCFilterFrequencyResponseLecture from "./lecture";
-
 // project imports
 import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus/index";
@@ -8,21 +6,28 @@ import GraphMenu from "math/GraphMenu";
 import { Grid } from "@mui/material";
 import GraphBox from "math/GraphBox";
 import { MathJax } from "better-react-mathjax";
-import RCFilterFrequencyResponseParameters from "./parameters";
+import BodePlotParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
+import { preventBrowserLock } from "toolshed";
+import BodePlotExampleLecture from "./lecture";
 const symbols = {
     in: "jw",
     out: "H",
 };
 
-const RCFilterFrequencyResponseExample = () => {
-    const [R, $R] = useState(0.001);
-    const [C, $C] = useState(1.0);
+const BodePlotExample = () => {
+    const [K, $K] = useState(1);
+    const [t_a, $t_a] = useState(0.1);
+    const [t_b, $t_b] = useState(0.2);
+    const [t_1, $t_1] = useState(0.3);
+    const [t_2, $t_2] = useState(0.4);
+    const [t_3, $t_3] = useState(0.5);
+    const [t_4, $t_4] = useState(0.6);
     const [H_s, $H_s] = useState(null);
-    const [w_min, $w_min] = useState(-5);
-    const [w_max, $w_max] = useState(5);
+    const [w_min, $w_min] = useState(0);
+    const [w_max, $w_max] = useState(10);
     // gradiant of u(t) is 0 and unit ramp is one
     const [systems, $systems] = useState([]);
     const [traces, $traces] = useState({
@@ -37,20 +42,16 @@ const RCFilterFrequencyResponseExample = () => {
     const [phaseInRadianScale, setPhaseInRadianScale] = useState(true); // for degree => 180 / PI, for radian scale => 1.0
     const [N, $N] = useState(1000);
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
-
     const capture = () => {
         const capturedSystems = [...systems];
-        const index = capturedSystems.findIndex(
-            (sys) => sys.R === +R && sys.C === +C
-        );
-        if (index === -1) {
+
+        if (capturedSystems.findIndex((sys) => H_s.equals(sys.H)) === -1) {
             // if current system has not been captured before => then capture it; o.w. its not needed
             capturedSystems.push({
-                R: +R,
-                C: +C,
                 H_s,
                 thickness,
-                legend: symbols.out + "_{" + (systems.length + 1).toString(),
+                legend:
+                    symbols.out + "_{" + (systems.length + 1).toString() + "}",
             });
             $systems(capturedSystems);
             $graphCaptured(true);
@@ -58,84 +59,128 @@ const RCFilterFrequencyResponseExample = () => {
     };
 
     useEffect(() => {
+        // plot
+        if (H_s) {
+            (async () => {
+                try {
+                    $response("$$" + H_s.label("H") + "$$");
+                    // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
+                    // so that the traces will be loaded with new conditions
+                    let repeatedSystem = false;
+                    const all = {
+                        amplitude: Array(systems.length),
+                        phase: Array(systems.length),
+                        degreePhase: Array(systems.length),
+                    };
+
+                    for (let i = 0; i < systems.length; i++) {
+                        if (i % 5 === 0) await preventBrowserLock();
+                        all.amplitude[i] = calculus.systemToTrace(
+                            systems[i].H_s.bode,
+                            +w_min,
+                            +w_max,
+                            systems[i].thickness,
+                            systems[i].legend,
+                            is3DPlotEnabled,
+                            N
+                        );
+                        all.phase[i] = calculus.systemToTrace(
+                            systems[i].H_s.phase,
+                            +w_min,
+                            +w_max,
+                            systems[i].thickness,
+                            systems[i].legend,
+                            is3DPlotEnabled,
+                            N
+                        ).map(phi => (phi + 360) % 360);
+                        all.degreePhase[i] = { ...all.phase[i] };
+                        all.degreePhase[i].y = all.degreePhase[i].y.map(
+                            (yi) => yi * calculus.RadianToDegree
+                        );
+                        if (H_s.equals(systems[i].H_s)) repeatedSystem = true;
+                    }
+
+                    if (!repeatedSystem) {
+                        const amps = calculus.systemToTrace(
+                                H_s.bode,
+                                +w_min,
+                                +w_max,
+                                thickness,
+                                `${symbols.out}(${symbols.in})`,
+                                is3DPlotEnabled,
+                                N
+                            ),
+                            phase = calculus.systemToTrace(
+                                H_s.phase,
+                                +w_min,
+                                +w_max,
+                                thickness,
+                                `${symbols.out}(${symbols.in})`,
+                                is3DPlotEnabled,
+                                N
+                            );
+                        phase.y = phase.y.map(phi => ((phi - (2 * Math.PI)) % (2 * Math.PI)));
+                        const degreePhase = { ...phase };
+                        degreePhase.y = degreePhase.y.map(
+                            (yi) => yi * calculus.RadianToDegree
+                        );
+                        all.phase.push(phase);
+                        all.degreePhase.push(degreePhase);
+                        all.amplitude.push(amps);
+                    }
+                    $traces(all);
+                } catch (err) {
+                    console.log(err);
+                }
+            })();
+        }
+    }, [H_s, systems, w_min, w_max, is3DPlotEnabled, thickness, N]);
+
+    const multiplyPlotBy = (value) => {
+        const currentLength = systems.length;
+        const multipliedSystem = H_s.multiply(value);
+        const newSystemList = systems.filter(
+            (sys) => !sys.H_s.equals(multipliedSystem)
+        );
+        if (newSystemList.length === currentLength) capture();
+        else $systems(newSystemList);
+        $H_s(multipliedSystem);
+    };
+    useEffect(() => {
         try {
-            const h_s = new TransferFunction([1], [+R * +C * 10e3, 1]);
+            const k = +K,
+                ta = +t_a,
+                tb = +t_b;
+            const tau = [+t_1, +t_2, +t_3, +t_4];
+
+            const num = [k * ta * tb, k * (ta + tb), k],
+                den = Array(6).fill(0);
+            den[5] = 0;
+            den[4] = 1;
+            den[0] = 1;
+
+            for (let i = 0; i <= 3; i++) {
+                den[0] *= tau[i];
+
+                for (let j = i + 1; j <= 3; j++) {
+                    den[2] += tau[i] * tau[j];
+                }
+
+                den[3] += tau[i];
+            }
+            den[1] +=
+                (tau[0] + tau[1]) * tau[2] * tau[3] +
+                (tau[2] + tau[3]) * tau[0] * tau[1];
+            const h_s = new TransferFunction(num, den);
             $H_s(h_s);
-            $response("$$" + h_s.label("H") + "$$");
-            // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
-            // so that the traces will be loaded with new conditions
-            let repeatedSystem = false;
-            const all = {
-                amplitude: Array(systems.length),
-                phase: Array(systems.length),
-                degreePhase: Array(systems.length),
-            };
-
-            for (let i = 0; i < systems.length; i++) {
-                all.amplitude[i] = calculus.systemToTrace(
-                    systems[i].H_s.amplitude,
-                    +w_min,
-                    +w_max,
-                    systems[i].thickness,
-                    systems[i].legend,
-                    is3DPlotEnabled,
-                    +N
-                );
-                all.phase[i] = calculus.systemToTrace(
-                    systems[i].H_s.phase,
-                    +w_min,
-                    +w_max,
-                    systems[i].thickness,
-                    systems[i].legend,
-                    is3DPlotEnabled,
-                    +N
-                );
-                all.degreePhase[i] = { ...all.phase[i] };
-                all.degreePhase[i].y = all.degreePhase[i].y.map(
-                    (yi) => yi * calculus.RadianToDegree
-                );
-                if (h_s.equals(systems[i].H_s)) repeatedSystem = true;
-            }
-
-            if (!repeatedSystem) {
-                // if current system isnt in traces list => add it temperory to plot
-                const amps = calculus.systemToTrace(
-                        h_s.amplitude,
-                        +w_min,
-                        +w_max,
-                        thickness,
-                        `${symbols.out}(${symbols.in})`,
-                        is3DPlotEnabled,
-                        +N
-                    ),
-                    phase = calculus.systemToTrace(
-                        h_s.phase,
-                        +w_min,
-                        +w_max,
-                        thickness,
-                        `${symbols.out}(${symbols.in})`,
-                        is3DPlotEnabled,
-                        +N
-                    );
-                const degreePhase = { ...phase };
-                degreePhase.y = degreePhase.y.map(
-                    (yi) => yi * calculus.RadianToDegree
-                );
-
-                all.phase.push(phase);
-                all.degreePhase.push(degreePhase);
-                all.amplitude.push(amps);
-            }
-
-            $traces(all);
         } catch (ex) {
             console.log(ex);
         }
-    }, [R, C, w_min, w_max, is3DPlotEnabled, thickness, systems, N]);
+    }, [K, t_a, t_b, t_1, t_2, t_3, t_4]);
 
     useEffect(() => {
         $graphCaptured(false);
-    }, [R, C]);
+    }, [K, t_a, t_b, t_1, t_2, t_3, t_4]);
 
     const update = (changes) => {
         if (changes) $thickness(changes.thickness);
@@ -144,7 +189,7 @@ const RCFilterFrequencyResponseExample = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">پاسخ فرکانسی فیلتر RC</h2>
+                <h2 className="chapter-section-title">نمودار بود</h2>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={gridSpacing}>
@@ -157,7 +202,7 @@ const RCFilterFrequencyResponseExample = () => {
                         }}
                         item
                     >
-                        <RCFilterFrequencyResponseLecture />
+                        <BodePlotExampleLecture />
                     </Grid>
                     <Grid sx={{ margin: "auto", width: "100%" }} item>
                         <SubCard sx={{ direction: "ltr" }}>
@@ -214,15 +259,21 @@ const RCFilterFrequencyResponseExample = () => {
                             container
                         >
                             <Grid xs={12}>
-                                <RCFilterFrequencyResponseParameters
-                                    C={C}
-                                    R={R}
-                                    $C={(value) => {
-                                        if (value >= 0) $C(value);
-                                    }}
-                                    $R={(value) => {
-                                        if (value >= 0) $R(value);
-                                    }}
+                                <BodePlotParameters
+                                    K={K}
+                                    $K={$K}
+                                    t_a={t_a}
+                                    $t_a={$t_a}
+                                    t_b={t_b}
+                                    $t_b={$t_b}
+                                    t_1={t_1}
+                                    $t_1={$t_1}
+                                    t_2={t_2}
+                                    $t_2={$t_2}
+                                    t_3={t_3}
+                                    $t_3={$t_3}
+                                    t_4={t_4}
+                                    $t_4={$t_4}
                                     w_min={w_min}
                                     w_max={w_max}
                                     $w_min={$w_min}
@@ -233,6 +284,7 @@ const RCFilterFrequencyResponseExample = () => {
                                     }
                                     N={N}
                                     $N={$N}
+                                    multiplier={multiplyPlotBy}
                                 />
                             </Grid>
                         </Grid>
@@ -269,39 +321,23 @@ const RCFilterFrequencyResponseExample = () => {
                             <hr />
                             <Grid lg={12} md={12} sm={12} xs={12} item>
                                 <SubCard>
-                                    <Grid
-                                        spacing={gridSpacing}
-                                        direction="row"
-                                        container
-                                    >
-                                        <Grid
-                                            lg={9}
-                                            md={9}
-                                            sm={12}
-                                            xs={12}
-                                            item
-                                        >
-                                            <GraphBox
-                                                title="اندازه"
-                                                traces={traces.amplitude}
-                                            />
-                                        </Grid>
-                                        <Grid
-                                            lg={9}
-                                            md={9}
-                                            sm={12}
-                                            xs={12}
-                                            item
-                                        >
-                                            <GraphBox
-                                                title="فاز"
-                                                traces={
-                                                    phaseInRadianScale
-                                                        ? traces.phase
-                                                        : traces.degreePhase
-                                                }
-                                            />
-                                        </Grid>
+                                    <Grid lg={9} md={9} sm={12} xs={12} item>
+                                        <GraphBox
+                                            logX={true}
+                                            title="نمودار بود"
+                                            traces={traces.amplitude}
+                                        />
+                                    </Grid>
+                                    <Grid lg={9} md={9} sm={12} xs={12} item>
+                                        <GraphBox
+                                            title="فاز"
+                                            logX={true}
+                                            traces={
+                                                phaseInRadianScale
+                                                    ? traces.phase
+                                                    : traces.degreePhase
+                                            }
+                                        />
                                     </Grid>
                                 </SubCard>
                             </Grid>
@@ -313,4 +349,4 @@ const RCFilterFrequencyResponseExample = () => {
     );
 };
 
-export default RCFilterFrequencyResponseExample;
+export default BodePlotExample;

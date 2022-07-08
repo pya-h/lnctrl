@@ -17,6 +17,7 @@ const routes = {
     rc_filter_frequency_response: "rc_filter_freq_res",
     frequency_response: "freq_res",
     bode_plot: 'bode_plot',
+    bode_example: 'bode_example',
     nyquist_plot: 'nyquist_plot',
 
 };

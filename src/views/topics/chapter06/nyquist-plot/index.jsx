@@ -21,7 +21,6 @@ const makeTrace = (x, y, thickness, legend, _3d, mode = "lines") => {
         x,
         y,
         z: _3d ? Array(x.length).fill(0) : null,
-        // color,
         line: {
             // color:'rgb(17, 157, 255)'
             width: thickness,
@@ -64,7 +63,7 @@ const NyquistPlot = () => {
             });
             $systems(capturedSystems);
             $graphCaptured(true);
-            console.log(capturedSystems);
+
         }
     };
 

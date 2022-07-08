@@ -1,5 +1,4 @@
 import { Button, Grid } from "@mui/material";
-import CoordinateSystem from "views/input-boxes/CoordinateSystem";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
 import { gridSpacing } from "store/constant";

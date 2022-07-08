@@ -69,6 +69,7 @@ const NyquistPlotParameters = ({
                         </Button>
                     </Grid>
                 </Grid>
+                
                 <Grid xs={12} sx={{ mt: 1 }} item>
                     <ProgressBar id="fr_progressbar" />
                 </Grid>

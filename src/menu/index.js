@@ -223,6 +223,14 @@ const load = (pathname) => {
                         breadcrumbs: false,
                     },
                     {
+                        id: routes.bode_example,
+                        title: "مثالی از نمودار بود",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.bode_example}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
+                    {
                         id: routes.nyquist_plot,
                         title: "نمودار نایکوئیست",
                         type: "item",

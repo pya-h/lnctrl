@@ -6,19 +6,45 @@ import AnimateButton from "../../../ui-component/extended/AnimateButton";
 import { MathJax } from "better-react-mathjax";
 
 const parameterFormulas = [
-    "$$Num = [$$",
-    "$$Den = [$$",
+    "$$K = $$",
+    "$$\\tau _a = $$",
+    "$$\\tau _b = $$",
+    "$$\\tau _1 = $$",
+    "$$\\tau _2 = $$",
+    "$$\\tau _3 = $$",
+    "$$\\tau _4 = $$",
     "$$\\omega_{min} = $$",
     "$$\\omega_{max} = $$",
     "$$N = $$",
 ];
-const parameterUnits = ["$$]$$", "$$]$$", "$$Hz$$", "$$Hz$$", null];
+const parameterUnits = [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    "$$Hz$$",
+    "$$Hz$$",
+    null,
+];
 
-const BodePlotParameters = ({
-    rawNumerator,
-    rawDenominator,
-    $rawNumerator,
-    $rawDenominator,
+const BodePlotExampleParameters = ({
+    t_a,
+    t_b,
+    K,
+    t_1,
+    t_2,
+    t_3,
+    t_4,
+    $t_a,
+    $t_b,
+    $K,
+    $t_1,
+    $t_2,
+    $t_3,
+    $t_4,
     w_min,
     w_max,
     $w_min,
@@ -41,10 +67,26 @@ const BodePlotParameters = ({
         >
             <Grid spacing={gridSpacing} container direction="row">
                 <SimpleParametersList
-                    parameters={[rawNumerator, rawDenominator, w_min, w_max, N]}
+                    parameters={[
+                        K,
+                        t_a,
+                        t_b,
+                        t_1,
+                        t_2,
+                        t_3,
+                        t_4,
+                        w_min,
+                        w_max,
+                        N,
+                    ]}
                     setters={[
-                        $rawNumerator,
-                        $rawDenominator,
+                        $K,
+                        $t_a,
+                        $t_b,
+                        $t_1,
+                        $t_2,
+                        $t_3,
+                        $t_4,
                         $w_min,
                         $w_max,
                         $N,
@@ -85,7 +127,9 @@ const BodePlotParameters = ({
                 style={{ textAlign: "center" }}
                 container
             >
-                <Grid xs={12} item>تاثیر ضرب اسکالر سیستم در نمودار بود</Grid>
+                <Grid xs={12} item>
+                    تاثیر ضرب اسکالر سیستم در نمودار بود
+                </Grid>
                 <Grid xs={4} item>
                     <Fab
                         size="large"
@@ -124,4 +168,4 @@ const BodePlotParameters = ({
     );
 };
 
-export default BodePlotParameters;
+export default BodePlotExampleParameters;

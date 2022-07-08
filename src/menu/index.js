@@ -231,6 +231,14 @@ const load = (pathname) => {
                         breadcrumbs: false,
                     },
                     {
+                        id: routes.delayed_systems,
+                        title: "سیستم های تاخیردار",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.delayed_systems}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
+                    {
                         id: routes.nyquist_plot,
                         title: "نمودار نایکوئیست",
                         type: "item",

@@ -4,9 +4,9 @@ import FirstOrderTfLecture from "./lecture";
 import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus/index";
 import { useState, useEffect } from "react";
-import GraphMenu from "math/GraphMenu";
+import GraphMenu from "views/plotter/GraphMenu";
 import { Grid } from "@mui/material";
-import GraphBox from "math/GraphBox";
+import GraphBox from "views/plotter/GraphBox";
 import { MathJax } from "better-react-mathjax";
 import FirstOrderTfParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
@@ -317,27 +317,6 @@ const FirstOrderTransferFunctionExamining = () => {
                             <SubCard>
                                 <GraphMenu
                                     capture={capture}
-                                    formulaFileName={
-                                        "Water Tank Level Equations _ " +
-                                        [
-                                            ...systems.map((sys) => sys.legend),
-                                        ].join() +
-                                        ".png"
-                                    }
-                                    graphFileName={
-                                        [
-                                            ...systems.map(
-                                                (sys) =>
-                                                    `${sys.legend}{alpha=${
-                                                        sys.a
-                                                    }_k=${sys.k}_in=${
-                                                        sys.inputSignal
-                                                            ? "ramp"
-                                                            : "step"
-                                                    }}`
-                                            ),
-                                        ].join(", ") + ".png"
-                                    }
                                     reset={() => $systems([])}
                                     update={(changes) => update(changes)}
                                     toggle3DPlot={toggle3DPlot}

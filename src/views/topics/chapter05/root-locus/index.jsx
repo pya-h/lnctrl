@@ -5,7 +5,7 @@ import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "math/calculus";
 import { useState, useEffect } from "react";
 import { Grid } from "@mui/material";
-import GraphBox from "math/GraphBox";
+import GraphBox from "views/plotter/GraphBox";
 import { MathJax } from "better-react-mathjax";
 import RootLocusParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";

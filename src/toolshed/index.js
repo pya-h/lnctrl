@@ -5,7 +5,7 @@ export const mathjaxSpaces = (n) => {
     for (let i = 0; i < n; i++, str += "\\quad");
     return str;
 };
-export const preventBrowserLock = () => {
+export const browserLockBreaker = () => {
     return new Promise((r) => setTimeout(r, 0));
 };
 
@@ -24,7 +24,7 @@ export const makeProgress = async (progressBar, progress, step = 5) => {
     if (progressValue % step === 0) {
         progressBar.style.width = `${progressValue}%`;
         progressBar.innerHTML = `${progressValue}%`;
-        await preventBrowserLock();
+        await browserLockBreaker();
     }
 };
 

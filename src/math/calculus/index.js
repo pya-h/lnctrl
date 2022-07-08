@@ -1,4 +1,4 @@
-import { preventBrowserLock } from "toolshed";
+import { browserLockBreaker, makeProgress } from "toolshed";
 import LTI from "./lti";
 import ODE from "./ode";
 
@@ -25,10 +25,16 @@ const pointify = (f, ti, tf, N = 1000) => {
     const ys = ts.map((t) => f(t));
     return [ts, ys];
 };
-export const complexPointify = async (fcomplex, ti, tf, N = 1000) => {
+export const complexPointify = async (
+    fcomplex,
+    ti,
+    tf,
+    N = 1000,
+    progressBar
+) => {
     // returns (x, y) as for x + jy => for complex returning functions like frequency responses
     let dt = (tf - ti) / N; //time step size
-
+    const plotlyLinkToOriginError = 0.0001;
     while (dt >= 0.01) {
         N *= 10;
         dt = (tf - ti) / N; //time step size
@@ -37,9 +43,22 @@ export const complexPointify = async (fcomplex, ti, tf, N = 1000) => {
         yc = Array(N + 1);
     for (let ts = ti, i = 0; ts <= tf; ts += dt, i++) {
         const ycomplex = fcomplex(ts);
-        if (i % 1000 === 0) await preventBrowserLock();
+        if (N >= 10000 && progressBar) {
+            if (i % 5000 === 0) await makeProgress(progressBar, (100 * i) / N);
+        }
         xc[i] = ycomplex.real();
         yc[i] = ycomplex.imaginary();
+
+        // these below lines are for making plotly remove link to origin lines:
+        if (
+            (yc[i] < plotlyLinkToOriginError &&
+                yc[i] > -plotlyLinkToOriginError) ||
+            (xc[i] < plotlyLinkToOriginError &&
+                xc[i] > -plotlyLinkToOriginError)
+        ) {
+            delete xc[i];
+            delete yc[i];
+        }
     }
 
     // for(let i = 0; i < N + 1; i++){

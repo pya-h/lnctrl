@@ -7,17 +7,7 @@ const Algebrite = require("algebrite");
 export default class Equation {
     static zeroPrecision = round(10 ** -precision.get());
     constructor(exp, symbol = "x") {
-        if (exp instanceof Poly) {
-            this.expression = exp.expression();
-            this.algebra = exp.copy();
-            this.symbol = exp.symbol;
-            this.degree = exp.degree();
-        } else if (exp instanceof Algebra) {
-            this.expression = exp.toString();
-            this.algebra = exp.copy();
-            this.symbol = this.exp.symbol;
-            this.degree = undefined; // unknown
-        } else if (exp instanceof Array) {
+        if (exp instanceof Array) {
             this.algebra = new Poly(exp);
             this.symbol = symbol;
             this.expression = "";
@@ -38,8 +28,31 @@ export default class Equation {
             this.expression = exp;
             this.algebra = null;
             this.symbol = symbol;
+        } else if (exp instanceof Poly) {
+            this.expression = "";
+            this.algebra = exp.copy();
+            this.symbol = this.exp.symbol;
+            const expression = this.getA();
+            const n = expression.length - 1;
+            this.degree = n; // unknown
+            for (
+                let i = 0;
+                i < expression.length;
+                this.expression += Equation.GetAlgebriteTerm(
+                    n - i,
+                    expression[i],
+                    i,
+                    symbol
+                ),
+                    i++
+            );
+        } else if (exp instanceof Algebra) {
+            // THIS IS TEMPORARY
+            this.expression = exp.toString(); // wrong EDIT THIS LATER
+            this.algebra = exp.copy();
+            this.symbol = this.exp.symbol;
+            this.degree = undefined; // unknown
         }
-
         this.symbol = symbol;
     }
 
@@ -47,22 +60,20 @@ export default class Equation {
         if (coef === +coef) {
             // means that coef is not a string
             const intExpI = coef | 0;
+            const symbolicPart =
+                termDegree > 0 ? `*${symbol}^${termDegree}` : "";
             if (intExpI !== coef) {
                 // means that coef is a float number
                 Algebrite.run(`a${index} = ${coef}`);
-                return (
-                    (coef >= 0 ? "+" : "") +
-                    `a${index}*${symbol}^${termDegree}`
-                );
+                return (coef >= 0 ? "+" : "") + `a${index}${symbolicPart}`;
             } else
-                return (
-                    (intExpI >= 0 ? "+" : "") + `${intExpI}${symbol}^${termDegree}`
-                );
+                return (intExpI >= 0 ? "+" : "") + `${intExpI}${symbolicPart}`;
         }
         // here it means coef is a string like '11/2' or '1/4', ...
         return `${coef}${symbol}^${termDegree}`;
     };
-    roots = () => {
+    solve = () => {
+        console.log(this.expression);
         // for factorable equations use: algebrite.roots
         let x = Algebrite.nroots(this.expression)
             .toString()
@@ -96,10 +107,10 @@ export default class Equation {
         });
     };
 
-    AlgebraRoots = () => {
-        // convert roots returning string to
-        if (!this.roots || this.roots.length === 0) this.solve();
-    };
+    // AlgebraRoots = () => {
+    //     // convert roots returning string to
+    //     if (!this.roots || this.roots.length === 0) this.solve();
+    // };
 
     approximate = (
         method = Equation.Methods.newton,

@@ -16,24 +16,25 @@ export default class TransferFunction extends Fraction {
         $2: (k, a, b = a instanceof Complex ? a.conjugate : a) => {
             // k / (s + a)(s + b) => must be converted to => k / (s2 + 2(a+b)s + ab)
             let aplusb =
-                a instanceof Algebra ?
-                a.add(b) :
-                b instanceof Algebra ?
-                b.add(a) :
-                b + a;
+                a instanceof Algebra
+                    ? a.add(b)
+                    : b instanceof Algebra
+                    ? b.add(a)
+                    : b + a;
             let ab =
-                a instanceof Algebra ?
-                a.multiply(b) :
-                b instanceof Algebra ?
-                b.multiply(a) :
-                b * a;
+                a instanceof Algebra
+                    ? a.multiply(b)
+                    : b instanceof Algebra
+                    ? b.multiply(a)
+                    : b * a;
             if (aplusb instanceof Complex && aplusb.isReal())
                 aplusb = aplusb.real();
             if (ab instanceof Complex && ab.isReal()) ab = ab.real();
 
             return new TransferFunction(
-                    [k], [1, aplusb instanceof Algebra ? aplusb.negation() : -aplusb, ab]
-                )
+                [k],
+                [1, aplusb instanceof Algebra ? aplusb.negation() : -aplusb, ab]
+            )
                 .setRoots([], [a, b])
                 .setOrder(2);
         },
@@ -60,7 +61,8 @@ export default class TransferFunction extends Fraction {
                 params.overshoot = Number(params.overshoot);
                 params.t_rise = Number(params.t_rise);
                 const logMp = Math.log10(params.overshoot);
-                params.zeta = -logMp / (Math.PI * Math.PI + logMp * logMp) ** 0.5;
+                params.zeta =
+                    -logMp / (Math.PI * Math.PI + logMp * logMp) ** 0.5;
                 params.w_d = Math.PI / params.t_rise;
                 params.w_n =
                     params.w_d / (1 - params.zeta * params.zeta) ** 0.5;
@@ -104,7 +106,7 @@ export default class TransferFunction extends Fraction {
         }
         if (!this.order)
             this.order =
-            denominator instanceof Array ? denominator.length - 1 : 1;
+                denominator instanceof Array ? denominator.length - 1 : 1;
         if (params.overshoot && params.t_rise) {
             [this.overshoot, this.t_rise] = [params.overshoot, params.t_rise];
         } else {
@@ -115,27 +117,44 @@ export default class TransferFunction extends Fraction {
                 this.t_rise = dampingCharasteristics.t_rise;
             }
         }
-        // Pusher.logToConsole = true;
-
-        // this.pusher = new Pusher("1c51665eca5798a19215", {
-        //     cluster: "ap2"
-        // });
-        // this.channel = this.pusher.subscribe("private-progress");
-        // // this.channel.bind("client-update-progress", function(data){
-        // //     // const {progress} = (data);
-        // //     // setProgress(progress);
-        // //     console.log(data);
-        // // });
     }
     static sortRoots = (rt) =>
         rt.sort((ri, rj) =>
-            ri instanceof Algebra ?
-            ri.substract(rj) :
-            rj instanceof Algebra ?
-            rj.substract(ri) :
-            Math.abs(ri) - Math.abs(rj)
+            ri instanceof Algebra
+                ? ri.substract(rj)
+                : rj instanceof Algebra
+                ? rj.substract(ri)
+                : Math.abs(ri) - Math.abs(rj)
         );
-    roots = () => [this.zeros, this.poles];
+
+    roots = () => {
+        if (
+            (!this.zeros || !this.zeros.length) &&
+            (!this.poles || !this.poles.length)
+        ) {
+            // roots hasnt been decided by user
+            if (
+                this.a instanceof Array &&
+                this.b instanceof Array && // if all elements of numerator and denominator are actual numbers
+                !this.a.find((ai) => ai !== +ai) &&
+                !this.b.find((bi) => bi !== +bi)
+            ) {
+                // CONSTANT COEFFICIENT POLYNOMIAL EQUATIONS
+                this.zeros =
+                    this.a.length > 1
+                        ? new Equation(this.a, this.symbol).solve()
+                        : [];
+                this.poles =
+                    this.b.length > 1
+                        ? new Equation(this.b, this.symbol).solve()
+                        : [];
+            } else {
+                // if the equation isnt a simple constant coefficient polynomial
+            }
+        }
+        return [this.zeros, this.poles];
+    };
+
     setRoots = (zeros, poles) => {
         this.poles = poles.map((pi) =>
             pi instanceof Complex && pi.isReal() ? pi.real() : pi
@@ -147,18 +166,22 @@ export default class TransferFunction extends Fraction {
     };
 
     getDampingSystemCharasteristics = () =>
-        this.w_d ? {
-            t_rise: round(Math.PI / this.w_d),
-            // WHAT IF W_D === 0?
-            overshoot: this.zeta >= -1 && this.zeta <= 1 ?
-                round(
-                    100 *
-                    Math.exp(-(this.zeta * Math.PI) /
-                        (1 - this.zeta ** 2) ** 0.5
-                    )
-                ) : null,
-        } :
-        null;
+        this.w_d
+            ? {
+                  t_rise: round(Math.PI / this.w_d),
+                  // WHAT IF W_D === 0?
+                  overshoot:
+                      this.zeta >= -1 && this.zeta <= 1
+                          ? round(
+                                100 *
+                                    Math.exp(
+                                        -(this.zeta * Math.PI) /
+                                            (1 - this.zeta ** 2) ** 0.5
+                                    )
+                            )
+                          : null,
+              }
+            : null;
 
     getOrder = () => this.order;
     setOrder = (order) => {
@@ -216,19 +239,20 @@ export default class TransferFunction extends Fraction {
                     // return u(t)
                     // DEFINE U(T) IN ALGEBRA
                 }
-                if (n === 1) {} else if (n === 2) {
+                if (n === 1) {
+                } else if (n === 2) {
                     const a = -this.poles[0],
                         b = -this.poles[1];
                     if (nreal === 2) {
                         // if (a > 0 && b > 0) {
                         if (a !== b)
-                        // two independent polesdddd
-                        // two negative independent poles
+                            // two independent polesdddd
+                            // two negative independent poles
                             return new Exp(1 / a, -a)
-                            .add(new Exp(-1 / b, -b))
-                            .multiply(k / (a - b))
-                            .multiply(new Step())
-                            .add(new Step(k / (a * b)));
+                                .add(new Exp(-1 / b, -b))
+                                .multiply(k / (a - b))
+                                .multiply(new Step())
+                                .add(new Step(k / (a * b)));
                         else {
                             const a2 = a * a;
                             return new Exp(-k / a2, -a)
@@ -309,7 +333,7 @@ export default class TransferFunction extends Fraction {
                 }
                 // now one of num.sp or den.sp is zero
                 if (den.sp)
-                // zero on denominator
+                    // zero on denominator
                     return Infinity;
                 // if den.sp == 0 and num.sp != 0
                 return 0;
@@ -333,7 +357,7 @@ export default class TransferFunction extends Fraction {
             }
             // now one of num.sp or den.sp is zero
             if (den.sp)
-            // zero on denominator
+                // zero on denominator
                 return 0;
             // if den.sp == 0 and num.sp != 0
             return Infinity;
@@ -342,7 +366,7 @@ export default class TransferFunction extends Fraction {
             num = this.numerator().$(s0);
             den = this.denominator().$(s0);
             if (den)
-            // simple non zero denominator limit
+                // simple non zero denominator limit
                 return num / den;
             // if den == 0
             // use Hopital or other limit methods
@@ -364,10 +388,11 @@ export default class TransferFunction extends Fraction {
     amplitude = (w) => {
         // w === omega
         const jw = new Complex(0, w);
-        const num = this.numerator().$(jw),
-            den = this.denominator().$(jw);
-
-        return num.magnitude() / den.magnitude();
+        const num = this.numerator(),
+            den = this.denominator();
+        const numAmp = !(num instanceof Exp) ? num.$(jw).magnitude() : Math.abs(num.getA()),
+            denAmp = !(den instanceof Exp) ? den.$(jw).magnitude() : Math.abs(den.getB());
+        return numAmp / denAmp;
         // this is for find exact match of the devide function
         // but im sure num and den are Complex so i directly stated the result
 
@@ -387,25 +412,30 @@ export default class TransferFunction extends Fraction {
 
     phase = (w) => {
         const jw = new Complex(0, w);
-        const num = this.numerator().$(jw),
-            den = this.denominator().$(jw);
-        const numPhase = num.phase(),
-            denPhase = den.phase();
-        const definiteNumPhase = num.phase(),
-            definiteDenPhase = den.phase();
-
-        if (definiteDenPhase === denPhase && definiteNumPhase === numPhase)
-            return num.phase() - den.phase();
+        let num = this.numerator(),
+            den = this.denominator();
+        const numPhase = !(num instanceof Exp)
+                ? num.$(jw).phase()
+                : num.phase(w), //exponentials have their own shortcut for phase()
+            denPhase = !(den instanceof Exp) ? den.$(jw).phase() : den.phase(w);
+        if (+denPhase === denPhase && +numPhase === numPhase)
+            return numPhase - denPhase;
+        // for now Complex.phase() returns numbers or functions:
+        // numPhase or denPhase instanceof Function then:
+        return (
+            (numPhase instanceof Function ? numPhase(w) : numPhase) -
+            (denPhase instanceof Function ? denPhase(w) : denPhase)
+        );
         // else if(numPhase instanceof Algebra)
-        //     return
-        return NaN;
+        //     return numPhase.$(w) - den.phase();
+        // return NaN;
     };
 
     nyquist = (w) => this.$(new Complex(0, w)); // G(jw)
 
-    bode = w => 20 * Math.log10(this.amplitude(w));
+    bode = (w) => 20 * Math.log10(this.amplitude(w));
 
-    rootLocus = async(k_min, k_max, progressBarObject, N = 1000) => {
+    rootLocus = async (k_min, k_max, progressBarObject, N = 1000) => {
         // return root locus values for plotting
 
         // TEMPORARY:
@@ -431,52 +461,60 @@ export default class TransferFunction extends Fraction {
                 delta = Array(nb);
                 const offsetB = nb - na;
                 for (
-                    let i = 0; i < offsetB; delta[i] = b[i],
-                    expression += newTerm(nb - i, delta[i], i, this.symbol),
-                    i++
+                    let i = 0;
+                    i < offsetB;
+                    delta[i] = b[i],
+                        expression += newTerm(nb - i, delta[i], i, this.symbol),
+                        i++
                 );
                 for (
-                    let i = 0, ib = offsetB; i <= na; delta[ib] = b[ib] + k * a[i],
-                    expression += newTerm(
-                        na - i,
-                        delta[ib],
-                        ib,
-                        this.symbol
-                    ),
-                    i++,
-                    ib++
+                    let i = 0, ib = offsetB;
+                    i <= na;
+                    delta[ib] = b[ib] + k * a[i],
+                        expression += newTerm(
+                            na - i,
+                            delta[ib],
+                            ib,
+                            this.symbol
+                        ),
+                        i++,
+                        ib++
                 );
             } else {
                 delta = Array(na);
                 const offsetA = na - nb;
                 for (
-                    let i = 0; i < offsetA; delta[i] = b[i],
-                    expression += newTerm(na - i, delta[i], i, this.symbol),
-                    i++
+                    let i = 0;
+                    i < offsetA;
+                    delta[i] = b[i],
+                        expression += newTerm(na - i, delta[i], i, this.symbol),
+                        i++
                 );
                 for (
-                    let i = 0, ib = offsetA; i <= nb; delta[ib] = b[ib] + k * a[i],
-                    expression += newTerm(
-                        nb - i,
-                        delta[ib],
-                        ib,
-                        this.symbol
-                    ),
-                    i++,
-                    ib++
+                    let i = 0, ib = offsetA;
+                    i <= nb;
+                    delta[ib] = b[ib] + k * a[i],
+                        expression += newTerm(
+                            nb - i,
+                            delta[ib],
+                            ib,
+                            this.symbol
+                        ),
+                        i++,
+                        ib++
                 );
             }
             // const roots = new Equation(new Poly(delta)).roots();
-            const roots = new Equation(expression).roots();
+            const poles = new Equation(expression).solve();
 
             await makeProgress(progressBarObject, k * percentageScale);
 
-            for (let i = 0; i < roots.length; i++) {
-                if (roots[i] instanceof Complex) {
-                    reals.push(roots[i].real());
-                    imaginaries.push(roots[i].imaginary());
+            for (let i = 0; i < poles.length; i++) {
+                if (poles[i] instanceof Complex) {
+                    reals.push(poles[i].real());
+                    imaginaries.push(poles[i].imaginary());
                 } else {
-                    reals.push(roots[i]);
+                    reals.push(poles[i]);
                     imaginaries.push(0);
                 }
             }

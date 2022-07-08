@@ -2,15 +2,15 @@
 import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus/index";
 import { useState, useEffect } from "react";
-import GraphMenu from "math/GraphMenu";
+import GraphMenu from "views/plotter/GraphMenu";
 import { Grid } from "@mui/material";
-import GraphBox from "math/GraphBox";
+import GraphBox from "views/plotter/GraphBox";
 import { MathJax } from "better-react-mathjax";
 import TransferFunction from "math/algebra/functions/transfer";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
 import { makeProgress } from "toolshed";
-import NyquistPlotParameters from './parameters';
+import NyquistPlotParameters from "./parameters";
 const symbols = {
     in: "jw",
     out: "H",
@@ -31,9 +31,12 @@ const makeTrace = (x, y, thickness, legend, _3d, mode = "lines") => {
     };
 };
 
+let currentRawNum = "",
+    currentRawDen = "";
 const NyquistPlot = () => {
     const [rawNumerator, $rawNumerator] = useState("1");
     const [rawDenominator, $rawDenominator] = useState("1 1");
+    const [fraction, $fraction] = useState([[1], [1, 1]]);
     const [H_s, $H_s] = useState(null);
     const [w_min, $w_min] = useState(-10);
     const [w_max, $w_max] = useState(10);
@@ -63,85 +66,102 @@ const NyquistPlot = () => {
             });
             $systems(capturedSystems);
             $graphCaptured(true);
-
         }
     };
 
     useEffect(() => {
         (async () => {
             try {
-                const num = calculus.stringToArray(rawNumerator),
-                den = calculus.stringToArray(rawDenominator);
-                const progressBarElement =
-                document.getElementById("fr_progressbar");
-                const h_s = new TransferFunction(num, den);
-                $H_s(h_s);
-                $response("$$" + h_s.label("H") + "$$");
-                await makeProgress(progressBarElement, 0);
-                setResponseTime('درحال محاسبه');
-                // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
-                // so that the traces will be loaded with new conditions
-                let repeatedSystem = false;
-                const startTime = new Date();
-                const all = systems.map(async (sys, i) => {
-                    const [x, y] = await calculus.complexPointify(
-                        sys.H_s.nyquist,
-                        +w_min,
-                        +w_max,
-                        +N
+                const currentPlotProgressBarElement = document.getElementById(
+                        "nyquist_progressbar"
+                    ),
+                    previousPlotsProgressBarElement = document.getElementById(
+                        "precvious_plots_progressbar"
                     );
-                    if (h_s.equals(sys.H_s)) repeatedSystem = true;
-                    await makeProgress(
-                        progressBarElement,
-                        (100 * i) / (systems.length + 1)
-                    );
-                    return makeTrace(
-                        x,
-                        y,
-                        sys.thickness,
-                        sys.legend,
-                        is3DPlotEnabled,
-                        "lines"
-                    );
-                });
-                if (!repeatedSystem) {
-                    // if current system isnt in traces list => add it temperory to plot
+                const h_s = new TransferFunction(fraction[0], fraction[1]);
+                // if (!h_s.equals(H_s))
+                {
+                    $H_s(h_s);
+                    $response("$$" + h_s.label("H") + "$$");
+                    setResponseTime("درحال رسم");
+                    // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
+                    // so that the traces will be loaded with new conditions
+                    let repeatedSystem = false;
+                    const startTime = new Date();
+                    const all = Array(systems.length);
+                    for (let i = 0; i < systems.length; i++) {
+                        await makeProgress(
+                            previousPlotsProgressBarElement,
+                            (100 * i) / systems.length
+                        );
+                        const [x, y] = await calculus.complexPointify(
+                            systems[i].H_s.nyquist,
+                            +w_min,
+                            +w_max,
+                            +N
+                        );
+                        if (h_s.equals(systems[i].H_s)) repeatedSystem = true;
+                        all[i] = makeTrace(
+                            x,
+                            y,
+                            systems[i].thickness,
+                            systems[i].legend,
+                            is3DPlotEnabled,
+                            "lines"
+                        );
+                    }
+                    if (all.length)
+                        await makeProgress(
+                            previousPlotsProgressBarElement,
+                            100
+                        );
 
-                    let [x, y] = await calculus.complexPointify(
-                        h_s.nyquist,
-                        +w_min,
-                        +w_max,
-                        +N
-                    );
-                    const newsys = makeTrace(
-                        x,
-                        y,
-                        thickness,
-                        `${symbols.out}(${symbols.in})`,
-                        is3DPlotEnabled,
-                        "lines"
-                    );
-                    all.push(newsys);
-                    const endTime = new Date();
-                    setResponseTime(((+endTime - +startTime) / 1000) + " ثانیه");
+                    if (!repeatedSystem) {
+                        // if current system isnt in traces list => add it temperory to plot
+
+                        let [x, y] = await calculus.complexPointify(
+                            h_s.nyquist,
+                            +w_min,
+                            +w_max,
+                            +N,
+                            currentPlotProgressBarElement
+                        );
+                        const newsys = makeTrace(
+                            x,
+                            y,
+                            thickness,
+                            `${symbols.out}(${symbols.in})`,
+                            is3DPlotEnabled,
+                            "lines"
+                        );
+                        all.push(newsys);
+                        const endTime = new Date();
+                        setResponseTime(
+                            (+endTime - +startTime) / 1000 + " ثانیه"
+                        );
+                        await makeProgress(currentPlotProgressBarElement, 100);
+                    }
+
+                    $traces(all);
                 }
-                await makeProgress(progressBarElement, 100);
-
-                $traces(all);
             } catch (ex) {
                 console.log(ex);
             }
         })();
-    }, [
-        rawNumerator,
-        rawDenominator,
-        w_min,
-        w_max,
-        is3DPlotEnabled,
-        thickness,
-        systems,
-        N,
-    ]);
+    }, [fraction, w_min, w_max, is3DPlotEnabled, thickness, systems, N]);
+
+    useEffect(() => {
+        if (
+            rawNumerator.trim() !== currentRawNum ||
+            rawDenominator.trim() !== currentRawDen
+        ) {
+            const num = calculus.stringToArray(rawNumerator),
+                den = calculus.stringToArray(rawDenominator);
+            currentRawDen = rawDenominator;
+            currentRawNum = rawNumerator;
+            $fraction([num, den]);
+        }
+    }, [rawNumerator, rawDenominator]);
 
     useEffect(() => {
         $graphCaptured(false);
@@ -154,10 +174,7 @@ const NyquistPlot = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">
-                    {" "}
-                    پاسخ فرکانسی سیستم ها
-                </h2>
+                <h2 className="chapter-section-title">نمودار نایکوئیست</h2>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={1}>
@@ -239,27 +256,6 @@ const NyquistPlot = () => {
                             <SubCard>
                                 <GraphMenu
                                     capture={capture}
-                                    formulaFileName={
-                                        "Water Tank Level Equations _ " +
-                                        [
-                                            ...systems.map((sys) => sys.legend),
-                                        ].join() +
-                                        ".png"
-                                    }
-                                    graphFileName={
-                                        [
-                                            ...systems.map(
-                                                (sys) =>
-                                                    `${sys.legend}{alpha=${
-                                                        sys.a
-                                                    }_k=${sys.k}_in=${
-                                                        sys.inputSignal
-                                                            ? "ramp"
-                                                            : "step"
-                                                    }}`
-                                            ),
-                                        ].join(", ") + ".png"
-                                    }
                                     reset={() => $systems([])}
                                     update={(changes) => update(changes)}
                                     toggle3DPlot={toggle3DPlot}
@@ -277,7 +273,6 @@ const NyquistPlot = () => {
                                 </SubCard>
                             </Grid>
                         </Grid>
-                        
                     </Grid>
                 </Grid>
             </Grid>

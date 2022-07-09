@@ -153,7 +153,6 @@ const FrequencyResponse = () => {
         <MainCard>
             <Grid item spacing={gridSpacing}>
                 <h2 className="chapter-section-title">
-                    {" "}
                     پاسخ فرکانسی سیستم ها
                 </h2>
             </Grid>

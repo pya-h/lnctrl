@@ -16,9 +16,10 @@ const symbols = {
     in: "jw",
     out: "H",
 };
-
+let currentT_d = "",
+    currentRawDen = "";
 const DelayedSystemsExample = () => {
-    const [T_d, $T_d] = useState(1);
+    const [T_d, $T_d] = useState('1');
     const [rawDenominator, $rawDenominator] = useState("1 1");
     const [H_s, $H_s] = useState(null);
     const [NoDelayH_s, $NoDelayH_s] = useState(null);
@@ -36,20 +37,7 @@ const DelayedSystemsExample = () => {
     const [phaseInRadianScale, setPhaseInRadianScale] = useState(true); // for degree => 180 / PI, for radian scale => 1.0
     const [N, $N] = useState(1000);
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
-    const makeTrace = (x, y, thickness, legend, _3d, mode = "lines") => {
-        return {
-            x,
-            y,
-            z: _3d ? Array(x.length).fill(0) : null,
-            line: {
-                // color:'rgb(17, 157, 255)'
-                width: thickness,
-            },
-            type: "scatter" + (_3d ? "3d" : ""),
-            mode,
-            name: `$$${legend}$$`,
-        };
-    };
+    
     useEffect(() => {
         // plot
         if (H_s) {
@@ -110,7 +98,7 @@ const DelayedSystemsExample = () => {
                             nx[j] = complexForm.real();
                             ny[j] = complexForm.imaginary();
                         }
-                        all.nyquist[i] = makeTrace(
+                        all.nyquist[i] = calculus.arrayToTrace(
                             nx,
                             ny,
                             thickness,
@@ -118,7 +106,6 @@ const DelayedSystemsExample = () => {
                             is3DPlotEnabled,
                             +N
                         );
-                        console.log(all.nyquist);
                         res.push({
                             color: systems[i].color,
                             text:
@@ -138,11 +125,18 @@ const DelayedSystemsExample = () => {
 
     useEffect(() => {
         try {
-            const num = new Exp(1, -T_d, "s"),
-                den = calculus.stringToArray(rawDenominator);
-            const h_s = new TransferFunction(num, den);
-            $H_s(h_s);
-            $NoDelayH_s(new TransferFunction(1, den));
+            if (
+                (T_d && +T_d.trim() !== currentT_d) ||
+                rawDenominator.trim() !== currentRawDen
+            ) {
+                const num = new Exp(1, -T_d, "s"),
+                    den = calculus.stringToArray(rawDenominator);
+                const h_s = new TransferFunction(num, den);
+                $H_s(h_s);
+                $NoDelayH_s(new TransferFunction(1, den));
+                currentRawDen = rawDenominator;
+                currentT_d = +T_d;
+            }
         } catch (ex) {
             console.log(ex);
         }

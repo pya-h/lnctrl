@@ -6,89 +6,37 @@ import GraphMenu from "views/plotter/GraphMenu";
 import { Grid } from "@mui/material";
 import GraphBox from "views/plotter/GraphBox";
 import { MathJax } from "better-react-mathjax";
+import NicolesChartParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
-import { makeProgress } from "toolshed";
-import NyquistPlotParameters from "./parameters";
+import { browserLockBreaker } from "toolshed";
+import NicolesChartLecture from "./lecture";
 const symbols = {
     in: "jw",
     out: "H",
 };
-
-const observeSystem = (numerator, denominator) => {
-    let degreeOfZeroPole = 0,
-        degreeOfZeroZero = 0;
-    for (
-        ;
-        !denominator[denominator.length - 1 - degreeOfZeroPole];
-        degreeOfZeroPole++
-    );
-    for (
-        ;
-        !numerator[numerator.length - 1 - degreeOfZeroZero];
-        degreeOfZeroZero++
-    );
-    const sensitiveSystem =
-        !denominator[denominator.length - 1] &&
-        degreeOfZeroZero < degreeOfZeroPole;
-        // degreeOfZeroPole % 2;
-        const systemIsPainInTheA =
-        sensitiveSystem &&
-        denominator.length > numerator.length + 1 &&
-        denominator.length > 2 &&
-        denominator.length - degreeOfZeroPole > 1; //numerator.length < denominator.length;
-
-    return { sensitiveSystem, systemIsPainInTheA };
-};
-
-const revisePlot = (numerator, denominator, x, y) => {
-    let systemIsPainInTheA = true;
-    if (denominator.length === 3 && denominator[0] && denominator[1]) {
-        // just have a simple zero pole with degree 1
-        let max = 0;
-        const nearInfinityPole = -Math.abs(denominator[1]) / denominator[0];
-
-        const absP = Math.abs(nearInfinityPole);
-        for (let i = 0; i < x.length; i++) {
-            if (Math.abs(x[i]) + 0.001 >= absP || x[i] === 0) {
-                delete x[i];
-                delete y[i];
-            } else {
-                const absy = Math.abs(y[i]);
-                if (absy > max) max = absy;
-            }
-        }
-        x.push(nearInfinityPole - 0.001);
-        y.push(max * 10);
-        x.push(nearInfinityPole - 0.001);
-        y.push(-max * 10);
-
-        systemIsPainInTheA = false;
-    }
-    return { x, y, systemIsPainInTheA };
-};
 let currentRawNum = "",
     currentRawDen = "";
-const NyquistPlot = () => {
+const NicolesChart = () => {
     const [rawNumerator, $rawNumerator] = useState("1");
     const [rawDenominator, $rawDenominator] = useState("1 1");
-    const [fraction, $fraction] = useState([[1], [1, 1]]);
     const [H_s, $H_s] = useState(null);
-    const [w_min, $w_min] = useState(-10);
+    const [w_min, $w_min] = useState(0);
     const [w_max, $w_max] = useState(10);
     // gradiant of u(t) is 0 and unit ramp is one
     const [systems, $systems] = useState([]);
-    const [traces, $traces] = useState([]);
+    const [traces, $traces] = useState({
+        rad: [],
+        deg: [],
+    });
     const [response, $response] = useState(null);
     const [thickness, $thickness] = useState(1.0); // graph line thickness
     const [isGraphCatured, $graphCaptured] = useState(false);
     const [is3DPlotEnabled, $3DPlotEnabled] = useState(false);
+    const [phaseInRadianScale, setPhaseInRadianScale] = useState(true); // for degree => 180 / PI, for radian scale => 1.0
     const [N, $N] = useState(1000);
-    const [responseTime, setResponseTime] = useState(null);
-    const [method, changeMethod] = useState("polar");
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
-
     const capture = () => {
         const capturedSystems = [...systems];
 
@@ -106,123 +54,122 @@ const NyquistPlot = () => {
     };
 
     useEffect(() => {
-        (async () => {
-            try {
-                const currentPlotProgressBarElement = document.getElementById(
-                        "nyquist_progressbar"
-                    ),
-                    previousPlotsProgressBarElement = document.getElementById(
-                        "precvious_plots_progressbar"
-                    );
-                const [numerator, denominator] = fraction;
-
-                const h_s = new TransferFunction(numerator, denominator);
-                // if (!h_s.equals(H_s))
-                {
-                    $H_s(h_s);
-                    $response("$$" + h_s.label("H") + "$$");
-                    setResponseTime("درحال رسم");
+        // plot
+        if (H_s) {
+            (async () => {
+                try {
+                    $response("$$" + H_s.label("H") + "$$");
                     // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
                     // so that the traces will be loaded with new conditions
                     let repeatedSystem = false;
-                    const startTime = new Date();
-                    const all = Array(systems.length);
+                    const all = {
+                        deg: Array(systems.length),
+                        rad: Array(systems.length),
+                    };
+
                     for (let i = 0; i < systems.length; i++) {
-                        const num = systems[i].H_s.getA(),
-                            den = systems[i].H_s.getB();
-                        let { sensitiveSystem, systemIsPainInTheA } =
-                            observeSystem(num, den);
-                        await makeProgress(
-                            previousPlotsProgressBarElement,
-                            (100 * i) / systems.length
-                        );
-                        let [x, y] = await calculus.complexPointify(
-                            w => systems[i].H_s.nyquist(w, method),
+                        if (i % 5 === 0) await browserLockBreaker();
+                        const [, phase] = calculus.pointify(
+                            systems[i].H_s.phase,
                             +w_min,
                             +w_max,
-                            method === "complex" && !sensitiveSystem,
                             +N
                         );
-                        // if (systemIsPainInTheA)
-                        //     ({ x, y, systemIsPainInTheA } = revisePlot(
-                        //         num,
-                        //         den,
-                        //         x,
-                        //         y
-                        //     ));
-                        if (h_s.equals(systems[i].H_s)) repeatedSystem = true;
-                        all[i] = calculus.arrayToTrace(
-                            x,
-                            y,
-                            systems[i].thickness,
-                            systems[i].legend,
-                            is3DPlotEnabled,
-                            method === 'polar' || !systemIsPainInTheA ? "lines" : "markers"
-                        );
-                    }
-                    if (all.length)
-                        await makeProgress(
-                            previousPlotsProgressBarElement,
-                            100
-                        );
-
-                    if (!repeatedSystem) {
-                        await makeProgress(currentPlotProgressBarElement, 0)
-                        // if current system isnt in traces list => add it temperory to plot
-                        let { sensitiveSystem, systemIsPainInTheA } =
-                            observeSystem(numerator, denominator);
-                        let [x, y] = await calculus.complexPointify(
-                            (w) => h_s.nyquist(w, method),
+                        const [, bodeAmp] = calculus.pointify(
+                            systems[i].H_s.bode,
                             +w_min,
                             +w_max,
-                            method === 'complex' && !sensitiveSystem,
-                            +N,
-                            currentPlotProgressBarElement
+                            +N
+                            );
+                            
+                        all.rad[i] = calculus.arrayToTrace(
+                            phase,
+                            bodeAmp,
+                            systems[i].thickness,
+                            systems[i].legend,
+                            is3DPlotEnabled
                         );
-                        // if (systemIsPainInTheA)
-                        //     ({ x, y, systemIsPainInTheA } = revisePlot(
-                        //         numerator,
-                        //         denominator,
-                        //         x,
-                        //         y
-                        //     ));
-                        const newsys = calculus.arrayToTrace(
-                            x,
-                            y,
-                            thickness,
-                            `${symbols.out}(${symbols.in})`,
-                            is3DPlotEnabled,
-                            method === 'polar' || !systemIsPainInTheA ? "lines" : "markers"
+                        all.deg[i] = calculus.arrayToTrace(
+                            phase.map((phi) => phi * calculus.RadianToDegree),
+                            bodeAmp,
+                            systems[i].thickness,
+                            systems[i].legend,
+                            is3DPlotEnabled
                         );
-                        all.push(newsys);
-                        const endTime = new Date();
-                        setResponseTime(
-                            (+endTime - +startTime) / 1000 + " ثانیه"
-                        );
-                        await makeProgress(currentPlotProgressBarElement, 100);
+                        if (H_s.equals(systems[i].H_s)) repeatedSystem = true;
                     }
 
-                    $traces(all);
-                }
-            } catch (ex) {
-                console.log(ex);
-            }
-        })();
-    }, [fraction, w_min, w_max, method, is3DPlotEnabled, thickness, systems, N]);
+                    if (!repeatedSystem) {
+                        const [, phase] = calculus.pointify(
+                            H_s.phase,
+                            +w_min,
+                            +w_max,
+                            +N
+                        );
 
+                        const [, bodeAmp] = calculus.pointify(
+                            H_s.bode,
+                            +w_min,
+                            +w_max,
+                            +N
+                        );
+
+                        all.rad.push(
+                            calculus.arrayToTrace(
+                                phase,
+                                bodeAmp,
+                                thickness,
+                                `${symbols.out}(${symbols.in})`,
+                                is3DPlotEnabled
+                            )
+                        );
+                        all.deg.push(
+                            calculus.arrayToTrace(
+                                phase.map(
+                                    (phi) => phi * calculus.RadianToDegree
+                                ),
+                                bodeAmp,
+                                thickness,
+                                `${symbols.out}(${symbols.in})`,
+                                is3DPlotEnabled
+                            )
+                        );
+                    }
+                    $traces(all);
+                } catch (err) {
+                    console.log(err);
+                }
+            })();
+        }
+    }, [H_s, systems, w_min, w_max, is3DPlotEnabled, thickness, N]);
+
+    const multiplyPlotBy = (value) => {
+        const currentLength = systems.length;
+        const multipliedSystem = H_s.multiply(value);
+        const newSystemList = systems.filter(
+            (sys) => !sys.H_s.equals(multipliedSystem)
+        );
+        if (newSystemList.length === currentLength) capture();
+        else $systems(newSystemList);
+        $H_s(multipliedSystem);
+    };
     useEffect(() => {
-        if (
-            rawNumerator.trim() !== currentRawNum ||
-            rawDenominator.trim() !== currentRawDen
-        ) {
-            const num = calculus.stringToArray(rawNumerator),
-                den = calculus.stringToArray(rawDenominator);
-            currentRawDen = rawDenominator;
-            currentRawNum = rawNumerator;
-            $fraction([num, den]);
+        try {
+            if (
+                rawNumerator.trim() !== currentRawNum ||
+                rawDenominator.trim() !== currentRawDen
+            ) {
+                const num = calculus.stringToArray(rawNumerator),
+                    den = calculus.stringToArray(rawDenominator);
+                const h_s = new TransferFunction(num, den);
+                currentRawNum = rawNumerator;
+                currentRawDen = rawDenominator;
+                $H_s(h_s);
+            }
+        } catch (ex) {
+            console.log(ex);
         }
     }, [rawNumerator, rawDenominator]);
-
     useEffect(() => {
         $graphCaptured(false);
     }, [rawNumerator, rawDenominator]);
@@ -234,10 +181,21 @@ const NyquistPlot = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">نمودار نایکوئیست</h2>
+                <h2 className="chapter-section-title">نمودار بود</h2>
             </Grid>
             <Grid item spacing={gridSpacing}>
-                <Grid container direction="column" spacing={1}>
+                <Grid container direction="column" spacing={gridSpacing}>
+                    <Grid
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            margin: "auto",
+                            direction: "ltr",
+                        }}
+                        item
+                    >
+                        <NicolesChartLecture />
+                    </Grid>
                     <Grid sx={{ margin: "auto", width: "100%" }} item>
                         <SubCard sx={{ direction: "ltr" }}>
                             <Grid
@@ -293,7 +251,7 @@ const NyquistPlot = () => {
                             container
                         >
                             <Grid xs={12}>
-                                <NyquistPlotParameters
+                                <NicolesChartParameters
                                     rawNumerator={rawNumerator}
                                     rawDenominator={rawDenominator}
                                     $rawNumerator={$rawNumerator}
@@ -302,11 +260,13 @@ const NyquistPlot = () => {
                                     w_max={w_max}
                                     $w_min={$w_min}
                                     $w_max={$w_max}
-                                    responseTime={responseTime}
+                                    phaseInRadianScale={phaseInRadianScale}
+                                    setPhaseInRadianScale={
+                                        setPhaseInRadianScale
+                                    }
                                     N={N}
                                     $N={$N}
-                                    method={method}
-                                    changeMethod={changeMethod}
+                                    multiplier={multiplyPlotBy}
                                 />
                             </Grid>
                         </Grid>
@@ -322,10 +282,14 @@ const NyquistPlot = () => {
                             <hr />
                             <Grid lg={12} md={12} sm={12} xs={12} item>
                                 <SubCard>
-                                    <Grid lg={12} md={12} sm={12} xs={12} item>
+                                    <Grid lg={9} md={9} sm={12} xs={12} item>
                                         <GraphBox
-                                            title="پاسخ فرکانسی"
-                                            traces={traces}
+                                            title="نمودار نیکولز"
+                                            traces={
+                                                phaseInRadianScale
+                                                    ? traces.rad
+                                                    : traces.deg
+                                            }
                                         />
                                     </Grid>
                                 </SubCard>
@@ -338,4 +302,4 @@ const NyquistPlot = () => {
     );
 };
 
-export default NyquistPlot;
+export default NicolesChart;

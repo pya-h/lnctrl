@@ -11,6 +11,8 @@ const BodePlot = Loadable(lazy(() => import('views/topics/chapter06/bode-plot'))
 const BodePlotExample = Loadable(lazy(() => import('views/topics/chapter06/bode-example')));
 const DelayedSystemsExample = Loadable(lazy(() => import('views/topics/chapter06/delayed-systems-example')));
 const NyquistPlot = Loadable(lazy(() => import('views/topics/chapter06/nyquist-plot')));
+const NicolesChart = Loadable(lazy(() => import('views/topics/chapter06/nicoles-chart')));
+
 // ==============================|| MAIN ROUTING ||============================== //
 const CH06Routes = {
     path:  `${routes.root}${routes.chapter}06`,
@@ -39,6 +41,10 @@ const CH06Routes = {
         {
             path:  `${routes.root}${routes.chapter}06/${routes.nyquist_plot}`,
             element: <NyquistPlot />
+        },
+        {
+            path:  `${routes.root}${routes.chapter}06/${routes.nicoles_chart}`,
+            element: <NicolesChart />
         },
     ]
 };

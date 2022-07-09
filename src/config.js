@@ -20,7 +20,7 @@ const routes = {
     bode_example: 'bode_example',
     delayed_systems: 'delayed_systems',
     nyquist_plot: 'nyquist_plot',
-
+    nicoles_chart: 'nicoles_chart',
 };
 
 const error_codes = {

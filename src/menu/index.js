@@ -246,6 +246,14 @@ const load = (pathname) => {
                         icon: icons.IconBike,
                         breadcrumbs: false,
                     },
+                    {
+                        id: routes.nicoles_chart,
+                        title: "نمودار اندازه و فاز نیکولز",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.nicoles_chart}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
                 ],
             };
     return {

@@ -10,12 +10,13 @@ import BodePlotParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
-import { browserLockBreaker } from 'toolshed';
+import { browserLockBreaker } from "toolshed";
 const symbols = {
     in: "jw",
     out: "H",
 };
-
+let currentRawNum = "",
+    currentRawDen = "";
 const BodePlot = () => {
     const [rawNumerator, $rawNumerator] = useState("1");
     const [rawDenominator, $rawDenominator] = useState("1 1");
@@ -68,7 +69,7 @@ const BodePlot = () => {
                     };
 
                     for (let i = 0; i < systems.length; i++) {
-                        if(i % 5 === 0) await browserLockBreaker();
+                        if (i % 5 === 0) await browserLockBreaker();
                         all.amplitude[i] = calculus.systemToTrace(
                             systems[i].H_s.bode,
                             +w_min,
@@ -141,10 +142,17 @@ const BodePlot = () => {
     };
     useEffect(() => {
         try {
-            const num = calculus.stringToArray(rawNumerator),
-                den = calculus.stringToArray(rawDenominator);
-            const h_s = new TransferFunction(num, den);
-            $H_s(h_s);
+            if (
+                rawNumerator.trim() !== currentRawNum ||
+                rawDenominator.trim() !== currentRawDen
+            ) {
+                const num = calculus.stringToArray(rawNumerator),
+                    den = calculus.stringToArray(rawDenominator);
+                const h_s = new TransferFunction(num, den);
+                currentRawNum = rawNumerator;
+                currentRawDen = rawDenominator;
+                $H_s(h_s);
+            }
         } catch (ex) {
             console.log(ex);
         }

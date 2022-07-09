@@ -1,4 +1,4 @@
-import { browserLockBreaker, makeProgress } from "toolshed";
+import { makeProgress } from "toolshed";
 import LTI from "./lti";
 import ODE from "./ode";
 
@@ -86,6 +86,21 @@ export const systemToTrace = (
         y,
         z: _3d ? Array(x.length).fill(0) : null,
         // color,
+        line: {
+            // color:'rgb(17, 157, 255)'
+            width: thickness,
+        },
+        type: "scatter" + (_3d ? "3d" : ""),
+        mode,
+        name: `$$${legend}$$`,
+    };
+};
+
+export const arrayToTrace = (x, y, thickness, legend, _3d, mode = "lines") => {
+    return {
+        x,
+        y,
+        z: _3d ? Array(x.length).fill(0) : null,
         line: {
             // color:'rgb(17, 157, 255)'
             width: thickness,
@@ -200,6 +215,7 @@ const calculus = {
     dfloor,
     isDigit,
     stringToArray,
+    arrayToTrace,
     evaluate,
     systemToTrace,
     RadianToDegree,

@@ -149,7 +149,7 @@ const DelayedSystemsExample = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">Bode plot</h2>
+                <h2 className="chapter-section-title">Time-delay systems</h2>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={gridSpacing}>

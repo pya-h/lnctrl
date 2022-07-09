@@ -36,7 +36,20 @@ const DelayedSystemsExample = () => {
     const [phaseInRadianScale, setPhaseInRadianScale] = useState(true); // for degree => 180 / PI, for radian scale => 1.0
     const [N, $N] = useState(1000);
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
-
+    const makeTrace = (x, y, thickness, legend, _3d, mode = "lines") => {
+        return {
+            x,
+            y,
+            z: _3d ? Array(x.length).fill(0) : null,
+            line: {
+                // color:'rgb(17, 157, 255)'
+                width: thickness,
+            },
+            type: "scatter" + (_3d ? "3d" : ""),
+            mode,
+            name: `$$${legend}$$`,
+        };
+    };
     useEffect(() => {
         // plot
         if (H_s) {
@@ -62,6 +75,7 @@ const DelayedSystemsExample = () => {
                         phase: Array(systems.length),
                         degreePhase: Array(systems.length),
                         amplitude: Array(systems.length),
+                        nyquist: Array(systems.length),
                     };
                     for (let i = 0; i < systems.length; i++) {
                         all.amplitude[i] = calculus.systemToTrace(
@@ -86,11 +100,30 @@ const DelayedSystemsExample = () => {
                         all.degreePhase[i].y = all.degreePhase[i].y.map(
                             (yi) => yi * calculus.RadianToDegree
                         );
+                        const nx = Array(all.amplitude[i].y.length),
+                            ny = Array(all.amplitude[i].y.length);
+                        for (let j = 0; j < nx.length; j++) {
+                            const complexForm = TransferFunction.PolarToComplex(
+                                all.amplitude[i].y[j],
+                                all.phase[i].y[j]
+                            );
+                            nx[j] = complexForm.real();
+                            ny[j] = complexForm.imaginary();
+                        }
+                        all.nyquist[i] = makeTrace(
+                            nx,
+                            ny,
+                            thickness,
+                            systems[i].legend,
+                            is3DPlotEnabled,
+                            +N
+                        );
+                        console.log(all.nyquist);
                         res.push({
                             color: systems[i].color,
                             text:
                                 "$$" +
-                                systems[i].H.label("H", systems[i].legend) +
+                                systems[i].H.label("H", i === 1 ? td : 0) +
                                 "$$",
                         });
                     }
@@ -227,6 +260,14 @@ const DelayedSystemsExample = () => {
                                                     ? traces.phase
                                                     : traces.degreePhase
                                             }
+                                        />
+                                    </Grid>
+                                </SubCard>
+                                <SubCard>
+                                    <Grid lg={9} md={9} sm={12} xs={12} item>
+                                        <GraphBox
+                                            title="نمودار نایکوپیست"
+                                            traces={traces.nyquist}
                                         />
                                     </Grid>
                                 </SubCard>

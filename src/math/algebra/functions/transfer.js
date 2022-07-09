@@ -152,7 +152,10 @@ export default class TransferFunction extends Fraction {
                 // if the equation isnt a simple constant coefficient polynomial
             }
         }
-        return [this.zeros, this.poles];
+        return [
+            this.zeros.map((zi) => (zi instanceof Algebra ? zi.copy() : zi)),
+            this.poles.map((pi) => (pi instanceof Algebra ? pi.copy() : pi)),
+        ];
     };
 
     setRoots = (zeros, poles) => {
@@ -390,8 +393,12 @@ export default class TransferFunction extends Fraction {
         const jw = new Complex(0, w);
         const num = this.numerator(),
             den = this.denominator();
-        const numAmp = !(num instanceof Exp) ? num.$(jw).magnitude() : Math.abs(num.getA()),
-            denAmp = !(den instanceof Exp) ? den.$(jw).magnitude() : Math.abs(den.getB());
+        const numAmp = !(num instanceof Exp)
+                ? num.$(jw).magnitude()
+                : Math.abs(num.getA()),
+            denAmp = !(den instanceof Exp)
+                ? den.$(jw).magnitude()
+                : Math.abs(den.getB());
         return numAmp / denAmp;
         // this is for find exact match of the devide function
         // but im sure num and den are Complex so i directly stated the result
@@ -431,7 +438,12 @@ export default class TransferFunction extends Fraction {
         // return NaN;
     };
 
-    nyquist = (w) => this.$(new Complex(0, w)); // G(jw)
+    static PolarToComplex = (A, phi) =>
+        new Complex(A * Math.cos(phi), A * Math.sin(phi));
+    nyquist = (w, method = "complex") =>
+        method === "complex"
+            ? this.$(new Complex(0, w))
+            : TransferFunction.PolarToComplex(this.amplitude(w), this.phase(w));
 
     bode = (w) => 20 * Math.log10(this.amplitude(w));
 

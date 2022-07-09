@@ -29,18 +29,21 @@ export const complexPointify = async (
     fcomplex,
     ti,
     tf,
-    N = 1000,
+    requiresRectifying,
+    N,
     progressBar
 ) => {
     // returns (x, y) as for x + jy => for complex returning functions like frequency responses
     let dt = (tf - ti) / N; //time step size
     const plotlyLinkToOriginError = 0.0001;
-    while (dt >= 0.01) {
+    while (dt >= 1) {
         N *= 10;
         dt = (tf - ti) / N; //time step size
     }
     const xc = Array(N + 1),
         yc = Array(N + 1);
+    // let previousRamp = 1;
+    // let roadToInfinityPoint = -1;
     for (let ts = ti, i = 0; ts <= tf; ts += dt, i++) {
         const ycomplex = fcomplex(ts);
         if (N >= 10000 && progressBar) {
@@ -50,28 +53,19 @@ export const complexPointify = async (
         yc[i] = ycomplex.imaginary();
 
         // these below lines are for making plotly remove link to origin lines:
-        if (
-            (yc[i] < plotlyLinkToOriginError &&
-                yc[i] > -plotlyLinkToOriginError) ||
-            (xc[i] < plotlyLinkToOriginError &&
-                xc[i] > -plotlyLinkToOriginError)
-        ) {
-            delete xc[i];
-            delete yc[i];
-        }
+        if (requiresRectifying) {
+            if (
+                (yc[i] < plotlyLinkToOriginError &&
+                    yc[i] > -plotlyLinkToOriginError) ||
+                (xc[i] < plotlyLinkToOriginError &&
+                    xc[i] > -plotlyLinkToOriginError)
+            ) {
+                delete xc[i];
+                delete yc[i];
+            }
+        } 
+       
     }
-
-    // for(let i = 0; i < N + 1; i++){
-    //     for(let j = i + 1; j < N + 1; j++){
-    //         if(xc[j] < xc[i]){
-    //             const tx = xc[j], ty = yc[j];
-    //             xc[j] = xc[i];
-    //             yc[j] = yc[i];
-    //             xc[i] = tx;
-    //             yc[i] = ty;
-    //         }
-    //     }
-    // }
     return [xc, yc];
 };
 

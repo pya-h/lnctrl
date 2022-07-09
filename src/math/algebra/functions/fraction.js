@@ -1,5 +1,6 @@
 import Algebra from "math/algebra";
 import Poly from "./poly";
+import Complex from '../complex';
 
 export default class Fraction extends Algebra {
     constructor(num, den = [1], symbol = "t", params = {}) {
@@ -52,6 +53,7 @@ export default class Fraction extends Algebra {
     valueAt = (t) => {
         const num = this.numerator().$(t);
         const den = this.denominator().$(t);
+       
         if(num instanceof Algebra)
             return num.devide(den);
         if(den instanceof Algebra)
@@ -59,7 +61,7 @@ export default class Fraction extends Algebra {
         if(den)
             return num / den;
         // THROW zero denominator ERROR 
-        return NaN;
+        return undefined;
     }
 
 }

@@ -31,6 +31,58 @@ const makeTrace = (x, y, thickness, legend, _3d, mode = "lines") => {
     };
 };
 
+const observeSystem = (numerator, denominator) => {
+    let degreeOfZeroPole = 0,
+        degreeOfZeroZero = 0;
+    for (
+        ;
+        !denominator[denominator.length - 1 - degreeOfZeroPole];
+        degreeOfZeroPole++
+    );
+    for (
+        ;
+        !numerator[numerator.length - 1 - degreeOfZeroZero];
+        degreeOfZeroZero++
+    );
+    const sensitiveSystem =
+        !denominator[denominator.length - 1] &&
+        degreeOfZeroZero < degreeOfZeroPole &&
+        degreeOfZeroPole % 2 &&
+        denominator.length - degreeOfZeroPole > 1; //numerator.length < denominator.length;
+    const systemIsPainInTheA =
+        sensitiveSystem &&
+        denominator.length > numerator.length + 1 &&
+        denominator.length > 2 ;
+
+    return { sensitiveSystem, systemIsPainInTheA };
+};
+
+const revisePlot = (numerator, denominator, x, y) => {
+    let systemIsPainInTheA = true;
+    if (denominator.length === 3 && denominator[0] && denominator[1]) {
+        // just have a simple zero pole with degree 1
+        let max = 0;
+        const nearInfinityPole = -Math.abs(denominator[1]) / denominator[0];
+
+        const absP = Math.abs(nearInfinityPole);
+        for (let i = 0; i < x.length; i++) {
+            if (Math.abs(x[i]) + 0.001 >= absP || x[i] === 0) {
+                delete x[i];
+                delete y[i];
+            } else {
+                const absy = Math.abs(y[i]);
+                if (absy > max) max = absy;
+            }
+        }
+        x.push(nearInfinityPole - 0.001);
+        y.push(max * 10);
+        x.push(nearInfinityPole - 0.001);
+        y.push(-max * 10);
+
+        systemIsPainInTheA = false;
+    }
+    return { x, y, systemIsPainInTheA };
+};
 let currentRawNum = "",
     currentRawDen = "";
 const NyquistPlot = () => {
@@ -50,7 +102,7 @@ const NyquistPlot = () => {
     const [phaseInRadianScale, setPhaseInRadianScale] = useState(true); // for degree => 180 / PI, for radian scale => 1.0
     const [N, $N] = useState(1000);
     const [responseTime, setResponseTime] = useState(null);
-
+    const [method, changeMethod] = useState("polar");
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
 
     const capture = () => {
@@ -78,7 +130,9 @@ const NyquistPlot = () => {
                     previousPlotsProgressBarElement = document.getElementById(
                         "precvious_plots_progressbar"
                     );
-                const h_s = new TransferFunction(fraction[0], fraction[1]);
+                const [numerator, denominator] = fraction;
+
+                const h_s = new TransferFunction(numerator, denominator);
                 // if (!h_s.equals(H_s))
                 {
                     $H_s(h_s);
@@ -90,16 +144,28 @@ const NyquistPlot = () => {
                     const startTime = new Date();
                     const all = Array(systems.length);
                     for (let i = 0; i < systems.length; i++) {
+                        const num = systems[i].H_s.getA(),
+                            den = systems[i].H_s.getB();
+                        let { sensitiveSystem, systemIsPainInTheA } =
+                            observeSystem(num, den);
                         await makeProgress(
                             previousPlotsProgressBarElement,
                             (100 * i) / systems.length
                         );
-                        const [x, y] = await calculus.complexPointify(
-                            systems[i].H_s.nyquist,
+                        let [x, y] = await calculus.complexPointify(
+                            w => systems[i].H_s.nyquist(w, method),
                             +w_min,
                             +w_max,
+                            method === "complex" && !sensitiveSystem,
                             +N
                         );
+                        // if (systemIsPainInTheA)
+                        //     ({ x, y, systemIsPainInTheA } = revisePlot(
+                        //         num,
+                        //         den,
+                        //         x,
+                        //         y
+                        //     ));
                         if (h_s.equals(systems[i].H_s)) repeatedSystem = true;
                         all[i] = makeTrace(
                             x,
@@ -107,7 +173,7 @@ const NyquistPlot = () => {
                             systems[i].thickness,
                             systems[i].legend,
                             is3DPlotEnabled,
-                            "lines"
+                            method === 'polar' || !systemIsPainInTheA ? "lines" : "markers"
                         );
                     }
                     if (all.length)
@@ -117,22 +183,32 @@ const NyquistPlot = () => {
                         );
 
                     if (!repeatedSystem) {
+                        await makeProgress(currentPlotProgressBarElement, 0)
                         // if current system isnt in traces list => add it temperory to plot
-
+                        let { sensitiveSystem, systemIsPainInTheA } =
+                            observeSystem(numerator, denominator);
                         let [x, y] = await calculus.complexPointify(
-                            h_s.nyquist,
+                            (w) => h_s.nyquist(w, method),
                             +w_min,
                             +w_max,
+                            method === 'complex' && !sensitiveSystem,
                             +N,
                             currentPlotProgressBarElement
                         );
+                        // if (systemIsPainInTheA)
+                        //     ({ x, y, systemIsPainInTheA } = revisePlot(
+                        //         numerator,
+                        //         denominator,
+                        //         x,
+                        //         y
+                        //     ));
                         const newsys = makeTrace(
                             x,
                             y,
                             thickness,
                             `${symbols.out}(${symbols.in})`,
                             is3DPlotEnabled,
-                            "lines"
+                            method === 'polar' || !systemIsPainInTheA ? "lines" : "markers"
                         );
                         all.push(newsys);
                         const endTime = new Date();
@@ -148,7 +224,7 @@ const NyquistPlot = () => {
                 console.log(ex);
             }
         })();
-    }, [fraction, w_min, w_max, is3DPlotEnabled, thickness, systems, N]);
+    }, [fraction, w_min, w_max, method, is3DPlotEnabled, thickness, systems, N]);
 
     useEffect(() => {
         if (
@@ -249,6 +325,8 @@ const NyquistPlot = () => {
                                     responseTime={responseTime}
                                     N={N}
                                     $N={$N}
+                                    method={method}
+                                    changeMethod={changeMethod}
                                 />
                             </Grid>
                         </Grid>

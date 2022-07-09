@@ -46,13 +46,13 @@ const observeSystem = (numerator, denominator) => {
     );
     const sensitiveSystem =
         !denominator[denominator.length - 1] &&
-        degreeOfZeroZero < degreeOfZeroPole &&
-        degreeOfZeroPole % 2 &&
-        denominator.length - degreeOfZeroPole > 1; //numerator.length < denominator.length;
-    const systemIsPainInTheA =
+        degreeOfZeroZero < degreeOfZeroPole;
+        // degreeOfZeroPole % 2;
+        const systemIsPainInTheA =
         sensitiveSystem &&
         denominator.length > numerator.length + 1 &&
-        denominator.length > 2 ;
+        denominator.length > 2 &&
+        denominator.length - degreeOfZeroPole > 1; //numerator.length < denominator.length;
 
     return { sensitiveSystem, systemIsPainInTheA };
 };

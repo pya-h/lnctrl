@@ -149,7 +149,7 @@ const DelayedSystemsExample = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">نمودار بود</h2>
+                <h2 className="chapter-section-title">سیستم های تاخیردار</h2>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={gridSpacing}>

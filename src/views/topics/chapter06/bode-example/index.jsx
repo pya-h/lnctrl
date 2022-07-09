@@ -190,7 +190,7 @@ const BodePlotExample = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">نمودار بود</h2>
+                <h2 className="chapter-section-title">مثالی از نمودار بود</h2>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={gridSpacing}>

@@ -246,6 +246,14 @@ const load = (pathname) => {
                         icon: icons.IconBike,
                         breadcrumbs: false,
                     },
+                    {
+                        id: routes.nicoles_chart,
+                        title: "Nichols Magnitude and Phase Chart",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.nicoles_chart}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
                 ],
             };
     return {

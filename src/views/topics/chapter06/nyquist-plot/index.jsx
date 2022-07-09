@@ -99,7 +99,6 @@ const NyquistPlot = () => {
     const [thickness, $thickness] = useState(1.0); // graph line thickness
     const [isGraphCatured, $graphCaptured] = useState(false);
     const [is3DPlotEnabled, $3DPlotEnabled] = useState(false);
-    const [phaseInRadianScale, setPhaseInRadianScale] = useState(true); // for degree => 180 / PI, for radian scale => 1.0
     const [N, $N] = useState(1000);
     const [responseTime, setResponseTime] = useState(null);
     const [method, changeMethod] = useState("polar");
@@ -318,10 +317,6 @@ const NyquistPlot = () => {
                                     w_max={w_max}
                                     $w_min={$w_min}
                                     $w_max={$w_max}
-                                    phaseInRadianScale={phaseInRadianScale}
-                                    setPhaseInRadianScale={
-                                        setPhaseInRadianScale
-                                    }
                                     responseTime={responseTime}
                                     N={N}
                                     $N={$N}

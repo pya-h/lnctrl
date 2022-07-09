@@ -4,6 +4,7 @@ import ODE from "./ode";
 
 const defaultMathPrecision = 4;
 export const RadianToDegree = 180 / Math.PI;
+export const DegreeToRadian = Math.PI / 180;
 
 export const precision = {
     get: () => localStorage.getItem("precision") || defaultMathPrecision, // digits allowed after dcimal point (private)
@@ -24,6 +25,22 @@ const pointify = (f, ti, tf, N = 1000) => {
     const ts = Array.from(Array(N + 1), (_, k) => k * dt + ti);
     const ys = ts.map((t) => f(t));
     return [ts, ys];
+};
+
+export const verticalLine = (at, xi, xf, N) => {
+    let dx = (xf - xi) / N;
+    while (dx >= 1) {
+        N *= 10;
+        dx = (xf - xi) / N;
+    }
+    const xs = Array(N + 1);
+    const ys = Array(N + 1);
+    xs[0] = at; ys[0] = xi;
+    for(let i = 1; i <= N;i ++){
+        xs[i] = at;
+        ys[i] = ys[i - 1] + dx;
+    }
+    return [xs, ys]; 
 };
 export const complexPointify = async (
     fcomplex,
@@ -111,6 +128,39 @@ export const arrayToTrace = (x, y, thickness, legend, _3d, mode = "lines") => {
     };
 };
 
+export const mCircle = (M, x_i, x_f, iterations) => {
+    const m2 = M ** 2;
+    const m2minus1 = m2 - 1;
+    const temp = m2 / m2minus1;
+    let x = [],
+        y = [];
+    if (m2 !== 1) {
+        const f = (x) => (temp / m2minus1 - (x + temp) ** 2) ** 0.5;
+        [x, y] = pointify(f, x_i, x_f, +iterations);
+    } else {
+        [x, y] = verticalLine(-0.5, x_i, x_f, iterations);
+    }
+    return [x, y];
+};
+
+
+export const nCircle = (N, x_i, x_f, iterations) => {
+    const iN = Math.abs(1 / N);
+    while (x_i > -iN) x_i -= iN;
+    while (x_f < iN) x_f += iN;
+
+    const i2n = 1 / (2 * N);
+    const n2 = N * N;
+    // const f = (x) => (0.25 + i2n / N - x - (x ** 2)) ** 0.5;
+    const f = (x) => ((n2 + 1) / (2 * n2) - (x + 0.5) ** 2) ** 0.5;
+
+    let [x, y] = pointify(f, x_i, x_f, +iterations);
+
+    return [
+        [...x, ...x],
+        [...y.map((yi) => i2n + yi), ...y.map((yi) => i2n - yi)],
+    ];
+};
 export const strictPrecisionFormat = (num) => {
     if (num) {
         // num != 0
@@ -208,6 +258,7 @@ const calculus = {
     round,
     isFloat,
     pointify,
+    verticalLine,
     complexPointify,
     strictPrecisionFormat,
     linspace,
@@ -219,6 +270,9 @@ const calculus = {
     evaluate,
     systemToTrace,
     RadianToDegree,
+    DegreeToRadian,
+    mCircle,
+    nCircle
 };
 
 export default calculus;

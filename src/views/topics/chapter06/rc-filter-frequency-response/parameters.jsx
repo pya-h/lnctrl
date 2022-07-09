@@ -1,14 +1,14 @@
 import { Grid, Button } from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
-import { gridSpacing } from 'store/constant';
+import { gridSpacing } from "store/constant";
 
 const parameterFormulas = [
     "$$R = $$",
     "$$C = $$",
     "$$\\omega_{min} = $$",
     "$$\\omega_{max} = $$",
-    "$$N = $$"
+    "$$N = $$",
 ];
 const parameterUnits = ["$$k\\Omega$$", "$$\\mu F$$", "$$Hz$$", "$$Hz$$", null];
 
@@ -24,16 +24,8 @@ const RCFilterFrequencyResponseParameters = ({
     phaseInRadianScale,
     setPhaseInRadianScale,
     N,
-    $N
+    $N,
 }) => {
-    // const grids = 10;
-    // const selectR = (point) => {
-    //     if (point) $R(point.x);
-    // };
-    // const selectC = (point) => {
-    //     if (point) $C(point.y);
-    // };
-
     return (
         <SubCard
             darkBorder
@@ -45,14 +37,28 @@ const RCFilterFrequencyResponseParameters = ({
             }}
         >
             <Grid spacing={gridSpacing} container direction="row">
-            
-                <SimpleParametersList parameters={[R, C, w_min, w_max, N]} setters={[$R, $C, $w_min, $w_max, $N]} labels={parameterFormulas} units={parameterUnits} />
-                <Grid xs={12} style={{paddingLeft: '3%'}} container>
+                <SimpleParametersList
+                    parameters={[R, C, w_min, w_max, N]}
+                    setters={[$R, $C, $w_min, $w_max, $N]}
+                    labels={parameterFormulas}
+                    units={parameterUnits}
+                />
+                <Grid xs={12} item>
+                    <hr />
+                </Grid>
+                <Grid xs={12} style={{ paddingLeft: "3%" }} container>
+                    <Grid xs={12} item>
+                        <p dir="ltr" style={{ textAlign: "center" }}>
+                            Phase output in terms of:
+                        </p>
+                    </Grid>
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button
                             onClick={() => setPhaseInRadianScale(false)}
                             style={{ width: "100%", textTransform: "none" }}
-                            variant={!phaseInRadianScale ? "contained" : "outlined"}
+                            variant={
+                                !phaseInRadianScale ? "contained" : "outlined"
+                            }
                         >
                             Degree
                         </Button>
@@ -61,24 +67,14 @@ const RCFilterFrequencyResponseParameters = ({
                         <Button
                             onClick={() => setPhaseInRadianScale("rad")}
                             style={{ width: "100%", textTransform: "none" }}
-                            variant={phaseInRadianScale ? "contained" : "outlined"}
+                            variant={
+                                phaseInRadianScale ? "contained" : "outlined"
+                            }
                         >
                             Radian
                         </Button>
                     </Grid>
                 </Grid>
-                {/* <Grid sx={{ mt: 1 }} md={12} sm={4} xs={6} item>
-                    <p style={{textAlign: 'center'}}>Select the location of the pole</p>
-                    <CoordinateSystem
-                        point={{ x: R, y: 0, select: selectR }}
-                        extra={{
-                            x: 0,
-                            y: C,
-                            select: selectC,
-                        }}
-                        options={{ pointSize: 10, grids }}
-                    />
-                </Grid> */}
             </Grid>
         </SubCard>
     );

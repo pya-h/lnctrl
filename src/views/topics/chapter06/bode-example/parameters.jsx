@@ -94,7 +94,15 @@ const BodePlotExampleParameters = ({
                     labels={parameterFormulas}
                     units={parameterUnits}
                 />
+                <Grid xs={12} item>
+                    <hr />
+                </Grid>
                 <Grid xs={12} style={{ paddingLeft: "3%" }} container>
+                    <Grid xs={12} item>
+                        <p dir="ltr" style={{ textAlign: "center" }}>
+                            Phase output in terms of:
+                        </p>
+                    </Grid>
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button
                             onClick={() => setPhaseInRadianScale(false)}

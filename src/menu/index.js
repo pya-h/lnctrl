@@ -254,6 +254,22 @@ const load = (pathname) => {
                         icon: icons.IconBike,
                         breadcrumbs: false,
                     },
+                    {
+                        id: routes.m_circle,
+                        title: "Constant-Magnitude Locus (M-circle)",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.m_circle}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
+                    {
+                        id: routes.n_circle,
+                        title: "Constant-phase locus (N-circle)",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.n_circle}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
                 ],
             };
     return {

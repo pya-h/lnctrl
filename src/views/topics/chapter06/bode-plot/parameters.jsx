@@ -52,7 +52,15 @@ const BodePlotParameters = ({
                     labels={parameterFormulas}
                     units={parameterUnits}
                 />
+                <Grid xs={12} item>
+                    <hr />
+                </Grid>
                 <Grid xs={12} style={{ paddingLeft: "3%" }} container>
+                    <Grid xs={12} item>
+                        <p dir="ltr" style={{ textAlign: "center" }}>
+                            Phase output in terms of:
+                        </p>
+                    </Grid>
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button
                             onClick={() => setPhaseInRadianScale(false)}
@@ -85,7 +93,9 @@ const BodePlotParameters = ({
                 style={{ textAlign: "center" }}
                 container
             >
-                <Grid xs={12} item>Effect of scalar multiplication of the system on the Bode plot</Grid>
+                <Grid xs={12} item>
+                    Effect of scalar multiplication of the system on the Bode plot
+                </Grid>
                 <Grid xs={4} item>
                     <Fab
                         size="large"

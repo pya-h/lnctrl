@@ -4,28 +4,25 @@ import SimpleParametersList from "views/input-boxes/SimpleParametersList";
 import { gridSpacing } from "store/constant";
 
 const parameterFormulas = [
-    "$$Num = [$$",
-    "$$Den = [$$",
-    "$$\\omega_{min} = $$",
-    "$$\\omega_{max} = $$",
     "$$N = $$",
+    "$$N_{iterations} = $$",
 ];
-const parameterUnits = ["$$]$$", "$$]$$", "$$Hz$$", "$$Hz$$", null];
 
-const FrequencyResponseParameters = ({
-    rawNumerator,
-    rawDenominator,
-    $rawNumerator,
-    $rawDenominator,
-    w_min,
-    w_max,
-    $w_min,
-    $w_max,
+const NCircleParameters = ({
+    N,    $N,
     phaseInRadianScale,
     setPhaseInRadianScale,
-    N,
-    $N,
+    iterations,
+    $iterations,
 }) => {
+    // const grids = 10;
+    // const selectR = (point) => {
+    //     if (point) $R(point.x);
+    // };
+    // const selectC = (point) => {
+    //     if (point) $C(point.y);
+    // };
+
     return (
         <SubCard
             darkBorder
@@ -38,25 +35,17 @@ const FrequencyResponseParameters = ({
         >
             <Grid spacing={gridSpacing} container direction="row">
                 <SimpleParametersList
-                    parameters={[rawNumerator, rawDenominator, w_min, w_max, N]}
-                    setters={[
-                        $rawNumerator,
-                        $rawDenominator,
-                        $w_min,
-                        $w_max,
-                        $N,
-                    ]}
+                    parameters={[N, iterations]}
+                    setters={[$N, $iterations]}
                     labels={parameterFormulas}
-                    units={parameterUnits}
+                    units={[phaseInRadianScale ? "$$rad$$" : "$$deg$$", null]}
                 />
                 <Grid xs={12} item>
-                    <hr />
+                <hr />
                 </Grid>
                 <Grid xs={12} style={{ paddingLeft: "3%" }} container>
                     <Grid xs={12} item>
-                        <p dir="ltr" style={{ textAlign: "center" }}>
-                            Phase output in terms of:
-                        </p>
+                        <p dir="ltr" style={{textAlign:'center'}}>Phase input in terms of:</p>
                     </Grid>
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button
@@ -86,4 +75,4 @@ const FrequencyResponseParameters = ({
     );
 };
 
-export default FrequencyResponseParameters;
+export default NCircleParameters;

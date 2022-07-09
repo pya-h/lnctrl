@@ -4,28 +4,25 @@ import SimpleParametersList from "views/input-boxes/SimpleParametersList";
 import { gridSpacing } from "store/constant";
 
 const parameterFormulas = [
-    "$$R = $$",
-    "$$C = $$",
-    "$$\\omega_{min} = $$",
-    "$$\\omega_{max} = $$",
     "$$N = $$",
+    "$$N_{iterations} = $$",
 ];
-const parameterUnits = ["$$k\\Omega$$", "$$\\mu F$$", "$$Hz$$", "$$Hz$$", null];
 
-const RCFilterFrequencyResponseParameters = ({
-    R,
-    C,
-    $R,
-    $C,
-    w_min,
-    w_max,
-    $w_min,
-    $w_max,
+const NCircleParameters = ({
+    N,    $N,
     phaseInRadianScale,
     setPhaseInRadianScale,
-    N,
-    $N,
+    iterations,
+    $iterations,
 }) => {
+    // const grids = 10;
+    // const selectR = (point) => {
+    //     if (point) $R(point.x);
+    // };
+    // const selectC = (point) => {
+    //     if (point) $C(point.y);
+    // };
+
     return (
         <SubCard
             darkBorder
@@ -38,19 +35,17 @@ const RCFilterFrequencyResponseParameters = ({
         >
             <Grid spacing={gridSpacing} container direction="row">
                 <SimpleParametersList
-                    parameters={[R, C, w_min, w_max, N]}
-                    setters={[$R, $C, $w_min, $w_max, $N]}
+                    parameters={[N, iterations]}
+                    setters={[$N, $iterations]}
                     labels={parameterFormulas}
-                    units={parameterUnits}
+                    units={[phaseInRadianScale ? "$$rad$$" : "$$deg$$", null]}
                 />
                 <Grid xs={12} item>
-                    <hr />
+                <hr />
                 </Grid>
                 <Grid xs={12} style={{ paddingLeft: "3%" }} container>
                     <Grid xs={12} item>
-                        <p dir="rtl" style={{ textAlign: "center" }}>
-                            خروجی فاز بر حسب:
-                        </p>
+                        <p dir="rtl" style={{textAlign:'center'}}>ورودی فاز بر حسب:</p>
                     </Grid>
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button
@@ -80,4 +75,4 @@ const RCFilterFrequencyResponseParameters = ({
     );
 };
 
-export default RCFilterFrequencyResponseParameters;
+export default NCircleParameters;

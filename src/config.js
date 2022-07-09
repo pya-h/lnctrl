@@ -21,6 +21,8 @@ const routes = {
     delayed_systems: 'delayed_systems',
     nyquist_plot: 'nyquist_plot',
     nicoles_chart: 'nicoles_chart',
+    m_circle: 'm_circle',
+    n_circle: 'n_circle',
 };
 
 const error_codes = {

@@ -254,6 +254,22 @@ const load = (pathname) => {
                         icon: icons.IconBike,
                         breadcrumbs: false,
                     },
+                    {
+                        id: routes.m_circle,
+                        title: "مکان هندسی اندازه ثابت",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.m_circle}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
+                    {
+                        id: routes.n_circle,
+                        title: "مکان هندسی فاز ثابت",
+                        type: "item",
+                        url: `${routes.chapter}06/${routes.n_circle}`,
+                        icon: icons.IconBike,
+                        breadcrumbs: false,
+                    },
                 ],
             };
     return {

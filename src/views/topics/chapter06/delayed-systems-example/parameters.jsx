@@ -1,9 +1,7 @@
-import { Grid, Button, Fab } from "@mui/material";
+import { Grid, Button } from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
 import { gridSpacing } from "store/constant";
-import AnimateButton from "../../../ui-component/extended/AnimateButton";
-import { MathJax } from "better-react-mathjax";
 
 const parameterFormulas = [
     "$$T_d = $$",
@@ -41,17 +39,19 @@ const DelayedSystemsExampleParameters = ({
             <Grid spacing={gridSpacing} container direction="row">
                 <SimpleParametersList
                     parameters={[T_d, rawDenominator, w_min, w_max, N]}
-                    setters={[
-                        $T_d,
-                        $rawDenominator,
-                        $w_min,
-                        $w_max,
-                        $N,
-                    ]}
+                    setters={[$T_d, $rawDenominator, $w_min, $w_max, $N]}
                     labels={parameterFormulas}
                     units={parameterUnits}
                 />
+                <Grid xs={12} item>
+                    <hr />
+                </Grid>
                 <Grid xs={12} style={{ paddingLeft: "3%" }} container>
+                    <Grid xs={12} item>
+                        <p dir="rtl" style={{ textAlign: "center" }}>
+                            خروجی فاز بر حسب:
+                        </p>
+                    </Grid>
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button
                             onClick={() => setPhaseInRadianScale(false)}
@@ -76,7 +76,6 @@ const DelayedSystemsExampleParameters = ({
                     </Grid>
                 </Grid>
             </Grid>
-            
         </SubCard>
     );
 };

@@ -8,7 +8,7 @@ const parameterFormulas = [
     "$$Den = [$$",
     "$$\\omega_{min} = $$",
     "$$\\omega_{max} = $$",
-    "$$N = $$"
+    "$$N = $$",
 ];
 const parameterUnits = ["$$]$$", "$$]$$", "$$Hz$$", "$$Hz$$", null];
 
@@ -24,7 +24,7 @@ const FrequencyResponseParameters = ({
     phaseInRadianScale,
     setPhaseInRadianScale,
     N,
-    $N
+    $N,
 }) => {
     return (
         <SubCard
@@ -39,12 +39,26 @@ const FrequencyResponseParameters = ({
             <Grid spacing={gridSpacing} container direction="row">
                 <SimpleParametersList
                     parameters={[rawNumerator, rawDenominator, w_min, w_max, N]}
-                    setters={[$rawNumerator, $rawDenominator, $w_min, $w_max, $N]}
+                    setters={[
+                        $rawNumerator,
+                        $rawDenominator,
+                        $w_min,
+                        $w_max,
+                        $N,
+                    ]}
                     labels={parameterFormulas}
                     units={parameterUnits}
                 />
-                <Grid xs={12} style={{paddingLeft: '3%'}} container>
-                    <Grid xs={6} sx={{ p: 1 }}  item>
+                <Grid xs={12} item>
+                    <hr />
+                </Grid>
+                <Grid xs={12} style={{ paddingLeft: "3%" }} container>
+                    <Grid xs={12} item>
+                        <p dir="rtl" style={{ textAlign: "center" }}>
+                            خروجی فاز بر حسب:
+                        </p>
+                    </Grid>
+                    <Grid xs={6} sx={{ p: 1 }} item>
                         <Button
                             onClick={() => setPhaseInRadianScale(false)}
                             style={{ width: "100%", textTransform: "none" }}

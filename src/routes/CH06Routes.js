@@ -12,6 +12,8 @@ const BodePlotExample = Loadable(lazy(() => import('views/topics/chapter06/bode-
 const DelayedSystemsExample = Loadable(lazy(() => import('views/topics/chapter06/delayed-systems-example')));
 const NyquistPlot = Loadable(lazy(() => import('views/topics/chapter06/nyquist-plot')));
 const NicolesChart = Loadable(lazy(() => import('views/topics/chapter06/nicoles-chart')));
+const MCircle = Loadable(lazy(() => import('views/topics/chapter06/m-circle')));
+const NCircle = Loadable(lazy(() => import('views/topics/chapter06/n-circle')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 const CH06Routes = {
@@ -45,6 +47,14 @@ const CH06Routes = {
         {
             path:  `${routes.root}${routes.chapter}06/${routes.nicoles_chart}`,
             element: <NicolesChart />
+        },
+        {
+            path:  `${routes.root}${routes.chapter}06/${routes.m_circle}`,
+            element: <MCircle />
+        },
+        {
+            path:  `${routes.root}${routes.chapter}06/${routes.n_circle}`,
+            element: <NCircle />
         },
     ]
 };

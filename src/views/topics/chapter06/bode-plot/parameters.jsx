@@ -52,7 +52,15 @@ const BodePlotParameters = ({
                     labels={parameterFormulas}
                     units={parameterUnits}
                 />
+                <Grid xs={12} item>
+                    <hr />
+                </Grid>
                 <Grid xs={12} style={{ paddingLeft: "3%" }} container>
+                    <Grid xs={12} item>
+                        <p dir="rtl" style={{ textAlign: "center" }}>
+                            خروجی فاز بر حسب:
+                        </p>
+                    </Grid>
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button
                             onClick={() => setPhaseInRadianScale(false)}
@@ -85,7 +93,9 @@ const BodePlotParameters = ({
                 style={{ textAlign: "center" }}
                 container
             >
-                <Grid xs={12} item>تاثیر ضرب اسکالر سیستم در نمودار بود</Grid>
+                <Grid xs={12} item>
+                    تاثیر ضرب اسکالر سیستم در نمودار بود
+                </Grid>
                 <Grid xs={4} item>
                     <Fab
                         size="large"

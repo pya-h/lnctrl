@@ -179,8 +179,10 @@ const DelayedSystemsExample = () => {
                                                 fontSize: "18px",
                                                 color: formula.color,
                                             }}
+                                            lg={6}
                                             md={6}
                                             sm={12}
+                                            xs={12}
                                         >
                                             <MathJax>{formula.text}</MathJax>
                                         </Grid>

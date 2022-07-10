@@ -113,7 +113,7 @@ const NCircle = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">پاسخ فرکانسی فیلتر RC</h2>
+                <h2 className="chapter-section-title">مکان هندسی فاز ثابت</h2>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={gridSpacing}>

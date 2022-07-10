@@ -1,38 +1,30 @@
-import SubCard from "views/ui-component/cards/SubCard";
+import SubCard from "../../../ui-component/cards/SubCard";
 import { Grid } from "@mui/material";
-import "../../topics.css";
-import { MathJax } from "better-react-mathjax";
-import { gridSpacing } from "store/constant";
-import { mathjaxSpaces } from "toolshed";
-
-const t_riseFormula =
-    "$$ t_{pk} = \\frac{k\\pi}{\\omega_n \\sqrt{1 - \\zeta^2}} = \\frac{k\\pi}{\\omega_d} " +
-    mathjaxSpaces(3) +
-    " k = 1, 2, 3, ...\\\\" +
-    " t_{rise} = t_p = \\frac{\\pi}{\\omega_d} $$";
-const overshootFormula = `$$M_p = e^{\\frac{-\\zeta \\pi}{\\sqrt{1 - \\zeta^2}}} = e ^ {-\\pi cot\\theta} \\\\
-    \\zeta = \\frac{-\\ln M_p}{\\sqrt{\\pi^2 + \\lgroup \\ln M_p \\rgroup ^ 2}} $$`;
+import "views/topics/topics.css";
+import temp_part1 from './temp/part1.png';
+import temp_part2 from './temp/part2.png';
 
 const RootLocusLecture = () => {
     return (
         <SubCard
-            title="طراحی سیستم از طریق مشخصات میرایی"
+            title="مکان هندسی فاز ثابت"
             darkBorder={true}
             sx={{ direction: "rtl" }}
-            spacing={gridSpacing}
         >
-            <Grid className="lecture-text" style={{ fontSize: "20px" }} item>
-                <p>&nbsp; &nbsp; &nbsp; &nbsp; 
-                    زمان اوج (Rise Time)</p>
+            
+            <Grid item>
+                <img
+                    className="lecture-image"
+                    src={temp_part1}
+                    alt="بارگذاری تصویر با مشکل مواجه شد"
+                />
             </Grid>
-            <Grid style={{ fontSize: "20px" }} item>
-                <MathJax>{t_riseFormula}</MathJax>
-            </Grid>
-            <Grid className="lecture-text" style={{ fontSize: "20px" }} item>
-                <p>&nbsp; &nbsp; &nbsp; &nbsp; بالازدگی (Overshoot)</p>
-            </Grid>
-            <Grid style={{ fontSize: "20px" }} item>
-                <MathJax>{overshootFormula}</MathJax>
+            <Grid item>
+                <img
+                    className="lecture-image"
+                    src={temp_part2}
+                    alt="بارگذاری تصویر با مشکل مواجه شد"
+                />
             </Grid>
         </SubCard>
     );

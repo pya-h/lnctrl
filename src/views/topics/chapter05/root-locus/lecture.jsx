@@ -1,37 +1,30 @@
-import SubCard from "views/ui-component/cards/SubCard";
+import SubCard from "../../../ui-component/cards/SubCard";
 import { Grid } from "@mui/material";
-import "../../topics.css";
-import { MathJax } from "better-react-mathjax";
-import { gridSpacing } from "store/constant";
-import { mathjaxSpaces } from "toolshed";
-
-const t_riseFormula =
-    "$$ t_{pk} = \\frac{k\\pi}{\\omega_n \\sqrt{1 - \\zeta^2}} = \\frac{k\\pi}{\\omega_d} " +
-    mathjaxSpaces(3) +
-    " k = 1, 2, 3, ...\\\\" +
-    " t_{rise} = t_p = \\frac{\\pi}{\\omega_d} $$";
-const overshootFormula = `$$M_p = e^{\\frac{-\\zeta \\pi}{\\sqrt{1 - \\zeta^2}}} = e ^ {-\\pi cot\\theta} \\\\
-    \\zeta = \\frac{-\\ln M_p}{\\sqrt{\\pi^2 + \\lgroup \\ln M_p \\rgroup ^ 2}} $$`;
+import "views/topics/topics.css";
+import temp_part1 from './temp/part1.png';
+import temp_part2 from './temp/part2.png';
 
 const RootLocusLecture = () => {
     return (
         <SubCard
-            title="System design through damping specifications"
+            title="Constant-phase locus (N-circle)"
             darkBorder={true}
             sx={{ direction: "ltr" }}
-            spacing={gridSpacing}
         >
-            <Grid className="lecture-text" style={{ fontSize: "20px" }} item>
-                <p>Peak time (Rise Time)</p>
+            
+            <Grid item>
+                <img
+                    className="lecture-image"
+                    src={temp_part1}
+                    alt="Image loading failed"
+                />
             </Grid>
-            <Grid style={{ fontSize: "20px" }} item>
-                <MathJax>{t_riseFormula}</MathJax>
-            </Grid>
-            <Grid className="lecture-text" style={{ fontSize: "20px" }} item>
-                <p>Overshoot</p>
-            </Grid>
-            <Grid style={{ fontSize: "20px" }} item>
-                <MathJax>{overshootFormula}</MathJax>
+            <Grid item>
+                <img
+                    className="lecture-image"
+                    src={temp_part2}
+                    alt="Image loading failed"
+                />
             </Grid>
         </SubCard>
     );

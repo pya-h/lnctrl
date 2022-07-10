@@ -113,7 +113,7 @@ const NCircle = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">Frequency response of the RC filter</h2>
+                <h2 className="chapter-section-title">Constant-phase locus (N-circle)</h2>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={gridSpacing}>

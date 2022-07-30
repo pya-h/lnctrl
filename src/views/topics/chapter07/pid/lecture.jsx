@@ -1,0 +1,26 @@
+import SubCard from "../../../ui-component/cards/SubCard";
+import { Grid } from "@mui/material";
+import "views/topics/topics.css";
+import { MathJax } from "better-react-mathjax";
+const transferFunctionFormFormula = "$$H(s) = \\frac{K(s\\tau _a + 1)(s\\tau _b + 1)}{s(s\\tau _1 + 1)(s\\tau _2 + 1)(s\\tau _3 + 1)(s\\tau _4 + 1)}$$";
+
+const PIDLecture = () => {
+    return (
+        <SubCard
+            title="An Example of Drawing a Bode Plot"
+            darkBorder={true}
+            sx={{ direction: "ltr" }}
+        >
+            <Grid className="lecture-text" item>
+                <p>
+                    We want to draw the Bode plot for transfer functions of the following form:
+                </p>
+            </Grid>
+            <Grid item>
+                <MathJax>{transferFunctionFormFormula}</MathJax>
+            </Grid>
+        </SubCard>
+    );
+};
+
+export default PIDLecture;

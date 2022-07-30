@@ -458,10 +458,9 @@ export default class TransferFunction extends Fraction {
             nb = b.length - 1;
         const reals = [],
             imaginaries = [];
-        const percentageScale = 100 / (k_max - k_min);
-        // channel.bind("pusher:subscription_succeeded", function(data) {
+        const progressLength = k_max - k_min;
         const newTerm = Equation.GetAlgebriteTerm;
-        for (let k = k_min; k <= k_max; k += dk) {
+        for (let k = k_min, progress = 0; k <= k_max; k += dk, progress += dk) {
             // in this piece: using short form codes and using objects is set to minimum
             // because root locus is time consuming and putting all the codes in one main loop is better
             // const delta = b.add(a.multiply(k));
@@ -519,7 +518,10 @@ export default class TransferFunction extends Fraction {
             // const roots = new Equation(new Poly(delta)).roots();
             const poles = new Equation(expression).solve();
 
-            await makeProgress(progressBarObject, k * percentageScale);
+            await makeProgress(
+                progressBarObject,
+                (100 * progress) / progressLength
+            );
 
             for (let i = 0; i < poles.length; i++) {
                 if (poles[i] instanceof Complex) {

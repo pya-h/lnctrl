@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Button, Grid } from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
 import { gridSpacing } from "store/constant";
@@ -25,6 +25,8 @@ const NyquistPlotParameters = ({
     N,
     $N,
     responseTime,
+    method,
+    changeMethod,
 }) => {
     return (
         <SubCard
@@ -49,8 +51,39 @@ const NyquistPlotParameters = ({
                     labels={parameterFormulas}
                     units={parameterUnits}
                 />
+                <hr style={{width: '100%'}} />
 
-                <hr />
+                <Grid xs={12} style={{ paddingLeft: "3%" }} container>
+  
+                    <Grid xs={12} item>
+                        <p dir="rtl" style={{ textAlign: "center" }}>
+                            روش رسم
+                        </p>
+                    </Grid>
+                    <Grid xs={6} sx={{ p: 1 }} item>
+                        <Button
+                            onClick={() => changeMethod("polar")}
+                            style={{ width: "100%", textTransform: "none" }}
+                            variant={
+                                method === "polar" ? "contained" : "outlined"
+                            }
+                        >
+                            قطبی
+                        </Button>
+                    </Grid>
+                    <Grid xs={6} sx={{ p: 1 }} item>
+                        <Button
+                            onClick={() => changeMethod("complex")}
+                            style={{ width: "100%", textTransform: "none" }}
+                            variant={
+                                method === "complex" ? "contained" : "outlined"
+                            }
+                        >
+                            مختلط
+                        </Button>
+                    </Grid>
+                </Grid>
+                <hr style={{width: '100%'}} />
                 <Grid xs={12} sx={{ mt: 1 }} item>
                     <ProgressBar
                         background="lightcoral"

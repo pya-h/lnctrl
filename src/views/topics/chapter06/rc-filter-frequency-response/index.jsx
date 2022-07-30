@@ -50,7 +50,7 @@ const RCFilterFrequencyResponseExample = () => {
                 C: +C,
                 H_s,
                 thickness,
-                legend: symbols.out + "_{" + (systems.length + 1).toString(),
+                legend: symbols.out + "_{" + (systems.length + 1).toString() + "}",
             });
             $systems(capturedSystems);
             $graphCaptured(true);
@@ -59,7 +59,7 @@ const RCFilterFrequencyResponseExample = () => {
 
     useEffect(() => {
         try {
-            const h_s = new TransferFunction([1], [+R * +C * 10e3, 1]);
+            const h_s = new TransferFunction([1], [+R * +C * 1000, 1]);
             $H_s(h_s);
             $response("$$" + h_s.label("H") + "$$");
             // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),

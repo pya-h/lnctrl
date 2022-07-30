@@ -32,8 +32,8 @@ const observeSystem = (numerator, denominator) => {
     const sensitiveSystem =
         !denominator[denominator.length - 1] &&
         degreeOfZeroZero < degreeOfZeroPole;
-        // degreeOfZeroPole % 2;
-        const systemIsPainInTheA =
+    // degreeOfZeroPole % 2;
+    const systemIsPainInTheA =
         sensitiveSystem &&
         denominator.length > numerator.length + 1 &&
         denominator.length > 2 &&
@@ -70,6 +70,7 @@ const revisePlot = (numerator, denominator, x, y) => {
 };
 let currentRawNum = "",
     currentRawDen = "";
+const _1PlusJ = calculus.arrayToTrace([-1], [0], 1, "-1+0j", false, "markers");
 const NyquistPlot = () => {
     const [rawNumerator, $rawNumerator] = useState("1");
     const [rawDenominator, $rawDenominator] = useState("1 1");
@@ -137,7 +138,7 @@ const NyquistPlot = () => {
                             (100 * i) / systems.length
                         );
                         let [x, y] = await calculus.complexPointify(
-                            w => systems[i].H_s.nyquist(w, method),
+                            (w) => systems[i].H_s.nyquist(w, method),
                             +w_min,
                             +w_max,
                             method === "complex" && !sensitiveSystem,
@@ -157,17 +158,19 @@ const NyquistPlot = () => {
                             systems[i].thickness,
                             systems[i].legend,
                             is3DPlotEnabled,
-                            method === 'polar' || !systemIsPainInTheA ? "lines" : "markers"
+                            method === "polar" || !systemIsPainInTheA
+                                ? "lines"
+                                : "markers"
                         );
                     }
-                    if (all.length)
+                    if (all.length) {
                         await makeProgress(
                             previousPlotsProgressBarElement,
                             100
                         );
-
+                    }
                     if (!repeatedSystem) {
-                        await makeProgress(currentPlotProgressBarElement, 0)
+                        await makeProgress(currentPlotProgressBarElement, 0);
                         // if current system isnt in traces list => add it temperory to plot
                         let { sensitiveSystem, systemIsPainInTheA } =
                             observeSystem(numerator, denominator);
@@ -175,7 +178,7 @@ const NyquistPlot = () => {
                             (w) => h_s.nyquist(w, method),
                             +w_min,
                             +w_max,
-                            method === 'complex' && !sensitiveSystem,
+                            method === "complex" && !sensitiveSystem,
                             +N,
                             currentPlotProgressBarElement
                         );
@@ -192,7 +195,9 @@ const NyquistPlot = () => {
                             thickness,
                             `${symbols.out}(${symbols.in})`,
                             is3DPlotEnabled,
-                            method === 'polar' || !systemIsPainInTheA ? "lines" : "markers"
+                            method === "polar" || !systemIsPainInTheA
+                                ? "lines"
+                                : "markers"
                         );
                         all.push(newsys);
                         const endTime = new Date();
@@ -201,6 +206,7 @@ const NyquistPlot = () => {
                         );
                         await makeProgress(currentPlotProgressBarElement, 100);
                     }
+                    all.push(_1PlusJ);
 
                     $traces(all);
                 }
@@ -208,7 +214,16 @@ const NyquistPlot = () => {
                 console.log(ex);
             }
         })();
-    }, [fraction, w_min, w_max, method, is3DPlotEnabled, thickness, systems, N]);
+    }, [
+        fraction,
+        w_min,
+        w_max,
+        method,
+        is3DPlotEnabled,
+        thickness,
+        systems,
+        N,
+    ]);
 
     useEffect(() => {
         if (
@@ -324,7 +339,7 @@ const NyquistPlot = () => {
                                 <SubCard>
                                     <Grid lg={12} md={12} sm={12} xs={12} item>
                                         <GraphBox
-                                            title="پاسخ فرکانسی"
+                                            title="نمودار نایکويیست"
                                             traces={traces}
                                         />
                                     </Grid>

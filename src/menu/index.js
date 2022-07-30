@@ -1,7 +1,7 @@
 // assets
 import { IconBike, IconPalette, IconShadow, IconWindmill } from "@tabler/icons";
 import { routes } from "config";
-import {path} from "toolshed";
+import { path } from "toolshed";
 import CropLandscapeIcon from "@mui/icons-material/CropLandscape";
 import DataArrayIcon from "@mui/icons-material/DataArray";
 import HubIcon from "@mui/icons-material/Hub";
@@ -159,119 +159,134 @@ const load = (pathname) => {
                 },
             ],
         };
-        else if (hierarchy[0] === `${routes.chapter}05`)
-            topics = {
-                id: "topics",
-                title: "مباحث",
-                type: "group",
-                children: [
-                    {
-                        id: `${routes.chapter}05`,
-                        title: "مقدمه",
-                        type: "item",
-                        url: `${routes.chapter}05`,
-                        icon: icons.IconBike,
-                        breadcrumbs: false,
-                    },
-                    {
-                        id: routes.root_locus,
-                        title: "مکان هندسی",
-                        type: "item",
-                        url: `${routes.chapter}05/${routes.root_locus}`,
-                        icon: icons.IconBike,
-                        breadcrumbs: false,
-                    },
-                    
-                ],
-            };
-        else if (hierarchy[0] === `${routes.chapter}06`)
-            topics = {
-                id: "topics",
-                title: "مباحث",
-                type: "group",
-                children: [
-                    {
-                        id: `${routes.chapter}06`,
-                        title: "مقدمه",
-                        type: "item",
-                        url: `${routes.chapter}06`,
-                        icon: icons.IconBike,
-                        breadcrumbs: false,
-                    },
-                    {
-                        id: routes.rc_filter_frequency_response,
-                        title: "پاسخ فرکانسی فیلتر RC",
-                        type: "item",
-                        url: `${routes.chapter}06/${routes.rc_filter_frequency_response}`,
-                        icon: icons.IconBike,
-                        breadcrumbs: false,
-                    },
-                    {
-                        id: routes.frequency_response,
-                        title: "پاسخ فرکانسی",
-                        type: "item",
-                        url: `${routes.chapter}06/${routes.frequency_response}`,
-                        icon: icons.IconBike,
-                        breadcrumbs: false,
-                    },
-                    {
-                        id: routes.bode_plot,
-                        title: "نمودار بود",
-                        type: "item",
-                        url: `${routes.chapter}06/${routes.bode_plot}`,
-                        icon: icons.IconBike,
-                        breadcrumbs: false,
-                    },
-                    {
-                        id: routes.bode_example,
-                        title: "مثالی از نمودار بود",
-                        type: "item",
-                        url: `${routes.chapter}06/${routes.bode_example}`,
-                        icon: icons.IconBike,
-                        breadcrumbs: false,
-                    },
-                    {
-                        id: routes.delayed_systems,
-                        title: "سیستم های تاخیردار",
-                        type: "item",
-                        url: `${routes.chapter}06/${routes.delayed_systems}`,
-                        icon: icons.IconBike,
-                        breadcrumbs: false,
-                    },
-                    {
-                        id: routes.nyquist_plot,
-                        title: "نمودار نایکوئیست",
-                        type: "item",
-                        url: `${routes.chapter}06/${routes.nyquist_plot}`,
-                        icon: icons.IconBike,
-                        breadcrumbs: false,
-                    },
-                    {
-                        id: routes.nicoles_chart,
-                        title: "نمودار اندازه و فاز نیکولز",
-                        type: "item",
-                        url: `${routes.chapter}06/${routes.nicoles_chart}`,
-                        icon: icons.IconBike,
-                        breadcrumbs: false,
-                    },
-                    {
-                        id: routes.m_circle,
-                        title: "مکان هندسی اندازه ثابت",
-                        type: "item",
-                        url: `${routes.chapter}06/${routes.m_circle}`,
-                        icon: icons.IconBike,
-                        breadcrumbs: false,
-                    },
-                    {
-                        id: routes.n_circle,
-                        title: "مکان هندسی فاز ثابت",
-                        type: "item",
-                        url: `${routes.chapter}06/${routes.n_circle}`,
-                        icon: icons.IconBike,
-                        breadcrumbs: false,
-                    },
-                ],
-            };
+    else if (hierarchy[0] === `${routes.chapter}05`)
+        topics = {
+            id: "topics",
+            title: "مباحث",
+            type: "group",
+            children: [
+                {
+                    id: `${routes.chapter}05`,
+                    title: "مقدمه",
+                    type: "item",
+                    url: `${routes.chapter}05`,
+                    icon: icons.IconBike,
+                    breadcrumbs: false,
+                },
+                {
+                    id: routes.root_locus,
+                    title: "مکان هندسی",
+                    type: "item",
+                    url: `${routes.chapter}05/${routes.root_locus}`,
+                    icon: icons.IconBike,
+                    breadcrumbs: false,
+                },
+            ],
+        };
+    else if (hierarchy[0] === `${routes.chapter}06`)
+        topics = {
+            id: "topics",
+            title: "مباحث",
+            type: "group",
+            children: [
+                {
+                    id: `${routes.chapter}06`,
+                    title: "مقدمه",
+                    type: "item",
+                    url: `${routes.chapter}06`,
+                    icon: icons.IconBike,
+                    breadcrumbs: false,
+                },
+                {
+                    id: routes.rc_filter_frequency_response,
+                    title: "پاسخ فرکانسی فیلتر RC",
+                    type: "item",
+                    url: `${routes.chapter}06/${routes.rc_filter_frequency_response}`,
+                    icon: icons.IconBike,
+                    breadcrumbs: false,
+                },
+                {
+                    id: routes.frequency_response,
+                    title: "پاسخ فرکانسی",
+                    type: "item",
+                    url: `${routes.chapter}06/${routes.frequency_response}`,
+                    icon: icons.IconBike,
+                    breadcrumbs: false,
+                },
+                {
+                    id: routes.bode_plot,
+                    title: "نمودار بود",
+                    type: "item",
+                    url: `${routes.chapter}06/${routes.bode_plot}`,
+                    icon: icons.IconBike,
+                    breadcrumbs: false,
+                },
+                {
+                    id: routes.bode_example,
+                    title: "مثالی از نمودار بود",
+                    type: "item",
+                    url: `${routes.chapter}06/${routes.bode_example}`,
+                    icon: icons.IconBike,
+                    breadcrumbs: false,
+                },
+                {
+                    id: routes.nyquist_plot,
+                    title: "نمودار نایکوئیست",
+                    type: "item",
+                    url: `${routes.chapter}06/${routes.nyquist_plot}`,
+                    icon: icons.IconBike,
+                    breadcrumbs: false,
+                },
+                {
+                    id: routes.delayed_systems,
+                    title: "سیستم های تاخیردار",
+                    type: "item",
+                    url: `${routes.chapter}06/${routes.delayed_systems}`,
+                    icon: icons.IconBike,
+                    breadcrumbs: false,
+                },
+                {
+                    id: routes.nicoles_chart,
+                    title: "نمودار اندازه و فاز نیکولز",
+                    type: "item",
+                    url: `${routes.chapter}06/${routes.nicoles_chart}`,
+                    icon: icons.IconBike,
+                    breadcrumbs: false,
+                },
+                {
+                    id: routes.m_circle,
+                    title: "مکان هندسی اندازه ثابت",
+                    type: "item",
+                    url: `${routes.chapter}06/${routes.m_circle}`,
+                    icon: icons.IconBike,
+                    breadcrumbs: false,
+                },
+                {
+                    id: routes.n_circle,
+                    title: "مکان هندسی فاز ثابت",
+                    type: "item",
+                    url: `${routes.chapter}06/${routes.n_circle}`,
+                    icon: icons.IconBike,
+                    breadcrumbs: false,
+                },
+            ],
+        };
+    else if (hierarchy[0] === `${routes.chapter}07`)
+        topics = {
+            id: "topics",
+            title: "مباحث",
+            type: "group",
+            children: [
+                {
+                    id: routes.pid,
+                    title: "کنترل کننده ی PID",
+                    type: "item",
+                    url: `${routes.chapter}07/${routes.pid}`,
+                    icon: icons.IconBike,
+                    breadcrumbs: false,
+                },
+            ],
+        };
     return {
         items: [topics],
         load,

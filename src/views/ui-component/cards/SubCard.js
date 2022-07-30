@@ -41,7 +41,9 @@ const SubCard = forwardRef(({ children, content, contentClass, darkBorder, darkT
 
             {/* card content */}
             {content && (
-                <CardContent sx={{ p: 2.5, ...contentSX }} className={contentClass || ''}>
+                <CardContent sx={{ p: 2.5, ...contentSX }} 
+            style={{overflowX: 'auto'}}
+            className={contentClass || ''}>
                     {children}
                 </CardContent>
             )}

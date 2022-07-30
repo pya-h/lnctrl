@@ -36,7 +36,7 @@ const NavBar = () => {
         { title: "فصل ۴", link: `${routes.root}${routes.chapter}04/${routes.hurwitz_criterion}` },
         { title: "فصل ۵", link: `${routes.root}${routes.chapter}05/${routes.root_locus}` },
         { title: "فصل ۶", link: `${routes.root}${routes.chapter}06/${routes.rc_filter_frequency_response}` },
-        { title: "فصل ۷", link: `${routes.root}${routes.chapter}07` },
+        { title: "فصل ۷", link: `${routes.root}${routes.chapter}07/${routes.pid}` },
 
         { title: "ابزار", link: "/toolbox" },
     ];

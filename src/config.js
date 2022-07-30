@@ -23,6 +23,7 @@ const routes = {
     nicoles_chart: 'nicoles_chart',
     m_circle: 'm_circle',
     n_circle: 'n_circle',
+    pid: 'pid'
 };
 
 const error_codes = {

@@ -17,6 +17,7 @@ const symbols = {
 };
 let currentRawNum = "",
     currentRawDen = "";
+
 const BodePlot = () => {
     const [rawNumerator, $rawNumerator] = useState("1");
     const [rawDenominator, $rawDenominator] = useState("1 1");
@@ -36,6 +37,8 @@ const BodePlot = () => {
     const [is3DPlotEnabled, $3DPlotEnabled] = useState(false);
     const [phaseInRadianScale, setPhaseInRadianScale] = useState(true); // for degree => 180 / PI, for radian scale => 1.0
     const [N, $N] = useState(1000);
+    const [K, $K] = useState(1);
+
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
     const capture = () => {
         const capturedSystems = [...systems];
@@ -140,6 +143,18 @@ const BodePlot = () => {
         else $systems(newSystemList);
         $H_s(multipliedSystem);
     };
+    const traceGainChange = () => {
+        const KH_s = H_s.multiply(K);
+        return calculus.systemToTrace(
+            KH_s.bode,
+            +w_min,
+            +w_max,
+            thickness,
+            `K=${K}`,
+            is3DPlotEnabled,
+            +N
+        );
+    };
     useEffect(() => {
         try {
             if (
@@ -152,6 +167,7 @@ const BodePlot = () => {
                 currentRawNum = rawNumerator;
                 currentRawDen = rawDenominator;
                 $H_s(h_s);
+                $K(1);
             }
         } catch (ex) {
             console.log(ex);
@@ -243,6 +259,8 @@ const BodePlot = () => {
                                     }
                                     N={N}
                                     $N={$N}
+                                    K={K}
+                                    $K={$K}
                                     multiplier={multiplyPlotBy}
                                 />
                             </Grid>
@@ -263,7 +281,7 @@ const BodePlot = () => {
                                         <GraphBox
                                             logX={true}
                                             title="نمودار بود"
-                                            traces={traces.amplitude}
+                                            traces={K !== 1 ? [...traces.amplitude, traceGainChange()] : traces.amplitude}
                                         />
                                     </Grid>
                                     <Grid lg={9} md={9} sm={12} xs={12} item>

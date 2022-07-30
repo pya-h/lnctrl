@@ -1,4 +1,12 @@
-import { Grid, Button, Fab } from "@mui/material";
+import {
+    Grid,
+    Button,
+    Fab,
+    Stack,
+    Slider,
+    TextField,
+    InputAdornment,
+} from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
 import { gridSpacing } from "store/constant";
@@ -28,6 +36,8 @@ const BodePlotParameters = ({
     N,
     $N,
     multiplier,
+    K,
+    $K,
 }) => {
     return (
         <SubCard
@@ -128,6 +138,35 @@ const BodePlotParameters = ({
                             <MathJax>{"$$\\lgroup - \\rgroup$$"}</MathJax>
                         </AnimateButton>
                     </Fab>
+                </Grid>
+            </Grid>
+            <br />
+
+            <hr />
+            <br />
+            <Grid
+                xs={12}
+                style={{ textAlign: "center", border: '1px solid grey', borderRadius: '1rem', paddingBottom: '0.5rem', paddingRight: '0.5rem', margin: 'auto' }}
+                spacing={gridSpacing}
+                container
+            >
+                <Grid xs={12} item>
+                    تاثیر تغییر بهره در نمودار بود
+                </Grid>
+                <Grid xs={9} item>
+                    <Slider sx={{mt: 1}}
+                        aria-label="Volume"
+                        value={K}
+                        onChange={(e, value) => $K(value)}
+                    />
+                </Grid>
+                <Grid  xs={3} item>
+                    <TextField
+                        onChange={(e) => $K(e.target.value)}
+                        value={K}
+                        sx={{ width: "100%" }}
+                       
+                    />
                 </Grid>
             </Grid>
         </SubCard>

@@ -1,6 +1,5 @@
 import Algebra from "math/algebra";
 import Poly from "./poly";
-import Complex from '../complex';
 
 export default class Fraction extends Algebra {
     constructor(num, den = [1], symbol = "t", params = {}) {

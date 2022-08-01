@@ -10,7 +10,6 @@ import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrow
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import calculus from "math/calculus/index";
 import Complex from "math/algebra/complex";
-import Fraction from "math/algebra/functions/fraction";
 import TransferFunction from "math/algebra/functions/transfer";
 import Exp from "math/algebra/functions/exp";
 import Poly from "math/algebra/functions/poly";

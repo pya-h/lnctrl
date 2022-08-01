@@ -5,7 +5,22 @@ class Complex extends Algebra {
     constructor(preal, pimage = 0, params = {}) {
         super(preal, { symbol: "j", type: "complex", b: pimage, ...params });
     }
-
+    static ToCouples = (arrComplex) => {
+        const n = arrComplex.length;
+        if (n >= 1) {
+            const reals = Array(n).fill(0),
+                imaginaries = Array(n).fill(0);
+            for (let i = 0; i < n; i++) {
+                if (arrComplex[i] instanceof Complex) {
+                    reals[i] = arrComplex[i].real();
+                    imaginaries[i] = arrComplex[i].imaginary();
+                } else
+                    reals[i] = arrComplex[i];
+            }
+            return [reals, imaginaries];
+        }
+        return [];
+    }
     hasMultiTerms = () =>
         this.plus || (this.a.toString() !== "0" && this.b.toString() !== "0");
 
@@ -25,11 +40,10 @@ class Complex extends Algebra {
             if (im < 0) {
                 im *= -1;
                 formula += " - ";
-            } else if(im instanceof Algebra && im.getA() < 0){
+            } else if (im instanceof Algebra && im.getA() < 0) {
                 im.setA(-im.getA());
                 formula += " - ";
-            } 
-            else if (rl !== 0) formula += " + ";
+            } else if (rl !== 0) formula += " + ";
 
             formula += this.symbol;
             if (im !== 1)

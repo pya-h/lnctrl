@@ -73,7 +73,6 @@ export default class Equation {
         return `${coef}${symbol}^${termDegree}`;
     };
     solve = () => {
-        console.log(this.expression);
         // for factorable equations use: algebrite.roots
         let x = Algebrite.nroots(this.expression)
             .toString()

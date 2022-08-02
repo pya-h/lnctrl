@@ -1,5 +1,5 @@
 import SubCard from "views/ui-component/cards/SubCard";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
 import { mathjaxSpaces } from "toolshed";
@@ -39,60 +39,88 @@ const SOTFByPolesLecture = () => {
             sx={{ direction: "rtl" }}
             spacing={gridSpacing}
         >
-            <Grid className="lecture-text"  style={{ fontSize: "20px" }} item>
-                <p>
-                    &nbsp; &nbsp; &nbsp; &nbsp; پاسخ سیستم مرتبه دوم به ورودی
-                    پله یکی از سه حالت زیر می باشد:
-                </p>
-            </Grid>
-            <SubCard>
-                <Grid sx={{ my: 4 }} className="lecture-text" item>
-                    <h1>&nbsp; پاسخ میرای شدید</h1>
-                </Grid>
-                <Grid sx={{ my: 4 }}  style={{ fontSize: "20px" }} className="lecture-text" item>
+            <Typography>
+                <Grid
+                    className="lecture-text"
+                    style={{ fontSize: "20px" }}
+                    item
+                >
                     <p>
-                        &nbsp; &nbsp; &nbsp; &nbsp; در این حالت سیستم دو قطب
-                        حقیقی منفی دارد.
+                        &nbsp; &nbsp; &nbsp; &nbsp; پاسخ سیستم مرتبه دوم به
+                        ورودی پله یکی از سه حالت زیر می باشد:
                     </p>
                 </Grid>
-                <Grid style={{ fontSize: "20px" }} item>
-                    <MathJax>{sotfExtremeMortalFormula}</MathJax>
-                </Grid>
-            </SubCard>
-            <SubCard sx={{ my: 4 }}>
-                <Grid className="lecture-text" item>
-                    <h1>&nbsp; پاسخ میرای بحرانی</h1>
-                </Grid>
-                <Grid sx={{ my: 4 }}  style={{ fontSize: "20px" }} className="lecture-text" item>
+                <SubCard>
+                    <Grid sx={{ my: 4 }} className="lecture-text" item>
+                        <h1>&nbsp; پاسخ میرای شدید</h1>
+                    </Grid>
+                    <Grid
+                        sx={{ my: 4 }}
+                        style={{ fontSize: "20px" }}
+                        className="lecture-text"
+                        item
+                    >
+                        <p>
+                            &nbsp; &nbsp; &nbsp; &nbsp; در این حالت سیستم دو قطب
+                            حقیقی منفی دارد.
+                        </p>
+                    </Grid>
+                    <Grid style={{ fontSize: "20px" }} item>
+                        <MathJax>{sotfExtremeMortalFormula}</MathJax>
+                    </Grid>
+                </SubCard>
+                <SubCard sx={{ my: 4 }}>
+                    <Grid className="lecture-text" item>
+                        <h1>&nbsp; پاسخ میرای بحرانی</h1>
+                    </Grid>
+                    <Grid
+                        sx={{ my: 4 }}
+                        style={{ fontSize: "20px" }}
+                        className="lecture-text"
+                        item
+                    >
+                        <p>
+                            &nbsp; &nbsp; &nbsp; &nbsp; در این حالت سیستم دو قطب
+                            حقیقی منفی برابر دارد.
+                        </p>
+                    </Grid>
+                    <Grid style={{ fontSize: "20px" }} item>
+                        <MathJax>{sotfCriticalFormula}</MathJax>
+                    </Grid>
+                </SubCard>
+                <SubCard sx={{ my: 4 }}>
+                    <Grid className="lecture-text" item>
+                        <h1>&nbsp; پاسخ میرای ضعیف (نوسانی)</h1>
+                    </Grid>
+                    <Grid
+                        sx={{ my: 4 }}
+                        style={{ fontSize: "20px" }}
+                        className="lecture-text"
+                        item
+                    >
+                        <p>
+                            &nbsp; &nbsp; &nbsp; &nbsp; در این حالت سیستم دو قطب
+                            مزدوج با مقدار حقیقی منفی دارد.
+                        </p>
+                    </Grid>
+                    <Grid style={{ fontSize: "20px" }} item>
+                        <MathJax>{sotfWeakFormula}</MathJax>
+                    </Grid>
+                </SubCard>
+                <Grid
+                    sx={{ my: 4 }}
+                    style={{ fontSize: "20px" }}
+                    className="lecture-text"
+                    item
+                >
                     <p>
-                        &nbsp; &nbsp; &nbsp; &nbsp; در این حالت سیستم دو قطب
-                        حقیقی منفی برابر دارد.
+                        &nbsp; &nbsp; &nbsp; &nbsp; پاسخ اکثر سیستم های خطی در
+                        عمل به صورت میرای ضعیف است. لذا معیارهای عملکرد در حوزه
+                        ی زمان برای بررسی و تحلیل سیستم های کنترل خطی از این
+                        پاسخ استخراج می شود.
                     </p>
                 </Grid>
-                <Grid style={{ fontSize: "20px" }} item>
-                    <MathJax>{sotfCriticalFormula}</MathJax>
-                </Grid>
-            </SubCard>
-            <SubCard sx={{ my: 4 }}>
-                <Grid className="lecture-text" item>
-                    <h1>&nbsp; پاسخ میرای ضعیف (نوسانی)</h1>
-                </Grid>
-                <Grid sx={{ my: 4 }}  style={{ fontSize: "20px" }} className="lecture-text" item>
-                    <p>
-                        &nbsp; &nbsp; &nbsp; &nbsp; در این حالت سیستم دو قطب
-                        مزدوج با مقدار حقیقی منفی دارد.
-                    </p>
-                </Grid>
-                <Grid style={{ fontSize: "20px" }} item>
-                    <MathJax>{sotfWeakFormula}</MathJax>
-                </Grid>
-            </SubCard>
-            <Grid sx={{ my: 4 }} style={{ fontSize: "20px" }} className="lecture-text" item>
-                <p>&nbsp; &nbsp; &nbsp; &nbsp;
-                    پاسخ اکثر سیستم های خطی در عمل به صورت میرای ضعیف است. لذا معیارهای عملکرد در حوزه ی زمان برای بررسی و تحلیل سیستم های کنترل خطی
-                    از این پاسخ استخراج می شود.
-                </p>
-            </Grid>
+            </Typography>
         </SubCard>
     );
 };

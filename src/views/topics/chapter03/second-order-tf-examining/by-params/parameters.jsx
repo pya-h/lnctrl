@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import CoordinateSystem from "views/input-boxes/CoordinateSystem";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
@@ -51,9 +51,9 @@ const SOTFByParamsInputs = ({
                 />
 
                 <Grid sx={{ mt: 1 }} md={12} sm={4} xs={6} item>
-                    <p style={{ textAlign: "center" }}>
+                    <Typography style={{ textAlign: "center" }}>
                         مقدار پارامترها را از اینجا هم می توانید تغییر دهید
-                    </p>
+                    </Typography>
 
                     <CoordinateSystem
                         point={{

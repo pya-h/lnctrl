@@ -3,7 +3,7 @@ import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus/index";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import GraphBox from "views/plotter/GraphBox";
 import { MathJax } from "better-react-mathjax";
 import BodePlotParameters from "./parameters";
@@ -92,8 +92,10 @@ const BodePlotExample = () => {
                             systems[i].legend,
                             is3DPlotEnabled,
                             +N
-                        )
-                        all.phase[i].y = all.phase[i].y.map(phi => ((phi - (2 * Math.PI)) % (2 * Math.PI)));
+                        );
+                        all.phase[i].y = all.phase[i].y.map(
+                            (phi) => (phi - 2 * Math.PI) % (2 * Math.PI)
+                        );
                         all.degreePhase[i] = { ...all.phase[i] };
                         all.degreePhase[i].y = all.degreePhase[i].y.map(
                             (yi) => yi * calculus.RadianToDegree
@@ -120,7 +122,9 @@ const BodePlotExample = () => {
                                 is3DPlotEnabled,
                                 +N
                             );
-                        phase.y = phase.y.map(phi => ((phi - (2 * Math.PI)) % (2 * Math.PI)));
+                        phase.y = phase.y.map(
+                            (phi) => (phi - 2 * Math.PI) % (2 * Math.PI)
+                        );
                         const degreePhase = { ...phase };
                         degreePhase.y = degreePhase.y.map(
                             (yi) => yi * calculus.RadianToDegree
@@ -190,7 +194,11 @@ const BodePlotExample = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">مثالی از نمودار بود</h2>
+                <Typography>
+                    <h2 className="chapter-section-title">
+                        مثالی از نمودار بود
+                    </h2>
+                </Typography>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={gridSpacing}>

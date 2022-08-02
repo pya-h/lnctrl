@@ -3,7 +3,7 @@ import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus/index";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import GraphBox from "views/plotter/GraphBox";
 import { MathJax } from "better-react-mathjax";
 import PIDParameters from "./parameters";
@@ -169,7 +169,9 @@ const PID = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">نمودار بود</h2>
+                <Typography>
+                    <h2 className="chapter-section-title">کنترل کننده PID</h2>
+                </Typography>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={1}>

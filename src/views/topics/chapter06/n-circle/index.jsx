@@ -3,7 +3,7 @@ import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus/index";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import GraphBox from "views/plotter/GraphBox";
 import NCircleParameters from "./parameters";
 import MainCard from "views/ui-component/cards/MainCard";
@@ -29,9 +29,7 @@ const NCircle = () => {
 
     const capture = () => {
         const capturedSystems = [...systems];
-        const index = capturedSystems.findIndex(
-            (sys) => sys.N === +N
-        );
+        const index = capturedSystems.findIndex((sys) => sys.N === +N);
         if (index === -1) {
             const n = phaseInRadianScale ? +N : +N * calculus.DegreeToRadian;
             const unit = phaseInRadianScale ? "rad" : "°";
@@ -51,8 +49,9 @@ const NCircle = () => {
             // so that the traces will be loaded with new conditions
             let repeatedSystem = false;
             const all = Array(systems.length);
-            let n = +N, legend = `N = ${+N} rad`;
-            if(!phaseInRadianScale){
+            let n = +N,
+                legend = `N = ${+N} rad`;
+            if (!phaseInRadianScale) {
                 legend = `N = ${+N} °`;
                 n *= calculus.DegreeToRadian;
             }
@@ -75,13 +74,8 @@ const NCircle = () => {
 
             if (!repeatedSystem) {
                 // if current system isnt in traces list => add it temperory to plot
-               
-                const [x, y] = calculus.nCircle(
-                    n,
-                    x_i,
-                    x_f,
-                    +iterations
-                );
+
+                const [x, y] = calculus.nCircle(n, x_i, x_f, +iterations);
                 all.push(
                     calculus.arrayToTrace(
                         [...x, ...x],
@@ -113,7 +107,11 @@ const NCircle = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">مکان هندسی فاز ثابت</h2>
+                <Typography>
+                    <h2 className="chapter-section-title">
+                        مکان هندسی فاز ثابت
+                    </h2>
+                </Typography>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={gridSpacing}>
@@ -171,19 +169,12 @@ const NCircle = () => {
                             <hr />
                             <Grid lg={12} md={12} sm={12} xs={12} item>
                                 <SubCard>
-
-                                        <Grid
-                                            lg={9}
-                                            md={9}
-                                            sm={12}
-                                            xs={12}
-                                            item
-                                        >
-                                            <GraphBox
-                                                title="N-Circle"
-                                                traces={traces}
-                                            />
-                                        </Grid>
+                                    <Grid lg={9} md={9} sm={12} xs={12} item>
+                                        <GraphBox
+                                            title="N-Circle"
+                                            traces={traces}
+                                        />
+                                    </Grid>
                                 </SubCard>
                             </Grid>
                         </Grid>

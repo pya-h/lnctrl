@@ -1,4 +1,4 @@
-import { Button, Grid } from "@mui/material";
+import { Button, Grid, Typography } from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
 import { gridSpacing } from "store/constant";
@@ -61,9 +61,9 @@ const RootLocusParameters = ({
             </Grid>
             {responseTime && (
                 <Grid xs={12} sx={{ mt: 1 }} item>
-                    <p style={{ textAlign: "center", color: "coral" }}>
+                    <Typography style={{ textAlign: "center", color: "coral" }}>
                         مدت زمان عملیات: {responseTime} ثانیه
-                    </p>
+                    </Typography>
                 </Grid>
             )}
         </Grid>

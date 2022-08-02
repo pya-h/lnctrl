@@ -1,5 +1,5 @@
 import SubCard from "../../../ui-component/cards/SubCard";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
 
 const NicolesChartLecture = () => {
@@ -9,13 +9,12 @@ const NicolesChartLecture = () => {
             darkBorder={true}
             sx={{ direction: "rtl" }}
         >
-            <Grid className="lecture-text" item>
-                <p>
-                    &nbsp; ترکیب نمودار اندازه و فاز بود با حذف محور
-                    ω
-                    در یک صفحه را نمودار اندازه و فاز می گویند.
-                </p>
-            </Grid>
+            <Typography>
+                <Grid className="lecture-text" item>
+                    &nbsp; ترکیب نمودار اندازه و فاز بود با حذف محور ω در یک
+                    صفحه را نمودار اندازه و فاز می گویند.
+                </Grid>
+            </Typography>
         </SubCard>
     );
 };

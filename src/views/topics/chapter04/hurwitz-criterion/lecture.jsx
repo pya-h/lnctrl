@@ -1,5 +1,5 @@
 import SubCard from "../../../ui-component/cards/SubCard";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
 
 import { MathJax } from "better-react-mathjax";
@@ -13,6 +13,7 @@ const HurwitzCriterionLecture = () => {
             darkBorder={true}
             sx={{ direction: "rtl" }}
         >
+            <Typography>
             <Grid className="lecture-text" item>
                 <p>
                     &nbsp; &nbsp; &nbsp; &nbsp; تمامی ریشه های معادله ی مشخصه در
@@ -44,6 +45,7 @@ const HurwitzCriterionLecture = () => {
                     ۲- غیرصفر بودن تمام a<sub>i</sub> ها: در غیر اینصورت ریشه ای روی محور موهومی و یا سمت راست آن قرار دارد. (وجود ریشه ای که سمت چپ محور موهومی نیست.)  
                 </p>
             </Grid>
+            </Typography>
         </SubCard>
     );
 };

@@ -3,7 +3,7 @@ import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus/index";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import GraphBox from "views/plotter/GraphBox";
 import { MathJax } from "better-react-mathjax";
 import DelayedSystemsExampleParameters from "./parameters";
@@ -19,7 +19,7 @@ const symbols = {
 let currentT_d = "",
     currentRawDen = "";
 const DelayedSystemsExample = () => {
-    const [T_d, $T_d] = useState('1');
+    const [T_d, $T_d] = useState("1");
     const [rawDenominator, $rawDenominator] = useState("1 1");
     const [H_s, $H_s] = useState(null);
     const [NoDelayH_s, $NoDelayH_s] = useState(null);
@@ -37,7 +37,7 @@ const DelayedSystemsExample = () => {
     const [phaseInRadianScale, setPhaseInRadianScale] = useState(true); // for degree => 180 / PI, for radian scale => 1.0
     const [N, $N] = useState(1000);
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
-    
+
     useEffect(() => {
         // plot
         if (H_s) {
@@ -149,7 +149,11 @@ const DelayedSystemsExample = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">سیستم های تاخیردار</h2>
+                <Typography>
+                    <h2 className="chapter-section-title">
+                        سیستم های تاخیردار
+                    </h2>
+                </Typography>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={gridSpacing}>

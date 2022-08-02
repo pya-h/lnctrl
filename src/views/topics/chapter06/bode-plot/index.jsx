@@ -3,7 +3,7 @@ import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus/index";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import GraphBox from "views/plotter/GraphBox";
 import { MathJax } from "better-react-mathjax";
 import BodePlotParameters from "./parameters";
@@ -185,7 +185,9 @@ const BodePlot = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">نمودار بود</h2>
+                <Typography>
+                    <h2 className="chapter-section-title">نمودار بود</h2>
+                </Typography>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={1}>
@@ -281,7 +283,14 @@ const BodePlot = () => {
                                         <GraphBox
                                             logX={true}
                                             title="نمودار بود"
-                                            traces={K !== 1 ? [...traces.amplitude, traceGainChange()] : traces.amplitude}
+                                            traces={
+                                                K !== 1
+                                                    ? [
+                                                          ...traces.amplitude,
+                                                          traceGainChange(),
+                                                      ]
+                                                    : traces.amplitude
+                                            }
                                         />
                                     </Grid>
                                     <Grid lg={9} md={9} sm={12} xs={12} item>

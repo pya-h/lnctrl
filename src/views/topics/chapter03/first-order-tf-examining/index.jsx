@@ -5,7 +5,7 @@ import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus/index";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import GraphBox from "views/plotter/GraphBox";
 import { MathJax } from "better-react-mathjax";
 import FirstOrderTfParameters from "./parameters";
@@ -154,7 +154,7 @@ const FirstOrderTransferFunctionExamining = () => {
             g_t = calculus.LTI.ramp(1, +k, +a);
             $response(rampResponse(+k, +a));
         }
-        const [x, y] = calculus.pointify(g_t, +t_i, +t_f, +N); 
+        const [x, y] = calculus.pointify(g_t, +t_i, +t_f, +N);
         // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
         // so that the traces will be loaded with new conditions
         const all = systems.map((e, index) => {
@@ -166,7 +166,7 @@ const FirstOrderTransferFunctionExamining = () => {
             } else {
                 g_t = calculus.LTI.ramp(1, e.k, e.a);
             }
-            const [xi, yi] = calculus.pointify(g_t, +t_i, +t_f, +N); 
+            const [xi, yi] = calculus.pointify(g_t, +t_i, +t_f, +N);
 
             return {
                 x: xi,
@@ -217,7 +217,11 @@ const FirstOrderTransferFunctionExamining = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">توابع تبدیل مرتبه یک</h2>
+                <Typography>
+                    <h2 className="chapter-section-title">
+                        توابع تبدیل مرتبه یک
+                    </h2>
+                </Typography>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={1}>

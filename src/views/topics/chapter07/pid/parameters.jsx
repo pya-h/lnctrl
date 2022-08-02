@@ -1,4 +1,4 @@
-import { Grid, Button, Fab } from "@mui/material";
+import { Grid, Button, Fab, Typography } from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
 import { gridSpacing } from "store/constant";
@@ -57,9 +57,9 @@ const PIDParameters = ({
                 </Grid>
                 <Grid xs={12} style={{ paddingLeft: "3%" }} container>
                     <Grid xs={12} item>
-                        <p dir="rtl" style={{ textAlign: "center" }}>
+                        <Typography dir="rtl" style={{ textAlign: "center" }}>
                             خروجی فاز بر حسب:
-                        </p>
+                        </Typography>
                     </Grid>
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button

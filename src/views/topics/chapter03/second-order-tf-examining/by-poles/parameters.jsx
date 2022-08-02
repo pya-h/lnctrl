@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import CoordinateSystem from "views/input-boxes/CoordinateSystem";
 import SubCard from "views/ui-component/cards/SubCard";
 import Complex from "math/algebra/complex";
@@ -82,9 +82,9 @@ const SOTFByPolesInputs = ({
                 />
 
                 <Grid sx={{ mt: 1 }} md={12} sm={4} xs={6} item>
-                    <p style={{ textAlign: "center" }}>
+                    <Typography style={{ textAlign: "center" }}>
                         محل قطب ها را انتخاب کنید
-                    </p>
+                    </Typography>
 
                     <CoordinateSystem
                         point={{

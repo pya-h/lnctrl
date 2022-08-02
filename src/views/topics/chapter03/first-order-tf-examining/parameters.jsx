@@ -1,4 +1,4 @@
-import { Grid, Button } from "@mui/material";
+import { Grid, Button, Typography } from "@mui/material";
 import CoordinateSystem from "views/input-boxes/CoordinateSystem";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
@@ -67,7 +67,7 @@ const FOTFParameters = ({
                 <SimpleParametersList parameters={[a, k, t_i, t_f, N]} setters={[$a, $k, $t_i, $t_f, $N]} labels={parameterFormulas} units={parameterUnits} />
                 
                 <Grid sx={{ mt: 1 }} md={12} sm={4} xs={6} item>
-                    <p style={{textAlign: 'center'}}>محل قطب را انتخاب کنید</p>
+                    <Typography style={{textAlign: 'center'}}>محل قطب را انتخاب کنید</Typography>
                     <CoordinateSystem
                         point={{ x: -a, y: 0, select: selectRealPart }}
                         options={{ pointSize: 10, grids }}

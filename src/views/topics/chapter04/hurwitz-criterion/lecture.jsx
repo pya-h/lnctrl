@@ -1,5 +1,5 @@
 import SubCard from "../../../ui-component/cards/SubCard";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
 
 import { MathJax } from "better-react-mathjax";
@@ -13,6 +13,7 @@ const HurwitzCriterionLecture = () => {
             darkBorder={true}
             sx={{ direction: "ltr" }}
         >
+            <Typography>
             <Grid className="lecture-text" item>
                 <p>
                     All roots of the characteristic equation lie to the left of the imaginary axis if and only if:
@@ -41,6 +42,7 @@ const HurwitzCriterionLecture = () => {
                 <p>2- All a being nonzero<sub>i</sub> s: Otherwise, a root lies on the imaginary axis or to its right. (There exists a root that is not to the left of the imaginary axis.)  
                 </p>
             </Grid>
+            </Typography>
         </SubCard>
     );
 };

@@ -1,5 +1,5 @@
 import SubCard from "views/ui-component/cards/SubCard";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
 import { mathjaxSpaces } from "toolshed";
@@ -39,54 +39,81 @@ const SOTFByPolesLecture = () => {
             sx={{ direction: "ltr" }}
             spacing={gridSpacing}
         >
-            <Grid className="lecture-text"  style={{ fontSize: "20px" }} item>
-                <p>
-                    The response of a second-order system to a step input is one of the following three cases:
-                </p>
-            </Grid>
-            <SubCard>
-                <Grid sx={{ my: 4 }} className="lecture-text" item>
-                    <h1>Overdamped Response</h1>
-                </Grid>
-                <Grid sx={{ my: 4 }}  style={{ fontSize: "20px" }} className="lecture-text" item>
+            <Typography>
+                <Grid
+                    className="lecture-text"
+                    style={{ fontSize: "20px" }}
+                    item
+                >
                     <p>
-                        In this case, the system has two negative real poles.
+                        The response of a second-order system to a step input is one of the following three cases:
                     </p>
                 </Grid>
-                <Grid style={{ fontSize: "20px" }} item>
-                    <MathJax>{sotfExtremeMortalFormula}</MathJax>
-                </Grid>
-            </SubCard>
-            <SubCard sx={{ my: 4 }}>
-                <Grid className="lecture-text" item>
-                    <h1>Critically Damped Response</h1>
-                </Grid>
-                <Grid sx={{ my: 4 }}  style={{ fontSize: "20px" }} className="lecture-text" item>
+                <SubCard>
+                    <Grid sx={{ my: 4 }} className="lecture-text" item>
+                        <h1>Overdamped Response</h1>
+                    </Grid>
+                    <Grid
+                        sx={{ my: 4 }}
+                        style={{ fontSize: "20px" }}
+                        className="lecture-text"
+                        item
+                    >
+                        <p>
+                            In this case, the system has two negative real poles.
+                        </p>
+                    </Grid>
+                    <Grid style={{ fontSize: "20px" }} item>
+                        <MathJax>{sotfExtremeMortalFormula}</MathJax>
+                    </Grid>
+                </SubCard>
+                <SubCard sx={{ my: 4 }}>
+                    <Grid className="lecture-text" item>
+                        <h1>Critically Damped Response</h1>
+                    </Grid>
+                    <Grid
+                        sx={{ my: 4 }}
+                        style={{ fontSize: "20px" }}
+                        className="lecture-text"
+                        item
+                    >
+                        <p>
+                            In this case, the system has two equal negative real poles.
+                        </p>
+                    </Grid>
+                    <Grid style={{ fontSize: "20px" }} item>
+                        <MathJax>{sotfCriticalFormula}</MathJax>
+                    </Grid>
+                </SubCard>
+                <SubCard sx={{ my: 4 }}>
+                    <Grid className="lecture-text" item>
+                        <h1>Underdamped (oscillatory) response</h1>
+                    </Grid>
+                    <Grid
+                        sx={{ my: 4 }}
+                        style={{ fontSize: "20px" }}
+                        className="lecture-text"
+                        item
+                    >
+                        <p>
+                            In this case, the system has two conjugate poles with a negative real value.
+                        </p>
+                    </Grid>
+                    <Grid style={{ fontSize: "20px" }} item>
+                        <MathJax>{sotfWeakFormula}</MathJax>
+                    </Grid>
+                </SubCard>
+                <Grid
+                    sx={{ my: 4 }}
+                    style={{ fontSize: "20px" }}
+                    className="lecture-text"
+                    item
+                >
                     <p>
-                        In this case, the system has two equal negative real poles.
+                        In practice, the response of most linear systems is underdamped. Therefore, the time-domain performance criteria for studying and analyzing linear control systems are derived from this response.
                     </p>
                 </Grid>
-                <Grid style={{ fontSize: "20px" }} item>
-                    <MathJax>{sotfCriticalFormula}</MathJax>
-                </Grid>
-            </SubCard>
-            <SubCard sx={{ my: 4 }}>
-                <Grid className="lecture-text" item>
-                    <h1>Underdamped (oscillatory) response</h1>
-                </Grid>
-                <Grid sx={{ my: 4 }}  style={{ fontSize: "20px" }} className="lecture-text" item>
-                    <p>
-                        In this case, the system has two conjugate poles with a negative real value.
-                    </p>
-                </Grid>
-                <Grid style={{ fontSize: "20px" }} item>
-                    <MathJax>{sotfWeakFormula}</MathJax>
-                </Grid>
-            </SubCard>
-            <Grid sx={{ my: 4 }} style={{ fontSize: "20px" }} className="lecture-text" item>
-                <p>In practice, the response of most linear systems is underdamped. Therefore, the time-domain performance criteria for studying and analyzing linear control systems are derived from this response.
-                </p>
-            </Grid>
+            </Typography>
         </SubCard>
     );
 };

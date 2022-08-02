@@ -1,4 +1,4 @@
-import { Grid, Button, Fab } from "@mui/material";
+import { Grid, Button, Fab, Typography } from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
 import { gridSpacing } from "store/constant";
@@ -99,9 +99,9 @@ const BodePlotExampleParameters = ({
                 </Grid>
                 <Grid xs={12} style={{ paddingLeft: "3%" }} container>
                     <Grid xs={12} item>
-                        <p dir="ltr" style={{ textAlign: "center" }}>
+                        <Typography dir="ltr" style={{ textAlign: "center" }}>
                             Phase output in terms of:
-                        </p>
+                        </Typography>
                     </Grid>
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button

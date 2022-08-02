@@ -1,4 +1,4 @@
-import { Grid, Button } from "@mui/material";
+import { Grid, Button, Typography } from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
 import { gridSpacing } from "store/constant";
@@ -45,7 +45,7 @@ const NCircleParameters = ({
                 </Grid>
                 <Grid xs={12} style={{ paddingLeft: "3%" }} container>
                     <Grid xs={12} item>
-                        <p dir="ltr" style={{textAlign:'center'}}>Phase input in terms of:</p>
+                        <Typography dir="ltr" style={{textAlign:'center'}}>Phase input in terms of:</Typography>
                     </Grid>
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button

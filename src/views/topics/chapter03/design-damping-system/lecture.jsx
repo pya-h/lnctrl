@@ -1,5 +1,5 @@
 import SubCard from "views/ui-component/cards/SubCard";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import "../../topics.css";
 import { MathJax } from "better-react-mathjax";
 import { gridSpacing } from "store/constant";
@@ -21,18 +21,28 @@ const DesignSystemByCharsLecture = () => {
             sx={{ direction: "ltr" }}
             spacing={gridSpacing}
         >
-            <Grid className="lecture-text" style={{ fontSize: "20px" }} item>
-                <p>Peak time (Rise Time)</p>
-            </Grid>
-            <Grid style={{ fontSize: "20px" }} item>
-                <MathJax>{t_riseFormula}</MathJax>
-            </Grid>
-            <Grid className="lecture-text" style={{ fontSize: "20px" }} item>
-                <p>Overshoot</p>
-            </Grid>
-            <Grid style={{ fontSize: "20px" }} item>
-                <MathJax>{overshootFormula}</MathJax>
-            </Grid>
+            <Typography>
+                <Grid
+                    className="lecture-text"
+                    style={{ fontSize: "20px" }}
+                    item
+                >
+                    <p>Peak time (Rise Time)</p>
+                </Grid>
+                <Grid style={{ fontSize: "20px" }} item>
+                    <MathJax>{t_riseFormula}</MathJax>
+                </Grid>
+                <Grid
+                    className="lecture-text"
+                    style={{ fontSize: "20px" }}
+                    item
+                >
+                    <p>Overshoot</p>
+                </Grid>
+                <Grid style={{ fontSize: "20px" }} item>
+                    <MathJax>{overshootFormula}</MathJax>
+                </Grid>
+            </Typography>
         </SubCard>
     );
 };

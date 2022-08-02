@@ -1,5 +1,5 @@
 import SubCard from "../../../ui-component/cards/SubCard";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import simple_LTI_system from "./visual/simple_lti_system.png";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
@@ -37,115 +37,117 @@ const FOTFLecture = () => {
             darkBorder={true}
             sx={{ direction: "ltr" }}
         >
-            <Grid className="lecture-text" item>
-                <p>
-                    These transfer functions are of the following form:
-                </p>
-            </Grid>
-            <Grid item>
-                <MathJax>{firstOrderTransferFunctionFormFormula}</MathJax>
-            </Grid>
-            <Grid className="lecture-text" item>
-                <h1 style={{ marginTop: "5%", marginBottom: "3%" }}>
-                    Steady-State Response
-                </h1>
-                <p>
-                    The diagram of a simple LTI system is as follows:
-                </p>
-            </Grid>
-            <Grid item>
-                <img
-                    className="lecture-image"
-                    src={simple_LTI_system}
-                    alt="Image loading failed"
-                />
-            </Grid>
-            <Grid style={{ fontSize: "20px" }} item>
-                <MathJax>
-                    {firstOrderTransferFunctionSteadyStateTransientFormula}
-                </MathJax>
-            </Grid>
-            <Grid style={{ fontSize: "20px" }} item>
-                <MathJax>{steadyStateCalculationsFormula}</MathJax>
-            </Grid>
-            <Grid className="lecture-text" item>
-                <p>
-                    Note: According to the final value theorem, we have:
-                </p>
-            </Grid>
-            <Grid style={{ fontSize: "20px" }} item>
-                <MathJax>{resultOfFinalValueTheorem}</MathJax>
-            </Grid>
-            <Grid sx={{ mt: 1 }} item>
-                <SubCard>
-                    <Grid className="lecture-text" item>
-                        <h1 style={{ marginTop: "5%", marginBottom: "3%" }}>
-                            Unit step response
-                        </h1>
-                        <p>
-                            Now we compute the steady-state response to a unit step input for the aforementioned system:
-                        </p>
-                    </Grid>
-                    <Grid style={{ fontSize: "20px" }} item>
-                        <MathJax>{stepFunctionFormula}</MathJax>
-                    </Grid>
-                    <Grid style={{ fontSize: "20px" }} item>
-                        <MathJax>
-                            {stepResponseOfFirstOrderTfInLaplaceDomain}
-                        </MathJax>
-                    </Grid>
-                    <Grid style={{ fontSize: "20px" }} item>
-                        <MathJax>
-                            {stepResponseOfFirstOrderTfInTimeDomain}
-                        </MathJax>
-                    </Grid>
-                    <Grid className="lecture-text" item>
-                        <p>
-                            As a result, the steady-state value of the system is:
-                        </p>
-                    </Grid>
-                    <Grid style={{ fontSize: "20px" }} item>
-                        <MathJax>
-                            {stepInputSteadyStateValueForFirstOrderTf}
-                        </MathJax>
-                    </Grid>
-                </SubCard>
-            </Grid>
-            <Grid sx={{ mt: 1 }} item>
-                <SubCard>
-                    <Grid className="lecture-text" item>
-                        <h1 style={{ marginTop: "5%", marginBottom: "3%" }}>
-                            Unit ramp response
-                        </h1>
-                        <p>
-                            Now we compute the steady-state response to a unit ramp input for the aforementioned system:
-                        </p>
-                    </Grid>
-                    <Grid style={{ fontSize: "20px" }} item>
-                        <MathJax>{rampFunctionFormula}</MathJax>
-                    </Grid>
-                    <Grid style={{ fontSize: "20px" }} item>
-                        <MathJax>
-                            {rampResponseOfFirstOrderTfInLaplaceDomain}
-                        </MathJax>
-                    </Grid>
-                    <Grid style={{ fontSize: "20px" }} item>
-                        <MathJax>
-                            {rampResponseOfFirstOrderTfInTimeDomain}
-                        </MathJax>
-                    </Grid>
-                    <Grid className="lecture-text" item>
-                        <p>
-                            As a result, the steady-state value of the system is:
-                        </p>
-                    </Grid>
-                    <Grid style={{ fontSize: "20px" }} item>
-                        <MathJax>
-                            {rampInputSteadyStateValueForFirstOrderTf}
-                        </MathJax>
-                    </Grid>
-                </SubCard>
-            </Grid>
+            <Typography>
+                <Grid className="lecture-text" item>
+                    <p>
+                        These transfer functions are of the following form:
+                    </p>
+                </Grid>
+                <Grid item>
+                    <MathJax>{firstOrderTransferFunctionFormFormula}</MathJax>
+                </Grid>
+                <Grid className="lecture-text" item>
+                    <h1 style={{ marginTop: "5%", marginBottom: "3%" }}>
+                        Steady-State Response
+                    </h1>
+                    <p>
+                        The diagram of a simple LTI system is as follows:
+                    </p>
+                </Grid>
+                <Grid item>
+                    <img
+                        className="lecture-image"
+                        src={simple_LTI_system}
+                        alt="Image loading failed"
+                    />
+                </Grid>
+                <Grid style={{ fontSize: "20px" }} item>
+                    <MathJax>
+                        {firstOrderTransferFunctionSteadyStateTransientFormula}
+                    </MathJax>
+                </Grid>
+                <Grid style={{ fontSize: "20px" }} item>
+                    <MathJax>{steadyStateCalculationsFormula}</MathJax>
+                </Grid>
+                <Grid className="lecture-text" item>
+                    <p>
+                        Note: According to the final value theorem, we have:
+                    </p>
+                </Grid>
+                <Grid style={{ fontSize: "20px" }} item>
+                    <MathJax>{resultOfFinalValueTheorem}</MathJax>
+                </Grid>
+                <Grid sx={{ mt: 1 }} item>
+                    <SubCard>
+                        <Grid className="lecture-text" item>
+                            <h1 style={{ marginTop: "5%", marginBottom: "3%" }}>
+                                Unit step response
+                            </h1>
+                            <p>
+                                Now we compute the steady-state response to a unit step input for the aforementioned system:
+                            </p>
+                        </Grid>
+                        <Grid style={{ fontSize: "20px" }} item>
+                            <MathJax>{stepFunctionFormula}</MathJax>
+                        </Grid>
+                        <Grid style={{ fontSize: "20px" }} item>
+                            <MathJax>
+                                {stepResponseOfFirstOrderTfInLaplaceDomain}
+                            </MathJax>
+                        </Grid>
+                        <Grid style={{ fontSize: "20px" }} item>
+                            <MathJax>
+                                {stepResponseOfFirstOrderTfInTimeDomain}
+                            </MathJax>
+                        </Grid>
+                        <Grid className="lecture-text" item>
+                            <p>
+                                As a result, the steady-state value of the system is:
+                            </p>
+                        </Grid>
+                        <Grid style={{ fontSize: "20px" }} item>
+                            <MathJax>
+                                {stepInputSteadyStateValueForFirstOrderTf}
+                            </MathJax>
+                        </Grid>
+                    </SubCard>
+                </Grid>
+                <Grid sx={{ mt: 1 }} item>
+                    <SubCard>
+                        <Grid className="lecture-text" item>
+                            <h1 style={{ marginTop: "5%", marginBottom: "3%" }}>
+                                Unit ramp response
+                            </h1>
+                            <p>
+                                Now we compute the steady-state response to a unit ramp input for the aforementioned system:
+                            </p>
+                        </Grid>
+                        <Grid style={{ fontSize: "20px" }} item>
+                            <MathJax>{rampFunctionFormula}</MathJax>
+                        </Grid>
+                        <Grid style={{ fontSize: "20px" }} item>
+                            <MathJax>
+                                {rampResponseOfFirstOrderTfInLaplaceDomain}
+                            </MathJax>
+                        </Grid>
+                        <Grid style={{ fontSize: "20px" }} item>
+                            <MathJax>
+                                {rampResponseOfFirstOrderTfInTimeDomain}
+                            </MathJax>
+                        </Grid>
+                        <Grid className="lecture-text" item>
+                            <p>
+                                As a result, the steady-state value of the system is:
+                            </p>
+                        </Grid>
+                        <Grid style={{ fontSize: "20px" }} item>
+                            <MathJax>
+                                {rampInputSteadyStateValueForFirstOrderTf}
+                            </MathJax>
+                        </Grid>
+                    </SubCard>
+                </Grid>
+            </Typography>
         </SubCard>
     );
 };

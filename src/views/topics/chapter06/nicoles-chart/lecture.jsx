@@ -1,5 +1,5 @@
 import SubCard from "../../../ui-component/cards/SubCard";
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
 
 const NicolesChartLecture = () => {
@@ -9,11 +9,11 @@ const NicolesChartLecture = () => {
             darkBorder={true}
             sx={{ direction: "ltr" }}
         >
-            <Grid className="lecture-text" item>
-                <p>
+            <Typography>
+                <Grid className="lecture-text" item>
                     The combination of the Bode magnitude and phase plots on a single plane, with the ω axis removed, is called the magnitude-phase plot.
-                </p>
-            </Grid>
+                </Grid>
+            </Typography>
         </SubCard>
     );
 };

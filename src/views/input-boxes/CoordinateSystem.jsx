@@ -3,7 +3,7 @@ import "./input-boxes.css";
 import calculus from "math/calculus/index";
 import { useState, useEffect, useRef } from "react";
 import ReactCursorPosition from "react-cursor-position";
-import { Grid, InputAdornment, TextField } from "@mui/material";
+import { Grid, InputAdornment, TextField, Typography } from "@mui/material";
 import { MathJax } from "better-react-mathjax";
 
 /* react-cursor-position props
@@ -264,7 +264,7 @@ const CoordinateSystem = (props) => {
                 </ReactCursorPosition>
             </Grid>
             <Grid xs={12}>
-                <p style={{ textAlign: "center" }}>{"(" + calculus.strictPrecisionFormat(x) + ", " + calculus.strictPrecisionFormat(y) + ")"}</p>
+                <Typography style={{ textAlign: "center" }}>{"(" + calculus.strictPrecisionFormat(x) + ", " + calculus.strictPrecisionFormat(y) + ")"}</Typography>
             </Grid>
             <Grid xs={12} item>
                 <TextField

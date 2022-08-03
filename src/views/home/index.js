@@ -40,7 +40,7 @@ const sections = [
     {
         title: 'فصل هفتم',
         subtitle: 'طراحی سیستم های کنترل خطی',
-        link: `${routes.root}${routes.chapter}05/${routes.root_locus}`
+        link: `${routes.root}${routes.chapter}07/${routes.pid}`
         
     },
     

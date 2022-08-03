@@ -17,33 +17,35 @@ const symbols = {
 };
 let currentRawNum = "",
     currentRawDen = "";
-const PID = () => {
+const PIDController = () => {
     const [rawNumerator, $rawNumerator] = useState("1");
     const [rawDenominator, $rawDenominator] = useState("1 1");
-    const [H_s, $H_s] = useState(null);
-    const [w_min, $w_min] = useState(0);
-    const [w_max, $w_max] = useState(10);
+    const [G_s, $G_s] = useState(null);
+    const [K_p, $K_p] = useState(1);
+    const [T_i, $T_i] = useState(0);
+    const [T_d, $T_d] = useState(0);
+
+    const [t_initial, $t_initial] = useState(0);
+    const [t_final, $t_final] = useState(10);
     // gradiant of u(t) is 0 and unit ramp is one
     const [systems, $systems] = useState([]);
     const [traces, $traces] = useState({
-        phase: [],
-        amplitude: [],
-        degreePhase: [],
+        main: [],
+        controlled: [],
     });
     const [response, $response] = useState(null);
     const [thickness, $thickness] = useState(1.0); // graph line thickness
     const [isGraphCatured, $graphCaptured] = useState(false);
     const [is3DPlotEnabled, $3DPlotEnabled] = useState(false);
-    const [phaseInRadianScale, setPhaseInRadianScale] = useState(true); // for degree => 180 / PI, for radian scale => 1.0
     const [N, $N] = useState(1000);
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
     const capture = () => {
         const capturedSystems = [...systems];
 
-        if (capturedSystems.findIndex((sys) => H_s.equals(sys.H)) === -1) {
+        if (capturedSystems.findIndex((sys) => G_s.equals(sys.H)) === -1) {
             // if current system has not been captured before => then capture it; o.w. its not needed
             capturedSystems.push({
-                H_s,
+                G_s,
                 thickness,
                 legend:
                     symbols.out + "_{" + (systems.length + 1).toString() + "}",
@@ -55,72 +57,63 @@ const PID = () => {
 
     useEffect(() => {
         // plot
-        if (H_s) {
+        if (G_s) {
             (async () => {
                 try {
-                    $response("$$" + H_s.label("H") + "$$");
+                    $response("$$" + G_s.label("H") + "$$");
                     // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
                     // so that the traces will be loaded with new conditions
                     let repeatedSystem = false;
                     const all = {
-                        amplitude: Array(systems.length),
-                        phase: Array(systems.length),
-                        degreePhase: Array(systems.length),
+                        main: Array(systems.length),
+                        controlled: Array(systems.length),
                     };
 
                     for (let i = 0; i < systems.length; i++) {
                         if (i % 5 === 0) await browserLockBreaker();
-                        all.amplitude[i] = calculus.systemToTrace(
-                            systems[i].H_s.bode,
-                            +w_min,
-                            +w_max,
+                        all.main[i] = calculus.systemToTrace(
+                            systems[i].G_s.bode,
+                            +t_initial,
+                            +t_final,
                             systems[i].thickness,
                             systems[i].legend,
                             is3DPlotEnabled,
                             +N
                         );
-                        all.phase[i] = calculus.systemToTrace(
-                            systems[i].H_s.phase,
-                            +w_min,
-                            +w_max,
+                        all.controlled[i] = calculus.systemToTrace(
+                            systems[i].G_s.phase,
+                            +t_initial,
+                            +t_final,
                             systems[i].thickness,
                             systems[i].legend,
                             is3DPlotEnabled,
                             +N
                         );
-                        all.degreePhase[i] = { ...all.phase[i] };
-                        all.degreePhase[i].y = all.degreePhase[i].y.map(
-                            (yi) => yi * calculus.RadianToDegree
-                        );
-                        if (H_s.equals(systems[i].H_s)) repeatedSystem = true;
+
+                        if (G_s.equals(systems[i].G_s)) repeatedSystem = true;
                     }
 
                     if (!repeatedSystem) {
-                        const amp = calculus.systemToTrace(
-                                H_s.bode,
-                                +w_min,
-                                +w_max,
+                        const main = calculus.systemToTrace(
+                                G_s.bode,
+                                +t_initial,
+                                +t_final,
                                 thickness,
                                 `${symbols.out}(${symbols.in})`,
                                 is3DPlotEnabled,
                                 +N
                             ),
-                            phase = calculus.systemToTrace(
-                                H_s.phase,
-                                +w_min,
-                                +w_max,
+                            controlled = calculus.systemToTrace(
+                                G_s.phase,
+                                +t_initial,
+                                +t_final,
                                 thickness,
                                 `${symbols.out}(${symbols.in})`,
                                 is3DPlotEnabled,
                                 +N
                             );
-                        const degreePhase = { ...phase };
-                        degreePhase.y = degreePhase.y.map(
-                            (yi) => yi * calculus.RadianToDegree
-                        );
-                        all.phase.push(phase);
-                        all.degreePhase.push(degreePhase);
-                        all.amplitude.push(amp);
+                        all.main.push(main);
+                        all.controlled.push(controlled);
                     }
                     $traces(all);
                 } catch (err) {
@@ -128,18 +121,8 @@ const PID = () => {
                 }
             })();
         }
-    }, [H_s, systems, w_min, w_max, is3DPlotEnabled, thickness, N]);
+    }, [G_s, systems, t_initial, t_final, is3DPlotEnabled, thickness, N]);
 
-    const multiplyPlotBy = (value) => {
-        const currentLength = systems.length;
-        const multipliedSystem = H_s.multiply(value);
-        const newSystemList = systems.filter(
-            (sys) => !sys.H_s.equals(multipliedSystem)
-        );
-        if (newSystemList.length === currentLength) capture();
-        else $systems(newSystemList);
-        $H_s(multipliedSystem);
-    };
     useEffect(() => {
         try {
             if (
@@ -148,10 +131,10 @@ const PID = () => {
             ) {
                 const num = calculus.stringToArray(rawNumerator),
                     den = calculus.stringToArray(rawDenominator);
-                const h_s = new TransferFunction(num, den);
+                const g_s = new TransferFunction(num, den);
                 currentRawNum = rawNumerator;
                 currentRawDen = rawDenominator;
-                $H_s(h_s);
+                $G_s(g_s);
             }
         } catch (ex) {
             console.log(ex);
@@ -186,7 +169,7 @@ const PID = () => {
                                 {systems.map((sys, index) => {
                                     let formula =
                                         "$$" +
-                                        sys.H_s.label("H", index + 1) +
+                                        sys.G_s.label("H", index + 1) +
                                         "$$";
 
                                     return (
@@ -235,17 +218,18 @@ const PID = () => {
                                     rawDenominator={rawDenominator}
                                     $rawNumerator={$rawNumerator}
                                     $rawDenominator={$rawDenominator}
-                                    w_min={w_min}
-                                    w_max={w_max}
-                                    $w_min={$w_min}
-                                    $w_max={$w_max}
-                                    phaseInRadianScale={phaseInRadianScale}
-                                    setPhaseInRadianScale={
-                                        setPhaseInRadianScale
-                                    }
+                                    t_initial={t_initial}
+                                    t_final={t_final}
+                                    $t_initial={$t_initial}
+                                    $t_final={$t_final}
+                                    K_p={K_p}
+                                    $K_p={$K_p}
+                                    T_i={T_i}
+                                    $T_i={$T_i}
+                                    T_d={T_d}
+                                    $T_d={$T_d}
                                     N={N}
                                     $N={$N}
-                                    multiplier={multiplyPlotBy}
                                 />
                             </Grid>
                         </Grid>
@@ -263,20 +247,14 @@ const PID = () => {
                                 <SubCard>
                                     <Grid lg={9} md={9} sm={12} xs={12} item>
                                         <GraphBox
-                                            logX={true}
-                                            title="نمودار بود"
-                                            traces={traces.amplitude}
+                                            title="پاسخ پله ی سیستم اولیه"
+                                            traces={traces.main}
                                         />
                                     </Grid>
                                     <Grid lg={9} md={9} sm={12} xs={12} item>
                                         <GraphBox
-                                            title="فاز"
-                                            logX={true}
-                                            traces={
-                                                phaseInRadianScale
-                                                    ? traces.phase
-                                                    : traces.degreePhase
-                                            }
+                                            title="پاسخ پله ی سیستم کنترل شده"
+                                            traces={traces.controlled}
                                         />
                                     </Grid>
                                 </SubCard>
@@ -289,4 +267,4 @@ const PID = () => {
     );
 };
 
-export default PID;
+export default PIDController;

@@ -4,8 +4,8 @@
 // import "nerdamer/Solve.js";
 // import "nerdamer/Extra.js";
 import Algebra from "math/algebra";
-import nerdamer from "nerdamer/all";
-
+import nerdamer from "nerdamer/all.min";
+// const nerdamer = require('nerdamer/all.min')
 export default class Nerdamer {
     constructor(algebra, symbol = null) {
         if (algebra instanceof Algebra) {

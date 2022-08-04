@@ -6,7 +6,7 @@ import { Step } from "math/input-signals/signals";
 import Poly from "./poly";
 import { Cos, Sin } from "./trigonometric";
 import { round } from "math/calculus/index";
-import Equation from "math/equation";
+import Equation from "math/solvers/equation";
 import { makeProgress } from "toolshed";
 
 export default class TransferFunction extends Fraction {
@@ -447,6 +447,8 @@ export default class TransferFunction extends Fraction {
 
     bode = (w) => 20 * Math.log10(this.amplitude(w));
 
+    // ****************************************************** //
+    // SOLVE THIS WITH nerdamer again
     rootLocus = async (k_min, k_max, progressBarObject, N = 1000) => {
         // return root locus values for plotting
 
@@ -536,4 +538,6 @@ export default class TransferFunction extends Fraction {
         await makeProgress(progressBarObject, 100);
         return [reals, imaginaries];
     };
+
+    
 }

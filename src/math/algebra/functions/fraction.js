@@ -63,4 +63,5 @@ export default class Fraction extends Algebra {
         return undefined;
     }
 
+    toFormula = () => "(" + this.numerator().toFormula() + ")/(" + this.denominator().toFormula() + ")"; 
 }

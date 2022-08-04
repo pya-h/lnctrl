@@ -12,17 +12,15 @@ import themes from "themes";
 // project imports
 import NavigationScroll from "layout/NavigationScroll";
 import { MathJaxContext } from "better-react-mathjax";
-import Nerdamer from "math/nerdamer-tools";
+import Poly from 'math/algebra/functions/poly';
 
 const App = () => {
     const customization = useSelector((state) => state.customization);
-    console.log(new Nerdamer("(1+s)^(-1)", "s").iL().text());
-    
     return (
         <StyledEngineProvider injectFirst>
             <ThemeProvider theme={themes(customization)}>
                 <div dir="rtl">
-                    <CssBaseline />
+              d      <CssBaseline />
                     <NavigationScroll>
                         <MathJaxContext
                             version={2}

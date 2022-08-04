@@ -11,9 +11,10 @@ import TransferFunction from "math/algebra/functions/transfer";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
 import { browserLockBreaker } from "toolshed";
+import Formula from "math/solvers/formula";
 const symbols = {
     in: "jw",
-    out: "H",
+    out: "G",
 };
 let currentRawNum = "",
     currentRawDen = "";
@@ -60,7 +61,7 @@ const PIDController = () => {
         if (G_s) {
             (async () => {
                 try {
-                    $response("$$" + G_s.label("H") + "$$");
+                    $response("$$" + G_s.label(symbols.out) + "$$");
                     // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
                     // so that the traces will be loaded with new conditions
                     let repeatedSystem = false;
@@ -135,6 +136,7 @@ const PIDController = () => {
                 currentRawNum = rawNumerator;
                 currentRawDen = rawDenominator;
                 $G_s(g_s);
+                $response(new Formula(g_s.toFormula(), g_s.symbol).iL().$());
             }
         } catch (ex) {
             console.log(ex);
@@ -169,7 +171,7 @@ const PIDController = () => {
                                 {systems.map((sys, index) => {
                                     let formula =
                                         "$$" +
-                                        sys.G_s.label("H", index + 1) +
+                                        sys.G_s.label(symbols.out, index + 1) +
                                         "$$";
 
                                     return (

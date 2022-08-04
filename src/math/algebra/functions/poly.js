@@ -22,7 +22,7 @@ export default class Poly extends Algebra {
         });
 
     degree = () => this.a.length - 1;
-    
+
     valueAt = (t) => {
         if (typeof t === "number") return Algebra.polynomialValueAt(this.a, t);
         else if (t instanceof Complex) {
@@ -36,7 +36,6 @@ export default class Poly extends Algebra {
                 for (let i = n - 1; i >= 0; i--) {
                     powerTerm = t.multiply(powerTerm);
                     result = result.add(powerTerm.multiply(this.a[i]));
-                    
                 }
                 return result;
             }
@@ -81,7 +80,6 @@ export default class Poly extends Algebra {
         return result;
     };
 
-
     expression = () => {
         if (this.a instanceof Array) {
             const n = this.a.length - 1;
@@ -96,24 +94,45 @@ export default class Poly extends Algebra {
                         ? Algebra.coefy(a_i, i, n) +
                           (i < n
                               ? this.symbol +
-                                (i < n - 1
-                                    ? "^" + (n - i).toString()
-                                    : "")
+                                (i < n - 1 ? "^" + (n - i).toString() : "")
                               : "")
                         : ""
                 )
                 .join(""); // joins all the coefficients, symbols, etc all together as for polynomal functions
         }
         return this.a.toString();
-    }
+    };
 
     devide = (operand) => {
-        if(operand instanceof Poly && this.symbol === operand.symbol){
+        if (operand instanceof Poly && this.symbol === operand.symbol) {
             return new Fraction(this.getA(), operand.getA(), this.symbol);
         }
-        if(operand === +operand)
-            return this.multiply(1 / Number(operand));
+        if (operand === +operand) return this.multiply(1 / Number(operand));
         // is it true??
         return super.devide();
-    }
+    };
+
+    // edit this function to remove unnecessary white spaces
+    toFormula = () => {
+        if (this.a instanceof Array) {
+            const n = this.a.length - 1;
+            if (
+                !n ||
+                !this.a.slice(0, n).filter((ci) => ci.toString() !== "0").length
+            )
+                return this.a[n].toString();
+            return this.a
+                .map((a_i, i) =>
+                    a_i
+                        ? Algebra.coefy(a_i, i, n) +
+                          (i < n
+                              ? this.symbol +
+                                (i < n - 1 ? "^" + (n - i).toString() : "")
+                              : "")
+                        : ""
+                )
+                .join(""); // joins all the coefficients, symbols, etc all together as for polynomal functions
+        }
+        return this.a.toString();
+    };
 }

@@ -8,7 +8,7 @@ export default class Exp extends Algebra {
         super(a, { symbol, type: "exp", b, ...params });
     }
 
-    copy = (linkPrevious = false) =>
+    copy = (linkPrevious = false) => // copy everything
         new Exp(this.a, this.b, this.symbol, {
             dot: this.dot,
             plus: this.plus,
@@ -16,6 +16,11 @@ export default class Exp extends Algebra {
             input: this.input,
         });
 
+    hardcopy = () => // shallow copy just for single term copy
+        new Exp(this.a, this.b, this.symbol, {
+            dot: this.dot,
+            input: this.input,
+        });
     toSin = () => {
         const exp = this.copy();
         if (exp.type === "exp" && exp.b instanceof Complex) {
@@ -39,13 +44,11 @@ export default class Exp extends Algebra {
     phase = (w) => {
         const jw = new Complex(0, w);
         let pb = +this.b;
-        if(this.b === pb)
-            return pb * w;
-        if(this.b instanceof Algebra){
+        if (this.b === pb) return pb * w;
+        if (this.b instanceof Algebra) {
             pb = this.b.$(jw);
             return jw.multiply(pb).imaginary();
         }
-        
     };
     valueAt = (t) => {
         const numericT = +t;

@@ -10,8 +10,8 @@ import PIDParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
-import { browserLockBreaker } from "toolshed";
 import Formula from "math/solvers/formula";
+import { makeProgress } from 'toolshed';
 const symbols = {
     in: "jw",
     out: "G",
@@ -29,100 +29,67 @@ const PIDController = () => {
     const [t_initial, $t_initial] = useState(0);
     const [t_final, $t_final] = useState(10);
     // gradiant of u(t) is 0 and unit ramp is one
-    const [systems, $systems] = useState([]);
     const [traces, $traces] = useState({
         main: [],
         controlled: [],
     });
     const [response, $response] = useState(null);
     const [thickness, $thickness] = useState(1.0); // graph line thickness
-    const [isGraphCatured, $graphCaptured] = useState(false);
     const [is3DPlotEnabled, $3DPlotEnabled] = useState(false);
     const [N, $N] = useState(1000);
+    const [responseTime, setResponseTime] = useState(0);
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
-    const capture = () => {
-        const capturedSystems = [...systems];
-
-        if (capturedSystems.findIndex((sys) => G_s.equals(sys.H)) === -1) {
-            // if current system has not been captured before => then capture it; o.w. its not needed
-            capturedSystems.push({
-                G_s,
-                thickness,
-                legend:
-                    symbols.out + "_{" + (systems.length + 1).toString() + "}",
-            });
-            $systems(capturedSystems);
-            $graphCaptured(true);
-        }
-    };
+    // const [currentProgressSignal, currentProgressSignal] = useState(new AbortController());
 
     useEffect(() => {
         // plot
         if (G_s) {
             (async () => {
                 try {
-                    $response("$$" + G_s.label(symbols.out) + "$$");
+                    // $response("$$" + G_s.label(symbols.out) + "$$");
                     // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
                     // so that the traces will be loaded with new conditions
-                    let repeatedSystem = false;
-                    const all = {
-                        main: Array(systems.length),
-                        controlled: Array(systems.length),
-                    };
+                    const startTime = new Date();
 
-                    for (let i = 0; i < systems.length; i++) {
-                        if (i % 5 === 0) await browserLockBreaker();
-                        all.main[i] = calculus.systemToTrace(
-                            systems[i].G_s.bode,
-                            +t_initial,
-                            +t_final,
-                            systems[i].thickness,
-                            systems[i].legend,
-                            is3DPlotEnabled,
-                            +N
-                        );
-                        all.controlled[i] = calculus.systemToTrace(
-                            systems[i].G_s.phase,
-                            +t_initial,
-                            +t_final,
-                            systems[i].thickness,
-                            systems[i].legend,
-                            is3DPlotEnabled,
-                            +N
-                        );
+                    // console.log(g.roots().map(x => x.toString()));
+                    const c_t = G_s.step();
+                    const [x, y] = await calculus.pointifyAsync(
+                        c_t.$,
+                        +t_initial,
+                        +t_final,
+                        document.getElementById("pid_tune_progress"),
+                        500,
+                        +N
+                    );
+                    const main = calculus.arrayToTrace(
+                        x,
+                        y,
+                        thickness,
+                        `${symbols.out}(${symbols.in})`,
+                        is3DPlotEnabled
+                    );
+                    // controlled = calculus.systemToTrace(
+                    //     G_s.phase,
+                    //     +t_initial,
+                    //     +t_final,
+                    //     thickness,
+                    //     `${symbols.out}(${symbols.in})`,
+                    //     is3DPlotEnabled,
+                    //     +N
+                    // );
 
-                        if (G_s.equals(systems[i].G_s)) repeatedSystem = true;
-                    }
+                    // all.controlled.push(controlled);
 
-                    if (!repeatedSystem) {
-                        const main = calculus.systemToTrace(
-                                G_s.bode,
-                                +t_initial,
-                                +t_final,
-                                thickness,
-                                `${symbols.out}(${symbols.in})`,
-                                is3DPlotEnabled,
-                                +N
-                            ),
-                            controlled = calculus.systemToTrace(
-                                G_s.phase,
-                                +t_initial,
-                                +t_final,
-                                thickness,
-                                `${symbols.out}(${symbols.in})`,
-                                is3DPlotEnabled,
-                                +N
-                            );
-                        all.main.push(main);
-                        all.controlled.push(controlled);
-                    }
-                    $traces(all);
+                    $traces({ main: [main] });
+                    const endTime = new Date();
+                    setResponseTime((+endTime - +startTime) / 1000);
+
                 } catch (err) {
                     console.log(err);
                 }
             })();
         }
-    }, [G_s, systems, t_initial, t_final, is3DPlotEnabled, thickness, N]);
+    }, [G_s, t_initial, t_final, is3DPlotEnabled, thickness, N]);
 
     useEffect(() => {
         try {
@@ -136,15 +103,12 @@ const PIDController = () => {
                 currentRawNum = rawNumerator;
                 currentRawDen = rawDenominator;
                 $G_s(g_s);
-                $response(new Formula(g_s.toFormula(), g_s.symbol).iL().$());
+                // HOW TO CANCEL PREVIOUS ASYNC
+                new AbortController().abort();
             }
         } catch (ex) {
             console.log(ex);
         }
-    }, [rawNumerator, rawDenominator]);
-
-    useEffect(() => {
-        $graphCaptured(false);
     }, [rawNumerator, rawDenominator]);
 
     const update = (changes) => {
@@ -168,32 +132,13 @@ const PIDController = () => {
                                 container
                                 direction="row"
                             >
-                                {systems.map((sys, index) => {
-                                    let formula =
-                                        "$$" +
-                                        sys.G_s.label(symbols.out, index + 1) +
-                                        "$$";
-
-                                    return (
-                                        <Grid
-                                            style={{ fontSize: "18px" }}
-                                            md={6}
-                                            sm={12}
-                                            item
-                                        >
-                                            <MathJax>{formula}</MathJax>
-                                        </Grid>
-                                    );
-                                })}
-                                {!isGraphCatured && (
-                                    <Grid
-                                        style={{ fontSize: "18px" }}
-                                        md={6}
-                                        sm={12}
-                                    >
-                                        <MathJax>{response}</MathJax>
-                                    </Grid>
-                                )}
+                                <Grid
+                                    style={{ fontSize: "18px" }}
+                                    md={6}
+                                    sm={12}
+                                >
+                                    <MathJax>{response}</MathJax>
+                                </Grid>
                             </Grid>
                         </SubCard>
                     </Grid>
@@ -232,14 +177,17 @@ const PIDController = () => {
                                     $T_d={$T_d}
                                     N={N}
                                     $N={$N}
+                                    responseTime={responseTime}
                                 />
                             </Grid>
                         </Grid>
                         <Grid md={9} sm={12} xs={12} item>
                             <SubCard>
                                 <GraphMenu
-                                    capture={capture}
-                                    reset={() => $systems([])}
+                                    reset={() => {
+                                        $rawDenominator("1 1");
+                                        $rawNumerator("1");
+                                    }}
                                     update={(changes) => update(changes)}
                                     toggle3DPlot={toggle3DPlot}
                                 />

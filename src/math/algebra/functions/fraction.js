@@ -29,8 +29,8 @@ export default class Fraction extends Algebra {
         // for all fractions with all kind of numerator and denominator
     }
     
-    numerator = () => this.a instanceof Algebra ? this.a.copy(true) : new Poly(this.a);
-    denominator = () => this.b instanceof Algebra ? this.b.copy(true) : new Poly(this.b);
+    numerator = () => this.a instanceof Algebra ? this.a.copy(true) : new Poly(this.a, this.symbol);
+    denominator = () => this.b instanceof Algebra ? this.b.copy(true) : new Poly(this.b, this.symbol);
 
     setNumerator = (num) => {
         if (!(num instanceof Algebra)) {

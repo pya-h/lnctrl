@@ -24,7 +24,7 @@ class Complex extends Algebra {
     hasMultiTerms = () =>
         this.plus || (this.a.toString() !== "0" && this.b.toString() !== "0");
 
-    toString = (parenthesis = false) => {
+    toString = (parenthesis = false, showJ1 = false) => {
         if (this.isZero())
             return "0";
         const rl = this.a;
@@ -46,7 +46,7 @@ class Complex extends Algebra {
             } else if (rl !== 0) formula += " + ";
 
             formula += this.symbol;
-            if (im !== 1)
+            if (im !== 1 || showJ1)
                 formula +=
                 im instanceof Algebra ?
                 im.toString(im.hasMultiTerms()) :

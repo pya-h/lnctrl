@@ -8,6 +8,7 @@ import { Cos, Sin } from "./trigonometric";
 import { round } from "math/calculus/index";
 import Equation from "math/solvers/equation";
 import { makeProgress } from "toolshed";
+import Formula from "math/solvers/formula";
 
 export default class TransferFunction extends Fraction {
     static Specials = {
@@ -142,12 +143,20 @@ export default class TransferFunction extends Fraction {
                 // CONSTANT COEFFICIENT POLYNOMIAL EQUATIONS
                 this.zeros =
                     this.a.length > 1
-                        ? new Equation(this.a, this.symbol).solve()
-                        : [];
+                        ? new Formula(
+                              this.numerator().toFormula(),
+                              this.symbol
+                          ).x()
+                        : // ? new Equation(this.a, this.symbol).solve()
+                          [];
                 this.poles =
                     this.b.length > 1
-                        ? new Equation(this.b, this.symbol).solve()
-                        : [];
+                        ? new Formula(
+                              this.denominator().toFormula(),
+                              this.symbol
+                          ).x()
+                        : //? new Equation(this.b, this.symbol).solve()
+                          [];
             } else {
                 // if the equation isnt a simple constant coefficient polynomial
             }
@@ -158,12 +167,32 @@ export default class TransferFunction extends Fraction {
         ];
     };
 
+    repetitiveRoots = () => {
+        let [zeros, poles] = this.roots();
+        if (zeros.length < this.a.length - 1) {
+            zeros = Formula.RepetitiveFactors(
+                this.numerator().toFormula(),
+                zeros,
+                this.symbol
+            );
+            // console.log(poles);
+        }
+        if (poles.length < this.b.length - 1) {
+            poles = Formula.RepetitiveFactors(
+                this.denominator().toFormula(),
+                poles,
+                this.symbol
+            );
+            // console.log(poles);
+        }
+        return [zeros, poles];
+    }
     setRoots = (zeros, poles) => {
         this.poles = poles.map((pi) =>
-            pi instanceof Complex && pi.isReal() ? pi.real() : pi
+            pi instanceof Complex ? pi.copy() : new Complex(pi, 0)
         );
         this.zeros = zeros.map((zi) =>
-            zi instanceof Complex && zi.isReal() ? zi.real() : zi
+            zi instanceof Complex ? zi.copy() : new Complex(zi, 0)
         );
         return this;
     };
@@ -194,14 +223,14 @@ export default class TransferFunction extends Fraction {
     getPoles = () => this.poles;
     setPoles = (poles) => {
         this.poles = TransferFunction.sortRoots(poles).map((pi) =>
-            pi instanceof Complex && pi.isReal() ? pi.real() : pi
+            pi instanceof Complex ? pi.copy() : new Complex(pi, 0)
         );
         return this;
     };
     getZeros = () => this.zeros;
     setZeros = (zeros) => {
-        this.zeros = zeros.map((pi) =>
-            pi instanceof Complex && pi.isReal() ? pi.real() : pi
+        this.zeros = zeros.map((zi) =>
+            zi instanceof Complex ? zi.copy() : new Complex(zi, 0)
         );
         return this;
     };
@@ -227,75 +256,75 @@ export default class TransferFunction extends Fraction {
             }
         }
     };
-    step = (inTimeDomain = true) => {
+
+    stepify = () => {
+        const lstep = this.copy();
+        lstep.b.push(0); //update denominator
+        lstep.poles.push(new Complex(0, 0));
+        return lstep;
+    };
+    step = () => {
         // normally will automatically return the time domain answer
         // unless inLaplaceDomain is true
-        if (inTimeDomain) {
-            const m = this.zeros.length; // number of zeros
-            const n = this.poles.length; // number of poles
-            const nreal = this.poles.filter(
-                (pi) => !(pi instanceof Complex)
-            ).length; // number of real poles; can be eigher 2 or 0
-            if (m === 0) {
-                const k = this.numerator();
-                if (n === 0) {
-                    // return u(t)
-                    // DEFINE U(T) IN ALGEBRA
-                }
-                if (n === 1) {
-                } else if (n === 2) {
-                    const a = -this.poles[0],
-                        b = -this.poles[1];
-                    if (nreal === 2) {
-                        // if (a > 0 && b > 0) {
-                        if (a !== b)
-                            // two independent polesdddd
-                            // two negative independent poles
-                            return new Exp(1 / a, -a)
-                                .add(new Exp(-1 / b, -b))
-                                .multiply(k / (a - b))
-                                .multiply(new Step())
-                                .add(new Step(k / (a * b)));
-                        else {
-                            const a2 = a * a;
-                            return new Exp(-k / a2, -a)
-                                .multiply(new Poly([a, 1]))
-                                .multiply(new Step())
-                                .add(new Step(k / a2));
-                        }
-                        // } else {
-                        //     // repetetive poles
-                        // }
-                    } else if (nreal === 0) {
-                        // two conjugated complex poles
-                        //UNDERSHOOT BUG FIXLAYS HERE
-                        const a = -this.poles[0].real(),
-                            b = this.poles[0].imaginary();
-                        const ka2b2 = k / (a ** 2 + b ** 2);
-                        // FIND BUUUUUUG
-                        // return new Exp(-ka2b2, -a)
-                        //     .multiply(new Cos(1, b).add(new Sin(a / b, b)))
-                        //     .multiply(new Step())
-                        //     .add(new Step(ka2b2));
-                        return new Exp(-ka2b2, -a)
-                            .multiply(new Cos(1, b))
-                            .add(
-                                new Exp(-ka2b2, -a).multiply(new Sin(a / b, b))
-                            )
-                            .multiply(new Step())
-                            .add(new Step(ka2b2));
-                    }
-                    // else if( nreal == 1) // this cant happen, but what if sth went wrong?
-                }
+        const [zs, ps] = this.repetitiveRoots();
+        this.setRoots(zs, ps);
+        const m = this.zeros.length; // number of zeros
+        const n = this.poles.length; // number of poles
+        const nreal = this.poles.filter(
+            (pi) => !(pi instanceof Complex)
+        ).length; // number of real poles; can be eig   her 2 or 0
+        if (m === 0) {
+            const k = this.numerator();
+            if (n === 0) {
+                // return u(t)
+                // DEFINE U(T) IN ALGEBRA
             }
-        } else {
-            const lstep = this.copy();
-            const poles = lstep.getPoles();
-            poles.push(0);
-            lstep.getB().push(0); //update denominator
-            lstep.setPoles(poles).setDenominator(lstep.getB());
-            return lstep;
+            if (n === 1) {
+            } else if (n === 2) {
+                const a = -this.poles[0],
+                    b = -this.poles[1];
+                if (nreal === 2) {
+                    // if (a > 0 && b > 0) {
+                    if (a !== b)
+                        // two independent polesdddd
+                        // two negative independent poles
+                        return new Exp(1 / a, -a)
+                            .add(new Exp(-1 / b, -b))
+                            .multiply(k / (a - b))
+                            .multiply(new Step())
+                            .add(new Step(k / (a * b)));
+                    else {
+                        const a2 = a * a;
+                        return new Exp(-k / a2, -a)
+                            .multiply(new Poly([a, 1]))
+                            .multiply(new Step())
+                            .add(new Step(k / a2));
+                    }
+                    // } else {
+                    //     // repetetive poles
+                    // }
+                } else if (nreal === 0) {
+                    // two conjugated complex poles
+                    //UNDERSHOOT BUG FIXLAYS HERE
+                    const a = -this.poles[0].real(),
+                        b = this.poles[0].imaginary();
+                    const ka2b2 = k / (a ** 2 + b ** 2);
+                    // FIND BUUUUUUG
+                    // return new Exp(-ka2b2, -a)
+                    //     .multiply(new Cos(1, b).add(new Sin(a / b, b)))
+                    //     .multiply(new Step())
+                    //     .add(new Step(ka2b2));
+                    return new Exp(-ka2b2, -a)
+                        .multiply(new Cos(1, b))
+                        .add(new Exp(-ka2b2, -a).multiply(new Sin(a / b, b)))
+                        .multiply(new Step())
+                        .add(new Step(ka2b2));
+                }
+                // else if( nreal == 1) // this cant happen, but what if sth went wrong?
+            }
         }
+        // if its not in special mode:
+        return new Formula(this.stepify().toFormula(), this.symbol).iL();
     };
     copy = (linkPrevious = false) =>
         new TransferFunction(this.a, this.b, {
@@ -447,9 +476,122 @@ export default class TransferFunction extends Fraction {
 
     bode = (w) => 20 * Math.log10(this.amplitude(w));
 
+    toFormula = () => {
+        // const [zeros, poles] = this.repetitiveRoots();
+        const num =
+            this.zeros.length > 0
+                ? this.zeros
+                      .map(
+                          (zi) =>
+                              "(" +
+                              this.symbol +
+                              " - " +
+                              zi.toString(false, true).replace("j", "i*") +
+                              ")"
+                      )
+                      .join("*")
+                : "1";
+        const den =
+            this.poles.length > 0
+                ? this.poles
+                      .map(
+                          (pi) =>
+                              "(" +
+                              this.symbol +
+                              " - " +
+                              pi.toString(false, true).replace("j", "i*") +
+                              ")"
+                      )
+                      .join("*")
+                : "1";
+        return `(${num})/(${den})`;
+    };
     // ****************************************************** //
     // SOLVE THIS WITH nerdamer again
     rootLocus = async (k_min, k_max, progressBarObject, N = 1000) => {
+        // return root locus values for plotting
+
+        // TEMPORARY:
+        let dk = (k_max - k_min) / N;
+        const a = this.getA(), // numerator
+            b = this.getB(); // denominator => a / b
+        const na = a.length - 1,
+            nb = b.length - 1;
+        const reals = [],
+            imaginaries = [];
+        const progressLength = k_max - k_min;
+        const newTerm = Formula.GetTerm; // Equation.GetAlgebriteTerm;
+        for (let k = k_min, progress = 0; k <= k_max; k += dk, progress += dk) {
+            // in this piece: using short form codes and using objects is set to minimum
+            // because root locus is time consuming and putting all the codes in one main loop is better
+            // const delta = b.add(a.multiply(k));
+            let delta = null,
+                expression = "";
+            // USE ARRAY DIRECT PROCESS FOR FASTER RESPONSE
+            // NUM + K * DEN
+            if (na <= nb) {
+                delta = Array(nb);
+                const offsetB = nb - na;
+                for (
+                    let i = 0;
+                    i < offsetB;
+                    delta[i] = b[i],
+                        expression += newTerm(nb - i, delta[i], this.symbol),
+                        i++
+                );
+                for (
+                    let i = 0, ib = offsetB;
+                    i <= na;
+                    delta[ib] = b[ib] + k * a[i],
+                        expression += newTerm(na - i, delta[ib], this.symbol),
+                        i++,
+                        ib++
+                );
+            } else {
+                delta = Array(na);
+                const offsetA = na - nb;
+                for (
+                    let i = 0;
+                    i < offsetA;
+                    delta[i] = b[i],
+                        expression += newTerm(na - i, delta[i], this.symbol),
+                        i++
+                );
+                for (
+                    let i = 0, ib = offsetA;
+                    i <= nb;
+                    delta[ib] = b[ib] + k * a[i],
+                        expression += newTerm(nb - i, delta[ib], this.symbol),
+                        i++,
+                        ib++
+                );
+            }
+            const poles = new Formula(expression, this.symbol).x();
+            await makeProgress(
+                progressBarObject,
+                (100 * progress) / progressLength
+            );
+
+            for (let i = 0; i < poles.length; i++) {
+                if (poles[i] instanceof Complex) {
+                    reals.push(poles[i].real());
+                    imaginaries.push(poles[i].imaginary());
+                } else {
+                    reals.push(poles[i]);
+                    imaginaries.push(0);
+                }
+            }
+        }
+        await makeProgress(progressBarObject, 100);
+        return [reals, imaginaries];
+    };
+
+    rootsByAlgebriteLocus = async (
+        k_min,
+        k_max,
+        progressBarObject,
+        N = 1000
+    ) => {
         // return root locus values for plotting
 
         // TEMPORARY:
@@ -538,6 +680,4 @@ export default class TransferFunction extends Fraction {
         await makeProgress(progressBarObject, 100);
         return [reals, imaginaries];
     };
-
-    
 }

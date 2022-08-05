@@ -33,6 +33,7 @@ const RootLocus = () => {
     // const [GInfo, $GInfo] = useState("");
     const [formula, $formula] = useState(null);
     const [responseTime, setResponseTime] = useState(null); //the time that takes for plotting rootlocus
+    const [method, changeMethod] = useState("fast");
     const [N, $N] = useState(1000);
     //update
     useEffect(() => {
@@ -82,7 +83,9 @@ const RootLocus = () => {
 
                 // $GInfo(new Describer(G_s));
                 const progressBar = document.getElementById("progressbar");
-                const [x, y] = await G_s.rootLocus(
+                const [x, y] = await (method === "accurate"
+                    ? G_s.rootLocus
+                    : G_s.rootsByAlgebriteLocus)(
                     +k_min,
                     +k_max,
                     progressBar, // send progress bar element to root locus for showing progres and preventing the browser from locking
@@ -172,6 +175,8 @@ const RootLocus = () => {
                                     responseTime={responseTime}
                                     N={N}
                                     $N={$N}
+                                    method={method}
+                                    changeMethod={changeMethod}
                                 />
                             </Grid>
                         </Grid>

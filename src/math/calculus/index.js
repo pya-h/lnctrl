@@ -1,6 +1,7 @@
 import { makeProgress } from "toolshed";
 import LTI from "./lti";
 import ODE from "./ode";
+import { ProgressBar } from 'views/ui-component/progressbar/ProgressBar';
 
 const defaultMathPrecision = 4;
 export const RadianToDegree = 180 / Math.PI;
@@ -26,6 +27,25 @@ const pointify = (f, ti, tf, N = 1000) => {
     const ys = ts.map((t) => f(t));
     return [ts, ys];
 };
+
+export const pointifyAsync = async (f, ti, tf, progressBar, progressStep = 500, N = 1000) => {
+    // construct two arrays consisting inputs (t) and outputs[f(t)] of the function: f
+    let dt = (tf - ti) / N; //time step size
+    while (dt >= 1) {
+        N *= 10;
+        dt = (tf - ti) / N; //time step size
+    }
+    const ts = Array.from(Array(N + 1), (_, k) => k * dt + ti);
+    const ys = Array(N + 1);
+    for(let i = 0; i <= N; i++){
+        if (progressBar) {
+            if (i % progressStep === 0) await makeProgress(progressBar, (100 * i) / N);
+        }
+        ys[i] = f(ts[i]);
+    }
+    return [ts, ys];
+};
+
 
 export const verticalLine = (at, xi, xf, N) => {
     let dx = (xf - xi) / N;
@@ -272,7 +292,8 @@ const calculus = {
     RadianToDegree,
     DegreeToRadian,
     mCircle,
-    nCircle
+    nCircle,
+    pointifyAsync
 };
 
 export default calculus;

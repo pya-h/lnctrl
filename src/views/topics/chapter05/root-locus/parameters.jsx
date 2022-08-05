@@ -26,6 +26,8 @@ const RootLocusParameters = ({
     responseTime,
     N,
     $N,
+    method,
+    changeMethod,
 }) => (
     <SubCard
         darkBorder
@@ -43,30 +45,50 @@ const RootLocusParameters = ({
                 labels={startLebels}
                 units={endLabels}
             />
-            <Grid md={12} sm={4} xs={6} item>
+        </Grid>
+        <Grid xs={12} container>
+            <Grid xs={6} sx={{ py: 2, pr: 1 }} item>
                 <Button
-                    onClick={updatePlot}
-                    style={{
-                        width: "100%",
-                        textTransform: "none",
-                        background: "coral",
-                    }}
-                    variant="contained"
+                    onClick={() => {changeMethod("accurate"); $N(200)}}
+                    style={{ width: "100%", textTransform: "none" }}
+                    variant={method === "accurate" ? "contained" : "outlined"}
                 >
-                    مشاهده
+                    روش دقیق تر
                 </Button>
             </Grid>
-            <Grid xs={12} sx={{ mt: 1 }} item>
-                <ProgressBar id="progressbar" />
+            <Grid xs={6} sx={{ py: 2, pl: 1 }} item>
+                <Button
+                    onClick={() => {changeMethod("fast"); $N(500)}}
+                    style={{ width: "100%", textTransform: "none" }}
+                    variant={method === "fast" ? "contained" : "outlined"}
+                >
+                    روش سریع تر
+                </Button>
             </Grid>
-            {responseTime && (
-                <Grid xs={12} sx={{ mt: 1 }} item>
-                    <Typography style={{ textAlign: "center", color: "coral" }}>
-                        مدت زمان عملیات: {responseTime} ثانیه
-                    </Typography>
-                </Grid>
-            )}
         </Grid>
+        <Grid xs={12} item>
+            <Button
+                onClick={updatePlot}
+                style={{
+                    width: "100%",
+                    textTransform: "none",
+                    background: "coral",
+                }}
+                variant="contained"
+            >
+                مشاهده
+            </Button>
+        </Grid>
+        <Grid xs={12} sx={{ mt: 2}} item>
+            <ProgressBar id="progressbar" />
+        </Grid>
+        {responseTime && (
+            <Grid xs={12} sx={{ mt: 2 }} item>
+                <Typography style={{ textAlign: "center", color: "coral" }}>
+                    مدت زمان عملیات: {responseTime} ثانیه
+                </Typography>
+            </Grid>
+        )}
     </SubCard>
 );
 

@@ -96,9 +96,9 @@ export default class Equation {
             terms.push(xi.slice(0, separatorIndex));
             if (separatorIndex < xi.length)
                 terms.push(xi.slice(separatorIndex, xi.length - 2));
-
+            
             if (terms.length === 1) {
-                const magnitude = terms[0].replace("*i");
+                const magnitude = terms[0].replace("*i", "");
                 return magnitude === terms[0]
                     ? new Complex(Number(magnitude))
                     : new Complex(0, Number(magnitude));

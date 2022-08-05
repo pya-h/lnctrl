@@ -1,7 +1,8 @@
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
 import { gridSpacing } from "store/constant";
+import ProgressBar from "views/ui-component/progressbar/ProgressBar";
 
 const parameterFormulas = [
     "$$Num = [$$",
@@ -13,7 +14,16 @@ const parameterFormulas = [
     "$$t_{final} = $$",
     "$$N = $$",
 ];
-const parameterUnits = ["$$]$$", "$$]$$", null, null, null, "$$sec$$", "$$sec$$", null];
+const parameterUnits = [
+    "$$]$$",
+    "$$]$$",
+    null,
+    null,
+    null,
+    "$$sec$$",
+    "$$sec$$",
+    null,
+];
 
 const PIDParameters = ({
     rawNumerator,
@@ -32,6 +42,7 @@ const PIDParameters = ({
     $T_d,
     N,
     $N,
+    responseTime,
 }) => {
     return (
         <SubCard
@@ -45,7 +56,16 @@ const PIDParameters = ({
         >
             <Grid spacing={gridSpacing} container direction="row">
                 <SimpleParametersList
-                    parameters={[rawNumerator, rawDenominator, K_p, T_i, T_d, t_initial, t_final, N]}
+                    parameters={[
+                        rawNumerator,
+                        rawDenominator,
+                        K_p,
+                        T_i,
+                        T_d,
+                        t_initial,
+                        t_final,
+                        N,
+                    ]}
                     setters={[
                         $rawNumerator,
                         $rawDenominator,
@@ -59,7 +79,18 @@ const PIDParameters = ({
                     labels={parameterFormulas}
                     units={parameterUnits}
                 />
-                
+                <Grid xs={12} sx={{ mt: 2 }} item>
+                    <ProgressBar id="pid_tune_progress" />
+                </Grid>
+                {responseTime && (
+                    <Grid xs={12} sx={{ mt: 2 }} item>
+                        <Typography
+                            style={{ textAlign: "center", color: "coral" }}
+                        >
+                            مدت زمان عملیات: {responseTime} ثانیه
+                        </Typography>
+                    </Grid>
+                )}
             </Grid>
         </SubCard>
     );

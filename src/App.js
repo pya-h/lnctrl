@@ -12,8 +12,6 @@ import themes from "themes";
 // project imports
 import NavigationScroll from "layout/NavigationScroll";
 import { MathJaxContext } from "better-react-mathjax";
-import Poly from 'math/algebra/functions/poly';
-
 const App = () => {
     const customization = useSelector((state) => state.customization);
     return (

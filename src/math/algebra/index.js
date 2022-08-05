@@ -165,8 +165,6 @@ class Algebra {
             if (this.dot || exp.dot)
                 isUnifiable = this.dot && this.dot.unifiable(exp.dot);
             
-            console.log("first: ", this.toString());
-            console.log("first: ", exp.toString());
             if (this.b instanceof Array && exp.b instanceof Array) {
                 if (this.b.length === exp.b.length) {
                     const sameOnes = this.b.filter(

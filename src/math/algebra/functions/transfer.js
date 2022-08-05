@@ -9,6 +9,7 @@ import { round } from "math/calculus/index";
 import Equation from "math/solvers/equation";
 import { makeProgress } from "toolshed";
 import Formula from "math/solvers/formula";
+import Zero from "./zero";
 
 export default class TransferFunction extends Fraction {
     static Specials = {
@@ -271,8 +272,12 @@ export default class TransferFunction extends Fraction {
         if (against === this.symbol) {
             const rplus = result.plus;
             if (!result.dot) {
-                const f = this.numerator(), g = this.denominator();
-                const num = f.derivative().multiply(g).substract(g.derivative().multiply(f));
+                const f = this.numerator(),
+                    g = this.denominator();
+                const num = f
+                    .derivative()
+                    .multiply(g)
+                    .substract(g.derivative().multiply(f));
                 result = num.devide(g.multiply(g)).toTransferFunction();
             }
             if (rplus) result.plus = rplus.derivative();
@@ -298,30 +303,49 @@ export default class TransferFunction extends Fraction {
                 den = Complex.MultiplyFactors(otherPoles, s);
             coefs.push(num.devide(den));
             if (poles[i].order > 1) {
-                const ci = coefs.length - 1
-                coefs[ci] = [coefs[ci]];
-                let dF = TransferFunction.Specials.$Roots(zeros.map(z => z.value), otherPoles.map(p => p.value));
+                coefs[i] = [coefs[i]];
+                let dF = TransferFunction.Specials.$Roots(
+                    zeros.map((z) => z.value),
+                    otherPoles.map((p) => p.value)
+                );
                 for (let q = 1; q < poles[i].order; q++) {
                     dF = dF.derivative();
-                    coefs[ci].push(dF.$(s));
-
+                    coefs[i].push(dF.$(s));
                 }
             }
         }
         // edit THIIIIIIIIIIIIIS
-        let g_s = new TransferFunction(coefs[0].actual(), [
-                1,
-                poles[0].value.negation().actual(),
-            ]),
-            c_t = new Exp(coefs[0].actual(), poles[0].value.actual());
-        for (let i = 1; i < coefs.length; i++) {
-            g_s = g_s.add(
-                new TransferFunction(coefs[i].actual(), [
-                    1,
-                    poles[i].value.negation().actual(),
-                ])
-            );
-            c_t = c_t.add(new Exp(coefs[i].actual(), poles[i].value.actual()));
+        let g_s = new Zero(),
+            c_t = new Zero();
+        for (let i = 0; i < coefs.length; i++) {
+            if (coefs[i] instanceof Array && poles[i].order > 1) {
+                for (let q = 0; q < coefs[i].length; q++) {
+                    g_s = g_s.add(
+                        new TransferFunction(coefs[i][q].actual(), [
+                            1,
+                            poles[i].value.negation().actual(),
+                        ])
+                    );
+                    // const ap = [coefs[i][q].actual()];
+                    // for(let k = 0; k < poles[i].order - q - 1; k++)
+                    //     ap.push(0);
+                    const ap = Poly.atn(coefs[i][q].actual(), poles[i].order - q - 1)
+                    c_t = c_t.add(
+                        new Exp(ap, poles[i].value.actual())
+                    );
+                }
+            } else {
+                g_s = g_s.add(
+                    new TransferFunction(coefs[i].actual(),         [
+                        1,
+                        poles[i].value.negation().actual(),
+                    ])
+                );
+                console.log( new Exp(coefs[i].actual(), poles[i].value.actual()).toString())
+                c_t = c_t.add(
+                    !poles[i].value.isZero() ? new Exp(coefs[i].actual(), poles[i].value.actual()) : new Poly(coefs[i].actual())
+                );
+            }
         }
         return { $s: g_s, $t: c_t };
     };
@@ -394,7 +418,9 @@ export default class TransferFunction extends Fraction {
         // if its not in special mode:
         return new Formula(this.stepify().toFormula(), this.symbol).iL();
     };
-    copy = (linkPrevious = false) =>
+    copy = (
+        linkPrevious = false // copy everything
+    ) =>
         new TransferFunction(this.a, this.b, {
             overshoot: this.overshoot,
             t_rise: this.t_rise,
@@ -409,6 +435,12 @@ export default class TransferFunction extends Fraction {
             input: this.input,
         }).setRoots(this.zeros, this.poles);
 
+    hardcopy = () =>
+        // shallow-singleterm copy
+        new TransferFunction(this.a, this.b, {
+            dot: this.dot,
+            input: this.input,
+        });
     lim = (s0) => {
         let num, den;
         // for simple polynomial numerator and denominator fractions

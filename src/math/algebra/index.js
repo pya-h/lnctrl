@@ -50,7 +50,7 @@ class Algebra {
         return this;
     };
     getA = () => this.a;
-
+    getSymbol = () => this.symbol;
     setB = (b) => {
         this.b = Algebra.identify(b);
         return this;
@@ -62,6 +62,13 @@ class Algebra {
         return this;
     };
     getTeta = () => this.teta;
+    getType = () => this.type;
+
+    linkPlus = plus => {
+        this.plus = plus;
+        return this;
+    }
+    
     setInputSignal = (input) => {
         this.input = input;
         return this;

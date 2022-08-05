@@ -6,20 +6,27 @@ import Fraction from "./fraction";
 export class Sin extends Algebra {
     constructor(A, w, teta = 0, symbol = "t", params = {}) {
         // Ae^wt
-        if(w === +w && w < 0){
+        if (w === +w && w < 0) {
             w *= -1;
             A *= -1;
         }
         super(A, { symbol, type: "sin", b: w, teta, ...params });
     }
-    copy = (linkPrevious = false) =>
+    copy = (
+        linkPrevious = false // deep copy; copy everything
+    ) =>
         new Sin(this.a, this.b, this.teta, this.symbol, {
             dot: this.dot,
             plus: this.plus,
             previous: linkPrevious ? this.previous : null,
             input: this.input,
         });
-
+    hardcopy = () =>
+        // shallow copy; copy signle term
+        new Sin(this.a, this.b, this.teta, this.symbol, {
+            dot: this.dot,
+            input: this.input,
+        });
     toExp = () => {
         const sin = this.copy();
         const exp1 = new Exp(sin.a / 2, new Complex(0, -sin.b));
@@ -31,14 +38,14 @@ export class Sin extends Algebra {
         const A = Algebra.valueOf(this.a, t);
         const w = Algebra.valueOf(this.b, t);
         const teta = Algebra.valueOf(this.teta, t);
-        return A * Math.sin(w * t + teta)
-    }
+        return A * Math.sin(w * t + teta);
+    };
 }
 
 export class Cos extends Algebra {
     constructor(A, w, teta = 0, symbol = "t", params = {}) {
         // Ae^wt
-        if(+w === w && w < 0) w *= -1; // cos(-w) = cos(w);
+        if (+w === w && w < 0) w *= -1; // cos(-w) = cos(w);
         super(A, { symbol, type: "cos", b: w, teta, ...params });
     }
     copy = (linkPrevious = false) =>
@@ -48,7 +55,12 @@ export class Cos extends Algebra {
             previous: linkPrevious ? this.previous : null,
             input: this.input,
         });
-
+    hardcopy = () =>
+        // shallow copy; copy signle term
+        new Cos(this.a, this.b, this.teta, this.symbol, {
+            dot: this.dot,
+            input: this.input,
+        });
     toExp = () => {
         const cos = this.copy();
         const exp1 = new Exp(cos.a / 2, new Complex(0, cos.b));
@@ -56,13 +68,12 @@ export class Cos extends Algebra {
         return exp1.add(exp2);
     };
 
-
     valueAt = (t) => {
         const A = Algebra.valueOf(this.a, t);
         const w = Algebra.valueOf(this.b, t);
         const teta = Algebra.valueOf(this.teta, t);
-        return A * Math.cos(w * t + teta)
-    }
+        return A * Math.cos(w * t + teta);
+    };
 }
 
 export class Tan extends Algebra {
@@ -77,7 +88,12 @@ export class Tan extends Algebra {
             previous: linkPrevious ? this.previous : null,
             input: this.input,
         });
-
+    hardcopy = () =>
+        // shallow copy; copy signle term
+        new Tan(this.a, this.b, this.teta, this.symbol, {
+            dot: this.dot,
+            input: this.input,
+        });
     toExp = () => {
         const tan = this.copy();
         const exp1 = new Exp(1, new Complex(0, -tan.b));
@@ -90,8 +106,8 @@ export class Tan extends Algebra {
         const A = Algebra.valueOf(this.a, t);
         const w = Algebra.valueOf(this.b, t);
         const teta = Algebra.valueOf(this.teta, t);
-        return A * Math.tan(w * t + teta)
-    }
+        return A * Math.tan(w * t + teta);
+    };
 }
 
 export class Cot extends Algebra {
@@ -106,6 +122,12 @@ export class Cot extends Algebra {
             previous: linkPrevious ? this.previous : null,
             input: this.input,
         });
+    hardcopy = () =>
+        // shallow copy; copy signle term
+        new Cot(this.a, this.b, this.teta, this.symbol, {
+            dot: this.dot,
+            input: this.input,
+        });
     toExp = () => {
         const cot = this.copy();
         const exp1 = new Exp(1, new Complex(0, -cot.b));
@@ -114,11 +136,10 @@ export class Cot extends Algebra {
         return new Fraction(exp1.add(denominatorExp2), exp1.add(numeratorExp2));
     };
 
-
     valueAt = (t) => {
         const A = Algebra.valueOf(this.a, t);
         const w = Algebra.valueOf(this.b, t);
         const teta = Algebra.valueOf(this.teta, t);
-        return A * Math.cot(w * t + teta)
-    }
+        return A * Math.cot(w * t + teta);
+    };
 }

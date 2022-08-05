@@ -18,7 +18,9 @@ export default class Fraction extends Algebra {
         super(num, { symbol, type: "frac", b: den, ...params });
     }
 
-    copy = (linkPrevious = false) =>
+    copy = (
+        linkPrevious = false // copy everything
+    ) =>
         new Fraction(this.a, this.b, this.symbol, {
             dot: this.dot,
             plus: this.plus,
@@ -26,6 +28,12 @@ export default class Fraction extends Algebra {
             input: this.input,
         });
 
+    hardcopy = () =>
+        // shallow copy just for copying single term
+        new Fraction(this.a, this.b, this.symbol, {
+            dot: this.dot,
+            input: this.input,
+        });
     lim = () => {
         // for all fractions with all kind of numerator and denominator
     };

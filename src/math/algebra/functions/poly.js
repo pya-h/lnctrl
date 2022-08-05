@@ -13,14 +13,21 @@ export default class Poly extends Algebra {
         super(a, { symbol, type: "poly", ...params });
     }
 
-    copy = (linkPrevious = false) =>
+    copy = (
+        linkPrevious = false // copy everything
+    ) =>
         new Poly(this.a, this.symbol, {
             dot: this.dot,
             plus: this.plus,
             previous: linkPrevious ? this.previous : null,
             input: this.input,
         });
-
+    hardcopy = () =>
+        // shallow copy; signle term copy
+        new Poly(this.a, this.symbol, {
+            dot: this.dot,
+            input: this.input,
+        });
     degree = () => this.a.length - 1;
 
     valueAt = (t) => {

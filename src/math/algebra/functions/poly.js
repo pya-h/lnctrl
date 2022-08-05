@@ -108,8 +108,9 @@ export default class Poly extends Algebra {
             return new Fraction(this.getA(), operand.getA(), this.symbol);
         }
         if (operand === +operand) return this.multiply(1 / Number(operand));
+        return this.copy();
         // is it true??
-        return super.devide();
+        // return super.devide();
     };
 
     // edit this function to remove unnecessary white spaces

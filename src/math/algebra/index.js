@@ -33,7 +33,7 @@ class Algebra {
     }
     static identify = (parameter) => {
         if (parameter instanceof Array)
-            return parameter.map((pi) =>
+        return parameter.map((pi) =>
                 pi instanceof Algebra || pi instanceof StandardInputSignal
                     ? pi.copy()
                     : round(pi)
@@ -463,8 +463,12 @@ class Algebra {
                         for (let i = no; i >= 0; i--) {
                             if (operand.a[i]) {
                                 const zeros = Array(no - i).fill(0);
-                                const a = [...y.a].map(
-                                    (yai) => yai * operand.a[i]
+                                const a = [...y.a].map((yai) =>
+                                    yai instanceof Algebra
+                                        ? yai.multiply(operand.a[i])
+                                        : operand.a[i] instanceof Algebra
+                                        ? operand.a[i].multiply(yai)
+                                        : yai * operand.a[i]
                                 );
                                 a.push(...zeros);
                                 As.push(a);
@@ -478,8 +482,22 @@ class Algebra {
                                 i <= As[j].length && i <= product.length;
                                 i++
                             )
-                                product[product.length - i] +=
-                                    As[j][As[j].length - i];
+                                if (
+                                    product[product.length - i] instanceof
+                                    Algebra
+                                )
+                                    product[product.length - i] = product[
+                                        product.length - i
+                                    ].add(As[j][As[j].length - i]);
+                                else if (
+                                    As[j][As[j].length - i] instanceof Algebra
+                                )
+                                    product[product.length - i] = As[j][
+                                        As[j].length - i
+                                    ].add(product[product.length - i]);
+                                else
+                                    product[product.length - i] +=
+                                        As[j][As[j].length - i];
 
                         y.a = product;
                         if (operand.dot) {
@@ -560,11 +578,14 @@ class Algebra {
                         }
                         // now sum all the products
                         const product = As.pop();
-                        for (let i = 0; i < product.length; i++) {
-                            for (let j = 0; j < As.length; j++) {
-                                if (i < As[j].length) product[i] += As[j][i];
-                            }
-                        }
+                        for (let j = 0; j < As.length; j++)
+                            for (
+                                let i = 1;
+                                i <= As[j].length && i <= product.length;
+                                i++
+                            )
+                                product[product.length - i] +=
+                                    As[j][As[j].length - i];
                         this.a = product;
                         if (operand.dot) {
                             // link dots ***IS THIS TRUE?>***
@@ -574,12 +595,36 @@ class Algebra {
                         }
                     }
                 }
+            } else if (this.type !== operand.type && operand.plus) {
+                // like: exp(f(...)) * [Asin(...) * Bcos(...)]
+                // UPDATE SELF MULTIPLY AFTER SOLVING THIS ISSUE
+                this.plus = this.selfmultiply(operand.plus.copy());
+                const lastyDot = this.enddot();
+                if (
+                    typeof this.a === "number" &&
+                    typeof operand.a === "number" &&
+                    operand.a !== 1
+                ) {
+                    this.a *= operand.a;
+                    operand.a = 1;
+                }
+                lastyDot.dot = operand.copy();
+                lastyDot.dot.previous = lastyDot;
+                // UPDATE SELF MULTIPLY AFTER SOLVING THIS ISSUE
             } else {
                 const endDotTerm = this.enddot();
+                if (
+                    typeof this.a === "number" &&
+                    typeof operand.a === "number"
+                ) {
+                    this.a *= operand.a;
+                    operand.a = 1;
+                }
                 endDotTerm.dot = operand.copy(); // multiply
                 endDotTerm.dot.previous = endDotTerm;
-                if (this.plus) this.plus = this.plus.multiply(operand);
             }
+            if (this.plus) this.plus.selfmultiply(operand);
+            // if (operand.plus) this.end().plus = this.selfmultiply(operand.plus);
         } else if (operand instanceof StandardInputSignal) {
             // this.dot = operand.copy(); // multiply
             // this.dot.previous = this;

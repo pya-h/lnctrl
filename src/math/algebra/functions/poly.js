@@ -68,15 +68,17 @@ export default class Poly extends Algebra {
         }
         return res + (inline ? "" : " $$");
     };
-    derivative = () => {
+    derivative = (against = this.symbol) => {
         const result = this.copy(true);
-        if (!result.dot) {
-            const n = result.a.length - 1;
-            const da = Array(n).fill(0);
-            for (let i = n; i >= 1; i--) da[n - i] = i * result.a[n - i];
-            result.a = [...da];
+        if (against === this.symbol) {
+            if (!result.dot) {
+                const n = result.a.length - 1;
+                const da = Array(n).fill(0);
+                for (let i = n; i >= 1; i--) da[n - i] = i * result.a[n - i];
+                result.a = [...da];
+            }
+            if (result.plus) result.plus = result.plus.derivative();
         }
-        if (result.plus) result.plus = result.plus.derivative();
         return result;
     };
 

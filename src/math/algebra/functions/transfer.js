@@ -47,6 +47,27 @@ export default class TransferFunction extends Fraction {
             Ti !== 0
                 ? new TransferFunction([Kp * Ti * Td, Kp * Ti, Kp], [Ti, 0])
                 : new TransferFunction([Kp * Td, Kp], [1]),
+        $Roots: (zeros, poles) => {
+            let num = new Poly([1], "s"),
+                den = new Poly([1], "s");
+            for (let i = 0; i < zeros.length; i++) {
+                if (zeros[i] instanceof Complex)
+                    num = num.multiply(new Poly([1, zeros[i].negation()], "s"));
+                else {
+                    num = num.multiply(new Poly([1, -zeros[i]], "s"));
+                    zeros[i] = new Complex(zeros[i], 0);
+                }
+            }
+            for (let i = 0; i < poles.length; i++) {
+                if (poles[i] instanceof Complex)
+                    den = den.multiply(new Poly([1, poles[i].negation()], "s"));
+                else {
+                    den = den.multiply(new Poly([1, -poles[i]], "s"));
+                    poles[i] = new Complex(poles[i], 0);
+                }
+            }
+            return num.devide(den).toTransferFunction().setRoots(zeros, poles);
+        },
     };
 
     static RootOrders = (Roots) => {
@@ -245,6 +266,19 @@ export default class TransferFunction extends Fraction {
     poleOrder = (pole) =>
         this.poles.filter((pi) => Algebra.areTheseTwoEqual(pole, pi)).length;
 
+    derivative = (against = this.symbol) => {
+        let result = this.copy(true);
+        if (against === this.symbol) {
+            const rplus = result.plus;
+            if (!result.dot) {
+                const f = this.numerator(), g = this.denominator();
+                const num = f.derivative().multiply(g).substract(g.derivative().multiply(f));
+                result = num.devide(g.multiply(g)).toTransferFunction();
+            }
+            if (rplus) result.plus = rplus.derivative();
+        }
+        return result;
+    };
     laplace = () => this.copy(); // actually it has no laplace, this is for disfunctioning the laplace method in the parent class Algebra
     laplaceInverse = () => {
         // const m = this.zeros.length - 1; // number of zeros
@@ -263,7 +297,18 @@ export default class TransferFunction extends Fraction {
                         : new Complex(1, 0),
                 den = Complex.MultiplyFactors(otherPoles, s);
             coefs.push(num.devide(den));
+            if (poles[i].order > 1) {
+                const ci = coefs.length - 1
+                coefs[ci] = [coefs[ci]];
+                let dF = TransferFunction.Specials.$Roots(zeros.map(z => z.value), otherPoles.map(p => p.value));
+                for (let q = 1; q < poles[i].order; q++) {
+                    dF = dF.derivative();
+                    coefs[ci].push(dF.$(s));
+
+                }
+            }
         }
+        // edit THIIIIIIIIIIIIIS
         let g_s = new TransferFunction(coefs[0].actual(), [
                 1,
                 poles[0].value.negation().actual(),
@@ -529,6 +574,7 @@ export default class TransferFunction extends Fraction {
                 : "1";
         return `(${num})/(${den})`;
     };
+
     // ****************************************************** //
     // SOLVE THIS WITH nerdamer again
     rootLocus = async (k_min, k_max, progressBarObject, N = 1000) => {
@@ -708,6 +754,7 @@ export default class TransferFunction extends Fraction {
         const cs_gs = this.multiply(controller);
         return cs_gs
             .numerator()
-            .devide(cs_gs.numerator().add(cs_gs.denominator())).toTransferFunction();
+            .devide(cs_gs.numerator().add(cs_gs.denominator()))
+            .toTransferFunction();
     };
 }

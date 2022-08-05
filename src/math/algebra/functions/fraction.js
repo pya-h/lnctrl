@@ -1,5 +1,6 @@
 import Algebra from "math/algebra";
 import Poly from "./poly";
+import TransferFunction from "./transfer";
 
 export default class Fraction extends Algebra {
     constructor(num, den = [1], symbol = "t", params = {}) {
@@ -22,15 +23,21 @@ export default class Fraction extends Algebra {
             dot: this.dot,
             plus: this.plus,
             previous: linkPrevious ? this.previous : null,
-            input: this.input
+            input: this.input,
         });
 
     lim = () => {
         // for all fractions with all kind of numerator and denominator
-    }
-    
-    numerator = () => this.a instanceof Algebra ? this.a.copy(true) : new Poly(this.a, this.symbol);
-    denominator = () => this.b instanceof Algebra ? this.b.copy(true) : new Poly(this.b, this.symbol);
+    };
+
+    numerator = () =>
+        this.a instanceof Algebra
+            ? this.a.copy(true)
+            : new Poly(this.a, this.symbol);
+    denominator = () =>
+        this.b instanceof Algebra
+            ? this.b.copy(true)
+            : new Poly(this.b, this.symbol);
 
     setNumerator = (num) => {
         if (!(num instanceof Algebra)) {
@@ -39,7 +46,7 @@ export default class Fraction extends Algebra {
             else if (num.length === 0) num = [0];
         }
         return this.setA(num);
-    }
+    };
 
     setDenominator = (den) => {
         if (!(den instanceof Algebra)) {
@@ -48,20 +55,37 @@ export default class Fraction extends Algebra {
             else if (den.length === 0) den = [1];
         }
         return this.setB(den);
-    }
+    };
     valueAt = (t) => {
         const num = this.numerator().$(t);
         const den = this.denominator().$(t);
-       
-        if(num instanceof Algebra)
-            return num.devide(den);
-        if(den instanceof Algebra)
-            return den.devideInverse(num);
-        if(den)
-            return num / den;
-        // THROW zero denominator ERROR 
-        return undefined;
-    }
 
-    toFormula = () => "(" + this.numerator().toFormula() + ")/(" + this.denominator().toFormula() + ")"; 
+        if (num instanceof Algebra) return num.devide(den);
+        if (den instanceof Algebra) return den.devideInverse(num);
+        if (den) return num / den;
+        // THROW zero denominator ERROR
+        return undefined;
+    };
+
+    multiply = (operand) => {
+        let y = this.copy(true);
+        if (operand instanceof Fraction) {
+            const num = this.numerator().multiply(operand.numerator()),
+                den = this.denominator().multiply(operand.denominator());
+            y = num.devide(den);
+        } else {
+            const num = this.numerator().multiply(operand.numerator());
+            y = num.devide(this.denominator());
+        }
+        if (this.plus) y.plus = this.plus.multiply(operand);
+        return y;
+    };
+    toFormula = () =>
+        "(" +
+        this.numerator().toFormula() +
+        ")/(" +
+        this.denominator().toFormula() +
+        ")";
+
+    toTransferFunction = () => new TransferFunction(this.getA(), this.getB());
 }

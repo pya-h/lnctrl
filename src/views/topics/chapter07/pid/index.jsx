@@ -10,8 +10,7 @@ import PIDParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
-import Formula from "math/solvers/formula";
-import { makeProgress } from 'toolshed';
+
 const symbols = {
     in: "jw",
     out: "G",
@@ -25,7 +24,7 @@ const PIDController = () => {
     const [K_p, $K_p] = useState(1);
     const [T_i, $T_i] = useState(0);
     const [T_d, $T_d] = useState(0);
-
+    const [controller, setController] = useState(null);
     const [t_initial, $t_initial] = useState(0);
     const [t_final, $t_final] = useState(10);
     // gradiant of u(t) is 0 and unit ramp is one
@@ -33,7 +32,7 @@ const PIDController = () => {
         main: [],
         controlled: [],
     });
-    const [response, $response] = useState(null);
+    const [solution, $solution] = useState([]);
     const [thickness, $thickness] = useState(1.0); // graph line thickness
     const [is3DPlotEnabled, $3DPlotEnabled] = useState(false);
     const [N, $N] = useState(1000);
@@ -46,14 +45,26 @@ const PIDController = () => {
         if (G_s) {
             (async () => {
                 try {
-                    // $response("$$" + G_s.label(symbols.out) + "$$");
+                    const lp = G_s.stepify().laplaceInverse();
+                    const controlledSystem = G_s.controlFeedback(controller);
+                    const clp = controlledSystem.stepify().laplaceInverse();
+                    $solution([
+                        "$$" + G_s.label(symbols.out) + "$$",
+                        "$$" + lp.$s.label("H") + "$$",
+                        `$$h(t) = ${lp.$t.toString()}$$`,
+                        <hr />,
+                        `$$C_{PID}(s) = ${controller.toString()}$$`,
+                        `$$C(s) = ${clp.$s.toString()}$$`,
+                        `$$c(t) = ${clp.$t.toString()}$$`,
+                        
+                    ]);
                     // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
                     // so that the traces will be loaded with new conditions
                     const startTime = new Date();
 
                     // console.log(g.roots().map(x => x.toString()));
                     const c_t = G_s.step();
-                    const [x, y] = await calculus.pointifyAsync(
+                    let [x, y] = await calculus.pointifyAsync(
                         c_t.$,
                         +t_initial,
                         +t_final,
@@ -68,29 +79,36 @@ const PIDController = () => {
                         `${symbols.out}(${symbols.in})`,
                         is3DPlotEnabled
                     );
-                    // controlled = calculus.systemToTrace(
-                    //     G_s.phase,
-                    //     +t_initial,
-                    //     +t_final,
-                    //     thickness,
-                    //     `${symbols.out}(${symbols.in})`,
-                    //     is3DPlotEnabled,
-                    //     +N
-                    // );
+                    const c_pid = controlledSystem.step();
+                    [x, y] = await calculus.pointifyAsync(
+                        c_pid.$,
+                        +t_initial,
+                        +t_final,
+                        document.getElementById("pid_tune_progress"),
+                        500,
+                        +N
+                    );
+                    const controlled = calculus.arrayToTrace(
+                        x,
+                        y,
+                        thickness,
+                        `${symbols.out}(${symbols.in})`,
+                        is3DPlotEnabled
+                    );
 
-                    // all.controlled.push(controlled);
-
-                    $traces({ main: [main] });
+                    $traces({ main: [main], controlled: [controlled] });
                     const endTime = new Date();
                     setResponseTime((+endTime - +startTime) / 1000);
-
                 } catch (err) {
                     console.log(err);
                 }
             })();
         }
-    }, [G_s, t_initial, t_final, is3DPlotEnabled, thickness, N]);
+    }, [G_s, t_initial, t_final, controller, is3DPlotEnabled, thickness, N]);
 
+    useEffect(() => {
+        setController(TransferFunction.Specials.$PID(K_p, T_i, T_d));
+    }, [K_p, T_i, T_d]);
     useEffect(() => {
         try {
             if (
@@ -132,13 +150,14 @@ const PIDController = () => {
                                 container
                                 direction="row"
                             >
-                                <Grid
-                                    style={{ fontSize: "18px" }}
-                                    md={6}
-                                    sm={12}
-                                >
-                                    <MathJax>{response}</MathJax>
-                                </Grid>
+                                {solution.map((sol) => (
+                                    <Grid
+                                        style={{ fontSize: "18px", textAlign: 'center' }}
+                                        xs={12}
+                                    >
+                                        <MathJax>{sol}</MathJax>
+                                    </Grid>
+                                ))}
                             </Grid>
                         </SubCard>
                     </Grid>

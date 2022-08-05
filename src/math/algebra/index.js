@@ -41,7 +41,7 @@ class Algebra {
         else if (parameter instanceof Algebra) {
             return parameter.copy();
         } else if (typeof parameter === "number") return round(parameter);
-        else if(typeof parameter === 'string') return parameter;
+        else if (typeof parameter === "string") return parameter;
         else if (!parameter) return 0;
         throw new NotScalarError(parameter);
     };
@@ -62,6 +62,10 @@ class Algebra {
         return this;
     };
     getTeta = () => this.teta;
+    setInputSignal = (input) => {
+        this.input = input;
+        return this;
+    };
     // CONNECT AND LINK METHODS, FIND FIRST TERM AND LAST TERM AND ...
     end = () => {
         // returns the end term in the algebratic chain
@@ -164,7 +168,7 @@ class Algebra {
             let isUnifiable = true;
             if (this.dot || exp.dot)
                 isUnifiable = this.dot && this.dot.unifiable(exp.dot);
-            
+
             if (this.b instanceof Array && exp.b instanceof Array) {
                 if (this.b.length === exp.b.length) {
                     const sameOnes = this.b.filter(
@@ -172,8 +176,7 @@ class Algebra {
                     );
                     return isUnifiable && this.b.length === sameOnes.length;
                 }
-            }
-            else if(this.b instanceof Algebra)
+            } else if (this.b instanceof Algebra)
                 return isUnifiable && this.b.equals(exp.b);
             return isUnifiable && exp.b === this.b;
         }
@@ -259,14 +262,17 @@ class Algebra {
             let ai = a_i.copy();
             if (i > 0) {
                 // write a method to edit all the + - occuring next to each other in toString()
-                if (ai.type === "complex" && typeof ai.a === "number") {
+                if (ai.type === "complex" && +ai.a === ai.a) {
                     if (ai.a < 0) {
                         str += " - ";
                         ai.a *= -1;
-                    } else if (!ai.a && typeof ai.b === "number" && ai.b < 0) {
-                        str += " - ";
-                        ai.b *= -1;
-                    }
+                    } else if (!ai.a) {
+                        ai.b = +ai.b;
+                        if (ai.b < 0) {
+                            str += " - ";
+                            ai.b *= -1;
+                        } else str += " + ";
+                    } else str += " + ";
                 } else str += " + ";
             }
             return str + ai.toString(i < n && a_i.hasMultiTerms());
@@ -465,7 +471,6 @@ class Algebra {
                             }
                         }
                         // now sum all the products
-                        console.table(As);
                         let product = As.pop();
                         for (let j = 0; j < As.length; j++)
                             for (
@@ -490,14 +495,17 @@ class Algebra {
                 // UPDATE SELF MULTIPLY AFTER SOLVING THIS ISSUE
                 y.plus = y.multiply(operand.plus.copy());
                 const lastyDot = y.enddot();
-                if(typeof y.a === 'number' && typeof operand.a === 'number' && operand.a !== 1){
+                if (
+                    typeof y.a === "number" &&
+                    typeof operand.a === "number" &&
+                    operand.a !== 1
+                ) {
                     y.a *= operand.a;
                     operand.a = 1;
                 }
                 lastyDot.dot = operand.copy();
                 lastyDot.dot.previous = lastyDot;
                 // UPDATE SELF MULTIPLY AFTER SOLVING THIS ISSUE
-
             } else {
                 const endDotTerm = y.enddot();
                 if (typeof y.a === "number" && typeof operand.a === "number") {
@@ -526,7 +534,6 @@ class Algebra {
             }
             if (y.plus) y.plus = y.plus.multiply(operand);
         }
-        // console.log("y = ", y, "operand = ", operand)
         return y;
     };
 
@@ -594,58 +601,59 @@ class Algebra {
     substract = (operand) => this.add(operand.negation());
 
     devide = (operand) => {
-        if(operand === +operand)
+        if (operand === +operand)
             // scaler
-            return this.multiply(1 / Number(operand));
-        
+            return this.multiply(1 / +operand);
         // u need to handle Complex objects as Algebra using their type to recognize them
         if (operand instanceof Algebra) {
-            // operand algebra or complex
-            // ***** TODO:  ****************
-            // first u must do everything to simplify
-            // second at the simplest state of the terms,
-            // construct a new Algebra of "frac" type
+            if (operand.type === "poly" && this.symbol === operand.symbol) {
+                return new Algebra(this.getA(), {
+                    type: "frac",
+                    b: operand.getA(),
+                    symbol: this.symbol,
+                });
+            }
             return this.copy(); // for now just to avoid crashes
-        } 
+        }
     };
 
-    devideInverse = (k) =>{
-        if(k === +k){
-            return new Algebra([k], {symbol: this.symbol, type: "frac", b: [1]});
-        }
-        else if(k instanceof Algebra)
-            return k.devide(this);
-    }
+    devideInverse = (k) => {
+        if (k === +k) {
+            return new Algebra([k], {
+                symbol: this.symbol,
+                type: "frac",
+                b: [1],
+            });
+        } else if (k instanceof Algebra) return k.devide(this);
+    };
 
     laplace = () => {};
 
     static areTheSame = (el1, el2) => {
         // checkes the sameness of parameters like .a .b .teta , etc.
-        if(el1 instanceof Algebra && el2 instanceof Algebra)
+        if (el1 instanceof Algebra && el2 instanceof Algebra)
             return el1.equals(el2);
-        else if(el1 instanceof Array && el2 instanceof Array){
-            if(el1.length === el2.length){
+        else if (el1 instanceof Array && el2 instanceof Array) {
+            if (el1.length === el2.length) {
                 let i = 0;
-                for(i = 0; i < el1.length; i++)
-                    if(el1[i] !== el2[i]) break;
+                for (i = 0; i < el1.length; i++) if (el1[i] !== el2[i]) break;
                 return i >= el1.length;
-                
             }
         }
         return typeof el1 === typeof el2 && el1 === el2;
-    }
-    equals = (operand) => operand instanceof Algebra && 
-                            this.type === operand.type && 
-                            this.symbol === operand.symbol &&
-                            this.type === operand.type &&
-                            this.symbol === operand.symbol &&
-                            Algebra.areTheSame(this.a, operand.a) &&
-                            Algebra.areTheSame(this.b, operand.b) &&
-                            Algebra.areTheSame(this.teta, operand.teta) &&
-                            (!this.dot || this.dot.equals(operand.dot)) &&
-                            (!this.plus || this.plus.equals(operand.plus)) &&
-                            (!this.previous || this.previous.equals(operand.previous));
-
+    };
+    equals = (operand) =>
+        operand instanceof Algebra &&
+        this.type === operand.type &&
+        this.symbol === operand.symbol &&
+        this.type === operand.type &&
+        this.symbol === operand.symbol &&
+        Algebra.areTheSame(this.a, operand.a) &&
+        Algebra.areTheSame(this.b, operand.b) &&
+        Algebra.areTheSame(this.teta, operand.teta) &&
+        (!this.dot || this.dot.equals(operand.dot)) &&
+        (!this.plus || this.plus.equals(operand.plus)) &&
+        (!this.previous || this.previous.equals(operand.previous));
 
     static areTheseTwoEqual = (p1, p2) =>
         p1 instanceof Algebra

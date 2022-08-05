@@ -70,7 +70,7 @@ const PIDParameters = ({
                         $rawNumerator,
                         $rawDenominator,
                         $K_p,
-                        T_i,
+                        $T_i,
                         $T_d,
                         $t_initial,
                         $t_final,

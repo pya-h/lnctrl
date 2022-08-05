@@ -42,9 +42,26 @@ export default class TransferFunction extends Fraction {
         $WnZ: (w_n, zeta) => new TransferFunction(null, null, { w_n, zeta }),
         $design: (t_rise, overshoot) =>
             new TransferFunction(null, null, { overshoot, t_rise }),
+
+        $PID: (Kp, Ti, Td) =>
+            Ti !== 0
+                ? new TransferFunction([Kp * Ti * Td, Kp * Ti, Kp], [Ti, 0])
+                : new TransferFunction([Kp * Td, Kp], [1]),
     };
 
-    static omegaZetaPoles = (w_n, zeta) => {
+    static RootOrders = (Roots) => {
+        Roots = Roots.sort((p1, p2) => p1.real() - p2.real());
+        const orders = [];
+        for (let i = 0; i < Roots.length; i++) {
+            let j = i + 1,
+                order = 1;
+            for (; j < Roots.length && Roots[i].equals(Roots[j]); j++, order++);
+            orders.push({ value: Roots[i], order });
+            i = j - 1;
+        }
+        return orders;
+    };
+    static OmegaZetaPoles = (w_n, zeta) => {
         if (Math.abs(zeta) >= 1) {
             const alpha = -zeta * w_n;
             const beta = w_n * (zeta * zeta - 1) ** 0.5;
@@ -77,7 +94,7 @@ export default class TransferFunction extends Fraction {
                 const wn2 = w_n * w_n;
                 numerator = wn2;
                 denominator = [1, 2 * zeta * w_n, wn2];
-                poles = TransferFunction.omegaZetaPoles(w_n, zeta);
+                poles = TransferFunction.OmegaZetaPoles(w_n, zeta);
                 zeros = [];
             }
         }
@@ -101,7 +118,7 @@ export default class TransferFunction extends Fraction {
                 this.order = 2;
                 this.setRoots(
                     [],
-                    TransferFunction.omegaZetaPoles(this.w_n, this.zeta)
+                    TransferFunction.OmegaZetaPoles(this.w_n, this.zeta)
                 );
             }
         }
@@ -118,82 +135,72 @@ export default class TransferFunction extends Fraction {
                 this.t_rise = dampingCharasteristics.t_rise;
             }
         }
-    }
-    static sortRoots = (rt) =>
-        rt.sort((ri, rj) =>
-            ri instanceof Algebra
-                ? ri.substract(rj)
-                : rj instanceof Algebra
-                ? rj.substract(ri)
-                : Math.abs(ri) - Math.abs(rj)
-        );
-
-    roots = () => {
         if (
             (!this.zeros || !this.zeros.length) &&
             (!this.poles || !this.poles.length)
         ) {
-            // roots hasnt been decided by user
-            if (
-                this.a instanceof Array &&
-                this.b instanceof Array && // if all elements of numerator and denominator are actual numbers
-                !this.a.find((ai) => ai !== +ai) &&
-                !this.b.find((bi) => bi !== +bi)
-            ) {
-                // CONSTANT COEFFICIENT POLYNOMIAL EQUATIONS
-                this.zeros =
-                    this.a.length > 1
-                        ? new Formula(
-                              this.numerator().toFormula(),
-                              this.symbol
-                          ).x()
-                        : // ? new Equation(this.a, this.symbol).solve()
-                          [];
-                this.poles =
-                    this.b.length > 1
-                        ? new Formula(
-                              this.denominator().toFormula(),
-                              this.symbol
-                          ).x()
-                        : //? new Equation(this.b, this.symbol).solve()
-                          [];
-            } else {
-                // if the equation isnt a simple constant coefficient polynomial
-            }
+            const [zs, ps] = this.roots();
+            this.setRoots(zs, ps);
         }
-        return [
-            this.zeros.map((zi) => (zi instanceof Algebra ? zi.copy() : zi)),
-            this.poles.map((pi) => (pi instanceof Algebra ? pi.copy() : pi)),
-        ];
+    }
+
+    roots = () => {
+        // roots hasnt been decided by user
+        let zeros = [],
+            poles = [];
+        if (
+            this.a instanceof Array &&
+            this.b instanceof Array && // if all elements of numerator and denominator are actual numbers
+            !this.a.find((ai) => ai !== +ai) &&
+            !this.b.find((bi) => bi !== +bi)
+        ) {
+            // CONSTANT COEFFICIENT POLYNOMIAL EQUATIONS
+            zeros =
+                this.a.length > 1
+                    ? new Formula(this.numerator().toFormula(), this.symbol).x()
+                    : // ? new Equation(this.a, this.symbol).solve()
+                      [];
+            poles =
+                this.b.length > 1
+                    ? new Formula(
+                          this.denominator().toFormula(),
+                          this.symbol
+                      ).x()
+                    : //? new Equation(this.b, this.symbol).solve()
+                      [];
+            if (zeros.length < this.a.length - 1) {
+                zeros = Formula.RepetitiveFactors(
+                    this.numerator().toFormula(),
+                    zeros,
+                    this.symbol
+                );
+            }
+            if (poles.length < this.b.length - 1) {
+                poles = Formula.RepetitiveFactors(
+                    this.denominator().toFormula(),
+                    poles,
+                    this.symbol
+                );
+            }
+        } else {
+            // if the equation isnt a simple constant coefficient polynomial
+        }
+
+        return [zeros, poles];
     };
 
-    repetitiveRoots = () => {
-        let [zeros, poles] = this.roots();
-        if (zeros.length < this.a.length - 1) {
-            zeros = Formula.RepetitiveFactors(
-                this.numerator().toFormula(),
-                zeros,
-                this.symbol
-            );
-            // console.log(poles);
-        }
-        if (poles.length < this.b.length - 1) {
-            poles = Formula.RepetitiveFactors(
-                this.denominator().toFormula(),
-                poles,
-                this.symbol
-            );
-            // console.log(poles);
-        }
-        return [zeros, poles];
-    }
     setRoots = (zeros, poles) => {
-        this.poles = poles.map((pi) =>
-            pi instanceof Complex ? pi.copy() : new Complex(pi, 0)
-        );
-        this.zeros = zeros.map((zi) =>
-            zi instanceof Complex ? zi.copy() : new Complex(zi, 0)
-        );
+        this.poles = poles
+            .map((pi) =>
+                pi instanceof Complex ? pi.copy() : new Complex(pi, 0)
+            )
+            .sort((p1, p2) => p1.real() - p2.real());
+        this.zeros = zeros
+            .map((zi) =>
+                zi instanceof Complex ? zi.copy() : new Complex(zi, 0)
+            )
+            .sort((z1, z2) => z1.real() - z2.real());
+
         return this;
     };
 
@@ -222,7 +229,7 @@ export default class TransferFunction extends Fraction {
     };
     getPoles = () => this.poles;
     setPoles = (poles) => {
-        this.poles = TransferFunction.sortRoots(poles).map((pi) =>
+        this.poles = TransferFunction.map((pi) =>
             pi instanceof Complex ? pi.copy() : new Complex(pi, 0)
         );
         return this;
@@ -240,21 +247,38 @@ export default class TransferFunction extends Fraction {
 
     laplace = () => this.copy(); // actually it has no laplace, this is for disfunctioning the laplace method in the parent class Algebra
     laplaceInverse = () => {
-        const m = this.zeros.length - 1; // number of zeros
-        const n = this.poles.length - 1; // number of poles
-
-        if (m === 0) {
-            switch (n) {
-                case 2:
-                    return null;
-                case 1:
-                    return new Algebra(1, { type: "exp" }); //EDITTTTTTTTTTTTTTTT
-                case 0:
-                    return null; //u(t)
-                default:
-                    return null; //DEFINE AN UNKNOWN FUNCTION FOR CASE LIKE THIS
-            }
+        // const m = this.zeros.length - 1; // number of zeros
+        // const n = this.poles.length - 1; // number of poles
+        const zeros = TransferFunction.RootOrders(this.zeros),
+            poles = TransferFunction.RootOrders(this.poles); // compact zero/pole list containing the orders
+        const coefs = [];
+        for (let i = 0; i < poles.length; i++) {
+            // for(let j  = 0; j < poles[i].order; i++)
+            const s = poles[i].value;
+            const otherPoles = [...poles];
+            otherPoles.splice(i, 1);
+            const num =
+                    zeros.length > 0
+                        ? Complex.MultiplyFactors(zeros, s)
+                        : new Complex(1, 0),
+                den = Complex.MultiplyFactors(otherPoles, s);
+            coefs.push(num.devide(den));
         }
+        let g_s = new TransferFunction(coefs[0].actual(), [
+                1,
+                poles[0].value.negation().actual(),
+            ]),
+            c_t = new Exp(coefs[0].actual(), poles[0].value.actual());
+        for (let i = 1; i < coefs.length; i++) {
+            g_s = g_s.add(
+                new TransferFunction(coefs[i].actual(), [
+                    1,
+                    poles[i].value.negation().actual(),
+                ])
+            );
+            c_t = c_t.add(new Exp(coefs[i].actual(), poles[i].value.actual()));
+        }
+        return { $s: g_s, $t: c_t };
     };
 
     stepify = () => {
@@ -266,12 +290,11 @@ export default class TransferFunction extends Fraction {
     step = () => {
         // normally will automatically return the time domain answer
         // unless inLaplaceDomain is true
-        const [zs, ps] = this.repetitiveRoots();
-        this.setRoots(zs, ps);
+        // PUT INPUT SIGNAL AT THE END
         const m = this.zeros.length; // number of zeros
         const n = this.poles.length; // number of poles
         const nreal = this.poles.filter(
-            (pi) => !(pi instanceof Complex)
+            (pi) => !(pi instanceof Complex) || pi.isReal()
         ).length; // number of real poles; can be eig   her 2 or 0
         if (m === 0) {
             const k = this.numerator();
@@ -679,5 +702,12 @@ export default class TransferFunction extends Fraction {
         }
         await makeProgress(progressBarObject, 100);
         return [reals, imaginaries];
+    };
+
+    controlFeedback = (controller) => {
+        const cs_gs = this.multiply(controller);
+        return cs_gs
+            .numerator()
+            .devide(cs_gs.numerator().add(cs_gs.denominator())).toTransferFunction();
     };
 }

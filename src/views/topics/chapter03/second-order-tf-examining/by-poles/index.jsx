@@ -182,7 +182,6 @@ const SOTFExamineByPoles = () => {
                                     sys.C_t,
                                     index + 1
                                 );
-                                console.log(sys.C_t, sys.G_s);
 
                                 return (
                                     <Grid

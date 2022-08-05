@@ -50,7 +50,6 @@ const FrequencyResponse = () => {
             });
             $systems(capturedSystems);
             $graphCaptured(true);
-            console.log(capturedSystems);
         }
     };
 

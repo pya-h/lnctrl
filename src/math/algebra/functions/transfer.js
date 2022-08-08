@@ -69,6 +69,12 @@ export default class TransferFunction extends Fraction {
             }
             return num.devide(den).toTransferFunction().setRoots(zeros, poles);
         },
+        $DelayedIntegrator: (amplitude, delay, degree) =>
+            // k / (s + a) ^ n : k =amplitude, a = delay, n = degree
+            // new TransferFunction(amplitude, [new Poly([1, delay], "s"), ...Array(degree).fill(0)])
+            new TransferFunction(1, [1, delay])
+                .raise(degree)
+                .multiply(amplitude),
     };
 
     static RootOrders = (Roots) => {
@@ -319,31 +325,36 @@ export default class TransferFunction extends Fraction {
             c_t = new Zero();
         for (let i = 0; i < coefs.length; i++) {
             if (coefs[i] instanceof Array && poles[i].order > 1) {
-                for (let q = 0; q < coefs[i].length; q++) {
+                const n = poles[i].order;
+                for (let q = 0; q < n; q++) {
                     g_s = g_s.add(
-                        new TransferFunction(coefs[i][q].actual(), [
-                            1,
+                        TransferFunction.Specials.$DelayedIntegrator(
+                            coefs[i][q].actual(),
                             poles[i].value.negation().actual(),
-                        ])
+                            n - q
+                        )
                     );
                     // const ap = [coefs[i][q].actual()];
                     // for(let k = 0; k < poles[i].order - q - 1; k++)
                     //     ap.push(0);
-                    const ap = Poly.atn(coefs[i][q].actual(), poles[i].order - q - 1)
-                    c_t = c_t.add(
-                        new Exp(ap, poles[i].value.actual())
+                    const ap = Poly.atn(
+                        coefs[i][q].actual(),
+                        poles[i].order - q - 1
                     );
+                    c_t = c_t.add(new Exp(ap, poles[i].value.actual()));
                 }
             } else {
                 g_s = g_s.add(
-                    new TransferFunction(coefs[i].actual(),         [
+                    new TransferFunction(coefs[i].actual(), [
                         1,
                         poles[i].value.negation().actual(),
                     ])
                 );
-                console.log( new Exp(coefs[i].actual(), poles[i].value.actual()).toString())
+                // console.log( new Exp(coefs[i].actual(), poles[i].value.actual()).toString())
                 c_t = c_t.add(
-                    !poles[i].value.isZero() ? new Exp(coefs[i].actual(), poles[i].value.actual()) : new Poly(coefs[i].actual())
+                    !poles[i].value.isZero()
+                        ? new Exp(coefs[i].actual(), poles[i].value.actual())
+                        : new Poly(coefs[i].actual())
                 );
             }
         }

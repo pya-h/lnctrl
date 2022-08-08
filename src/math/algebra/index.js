@@ -33,7 +33,7 @@ class Algebra {
     }
     static identify = (parameter) => {
         if (parameter instanceof Array)
-        return parameter.map((pi) =>
+            return parameter.map((pi) =>
                 pi instanceof Algebra || pi instanceof StandardInputSignal
                     ? pi.copy()
                     : round(pi)
@@ -64,11 +64,11 @@ class Algebra {
     getTeta = () => this.teta;
     getType = () => this.type;
 
-    linkPlus = plus => {
+    linkPlus = (plus) => {
         this.plus = plus;
         return this;
-    }
-    
+    };
+
     setInputSignal = (input) => {
         this.input = input;
         return this;
@@ -242,10 +242,11 @@ class Algebra {
         return this;
     };
 
-    $ = (t) => {
+    $ = (t, params = { showSteps: false }) => {
         // valueOf function in certain point
         // I used character $ in many places as acronym for "set" in setters, so $ here means that set the t ( or x or whatever) with a certain point
         // for each type just implement the method literally
+        if (params.showSteps) console.log("step: ", this);
         let result = this.valueAt(t);
         if (this.dot) result *= this.dot.$(t);
         if (this.plus) result += this.plus.$(t);
@@ -648,6 +649,17 @@ class Algebra {
         }
     };
 
+    raise = (degree = 1) => {
+        if (degree === 0) return new Algebra(1, { symbol: null });
+        let negative = false;
+        if (degree < 0) {
+            negative = true;
+            degree *= -1;
+        }
+        let result = this.copy();
+        for (let i = 1; i < degree; i++) result = result.multiply(this);
+        return !negative ? result : result.devideInverse(1);
+    };
     negation = () => this.multiply(-1);
 
     substract = (operand) => this.add(operand.negation());

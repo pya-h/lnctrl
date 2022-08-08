@@ -10,6 +10,8 @@ export default class Poly extends Algebra {
     };
     constructor(a, symbol = "t", params = {}) {
         // ke^ct
+        if(typeof a === 'number')
+            a = [a];
         super(a, { symbol, type: "poly", ...params });
     }
 
@@ -117,6 +119,7 @@ export default class Poly extends Algebra {
             return new Fraction(this.getA(), operand.getA(), this.symbol);
         }
         if (operand === +operand) return this.multiply(1 / Number(operand));
+        else if(operand instanceof Algebra) return new Fraction(this.getA(), operand, this.symbol);
         return this.copy();
         // is it true??
         // return super.devide();

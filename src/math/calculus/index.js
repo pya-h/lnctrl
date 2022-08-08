@@ -1,7 +1,6 @@
 import { makeProgress } from "toolshed";
 import LTI from "./lti";
 import ODE from "./ode";
-import { ProgressBar } from 'views/ui-component/progressbar/ProgressBar';
 
 const defaultMathPrecision = 4;
 export const RadianToDegree = 180 / Math.PI;

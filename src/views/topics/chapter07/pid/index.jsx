@@ -39,7 +39,7 @@ const PIDController = () => {
     const [responseTime, setResponseTime] = useState(0);
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
     // const [currentProgressSignal, currentProgressSignal] = useState(new AbortController());
-
+    console.log(TransferFunction.Specials.$DelayedIntegrator(2, 4, 4).toString())
     useEffect(() => {
         // plot
         if (G_s) {
@@ -55,17 +55,18 @@ const PIDController = () => {
                         <hr />,
                         `$$C_{PID}(s) = ${controller.toString()}$$`,
                         `$$C(s) = ${clp.$s.toString()}$$`,
-                        `$$c(t) = ${clp.$t.toString()}$$`,
+                        `$$c(t) = ${clp.$t}$$`,
                         
                     ]);
+                    console.log(controlledSystem.toString());
                     // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
                     // so that the traces will be loaded with new conditions
                     const startTime = new Date();
 
-                    // console.log(g.roots().map(x => x.toString()));
                     const c_t = G_s.step();
                     let [x, y] = await calculus.pointifyAsync(
-                        c_t.$,
+                        // c_t.$,
+                        lp.$t.$,
                         +t_initial,
                         +t_final,
                         document.getElementById("pid_tune_progress"),
@@ -81,7 +82,8 @@ const PIDController = () => {
                     );
                     const c_pid = controlledSystem.step();
                     [x, y] = await calculus.pointifyAsync(
-                        c_pid.$,
+                        // c_pid.$,
+                        clp.$t.$,
                         +t_initial,
                         +t_final,
                         document.getElementById("pid_tune_progress"),

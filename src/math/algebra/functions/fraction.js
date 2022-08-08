@@ -82,7 +82,7 @@ export default class Fraction extends Algebra {
                 den = this.denominator().multiply(operand.denominator());
             y = num.devide(den);
         } else {
-            const num = this.numerator().multiply(operand.numerator());
+            const num = this.numerator().multiply(operand);
             y = num.devide(this.denominator());
         }
         if (this.plus) y.plus = this.plus.multiply(operand);

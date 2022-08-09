@@ -76,7 +76,7 @@ const SOTFExamineByPoles = () => {
     };
 
     useEffect(() => {
-        let gtf = TransferFunction.Specials.$2(
+        let gtf = TransferFunction.Shortcuts.$2(
             +k,
             alpha instanceof Algebra ? alpha.negation() : -alpha,
             beta instanceof Algebra ? beta.negation() : -beta
@@ -91,7 +91,7 @@ const SOTFExamineByPoles = () => {
             // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
             // so that the traces will be loaded with new conditions
             const all = systems.map((e, index) => {
-                let tgtf = TransferFunction.Specials.$2(
+                let tgtf = TransferFunction.Shortcuts.$2(
                     +e.k,
                     e.alpha instanceof Algebra ? e.alpha.negation() : -e.alpha,
                     e.beta instanceof Algebra ? e.beta.negation() : -e.beta

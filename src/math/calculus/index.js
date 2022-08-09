@@ -27,7 +27,14 @@ const pointify = (f, ti, tf, N = 1000) => {
     return [ts, ys];
 };
 
-export const pointifyAsync = async (f, ti, tf, progressBar, progressStep = 500, N = 1000) => {
+export const pointifyAsync = async (
+    f,
+    ti,
+    tf,
+    progressBar,
+    progressStep = 500,
+    N = 1000
+) => {
     // construct two arrays consisting inputs (t) and outputs[f(t)] of the function: f
     let dt = (tf - ti) / N; //time step size
     while (dt >= 1) {
@@ -36,15 +43,15 @@ export const pointifyAsync = async (f, ti, tf, progressBar, progressStep = 500, 
     }
     const ts = Array.from(Array(N + 1), (_, k) => k * dt + ti);
     const ys = Array(N + 1);
-    for(let i = 0; i <= N; i++){
+    for (let i = 0; i <= N; i++) {
         if (progressBar) {
-            if (i % progressStep === 0) await makeProgress(progressBar, (100 * i) / N);
+            if (i % progressStep === 0)
+                await makeProgress(progressBar, (100 * i) / N);
         }
         ys[i] = f(ts[i]);
     }
     return [ts, ys];
 };
-
 
 export const verticalLine = (at, xi, xf, N) => {
     let dx = (xf - xi) / N;
@@ -54,12 +61,13 @@ export const verticalLine = (at, xi, xf, N) => {
     }
     const xs = Array(N + 1);
     const ys = Array(N + 1);
-    xs[0] = at; ys[0] = xi;
-    for(let i = 1; i <= N;i ++){
+    xs[0] = at;
+    ys[0] = xi;
+    for (let i = 1; i <= N; i++) {
         xs[i] = at;
         ys[i] = ys[i - 1] + dx;
     }
-    return [xs, ys]; 
+    return [xs, ys];
 };
 export const complexPointify = async (
     fcomplex,
@@ -99,8 +107,7 @@ export const complexPointify = async (
                 delete xc[i];
                 delete yc[i];
             }
-        } 
-       
+        }
     }
     return [xc, yc];
 };
@@ -161,7 +168,6 @@ export const mCircle = (M, x_i, x_f, iterations) => {
     }
     return [x, y];
 };
-
 
 export const nCircle = (N, x_i, x_f, iterations) => {
     const iN = Math.abs(1 / N);
@@ -270,6 +276,28 @@ export const evaluate = (raw) => {
     if (terms.length === 1) return +terms[0];
     return NaN;
 };
+
+export const min = (nums) => {
+    let value = nums[0],
+        index = 0;
+    for (let i = 1; i < nums.length; i++)
+        if (nums[i] < value) {
+            value = nums[i];
+            index = i;
+        }
+    return {index, value};
+};
+
+export const max = (nums) => {
+    let value = nums[0],
+        index = 0;
+    for (let i = 1; i < nums.length; i++)
+        if (nums[i] > value) {
+            value = nums[i];
+            index = i;
+        }
+    return {index, value};
+};
 const calculus = {
     ODE,
     LTI,
@@ -292,7 +320,7 @@ const calculus = {
     DegreeToRadian,
     mCircle,
     nCircle,
-    pointifyAsync
+    pointifyAsync,
 };
 
 export default calculus;

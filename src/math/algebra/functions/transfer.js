@@ -10,9 +10,10 @@ import Equation from "math/solvers/equation";
 import { makeProgress } from "toolshed";
 import Formula from "math/solvers/formula";
 import Zero from "./zero";
+import { min } from "../../calculus/index";
 
 export default class TransferFunction extends Fraction {
-    static Specials = {
+    static Shortcuts = {
         $1: (k, a) =>
             new TransferFunction([k], [1, a]).setRoots([], [-a]).setOrder(1),
         $2: (k, a, b = a instanceof Complex ? a.conjugate : a) => {
@@ -89,6 +90,40 @@ export default class TransferFunction extends Fraction {
         }
         return orders;
     };
+
+    getSimplifiedRoots = () => {
+        let temp = this.copy();
+        for (let i = 0; i < temp.zeros.length; i++) {
+            temp.zeros[i] = temp.zeros[i] instanceof Complex ? temp.zeros[i] : new Complex(temp.zeros[i], 0);
+            const pi = temp.poles.findIndex((p) => temp.zeros[i].equals(p));
+            if (pi !== -1) {
+                // temp.zeros.splice(i, 1);
+                // temp.poles.splice(pi, 1);
+                temp.zeros[i] = null;
+                temp.poles[pi] = null;
+            }
+        }
+        return [temp.zeros.filter((zi) => zi), temp.poles.filter((pi) => pi)];
+    };
+
+    getSimplifiedOrderedRoots = () => {
+        let temp = this.copy();
+        for (let i = 0; i < temp.orderedZeros.length; i++) {
+            const pi = temp.orderedPoles.findIndex((p) =>
+                p.value.equals(temp.orderedZeros[i].value)
+            );
+            if (pi !== -1) {
+                const minOrder = min(temp.orderedZeros[i].order, pi.order);
+                temp.orderedZeros[i].order -= minOrder;
+                temp.orderedPoles[pi].order -= minOrder;
+            }
+        }
+        return [
+            temp.orderedZeros.filter((zi) => zi.order),
+            temp.orderedPoles.filter((pi) => pi.order),
+        ];
+    };
+
     static OmegaZetaPoles = (w_n, zeta) => {
         if (Math.abs(zeta) >= 1) {
             const alpha = -zeta * w_n;
@@ -166,10 +201,8 @@ export default class TransferFunction extends Fraction {
         if (
             (!this.zeros || !this.zeros.length) &&
             (!this.poles || !this.poles.length)
-        ) {
-            const [zs, ps] = this.roots();
-            this.setRoots(zs, ps);
-        }
+        )
+            this.updateRoots();
     }
 
     roots = () => {
@@ -228,10 +261,15 @@ export default class TransferFunction extends Fraction {
                 zi instanceof Complex ? zi.copy() : new Complex(zi, 0)
             )
             .sort((z1, z2) => z1.real() - z2.real());
-
+        this.orderedZeros = TransferFunction.RootOrders(this.zeros);
+        this.orderedPoles = TransferFunction.RootOrders(this.poles);
         return this;
     };
 
+    updateRoots = () => {
+        const [zeros, poles] = this.roots();
+        return this.setRoots(zeros, poles);
+    };
     getDampingSystemCharasteristics = () =>
         this.w_d
             ? {
@@ -292,11 +330,22 @@ export default class TransferFunction extends Fraction {
     };
     laplace = () => this.copy(); // actually it has no laplace, this is for disfunctioning the laplace method in the parent class Algebra
     laplaceInverse = () => {
-        // const m = this.zeros.length - 1; // number of zeros
-        // const n = this.poles.length - 1; // number of poles
-        const zeros = TransferFunction.RootOrders(this.zeros),
-            poles = TransferFunction.RootOrders(this.poles); // compact zero/pole list containing the orders
+        this.updateRoots();
+        const f_s = this.simplify();
+        console.log(f_s.isIntegrator())
+        if (f_s.isIntegrator()) {
+            const denCoef = f_s.b.filter((bi) => bi !== 0)[0];
+            return {
+                $s: f_s.copy(),
+                $t: Poly.atn(
+                    (f_s.a instanceof Array ? f_s.a[0] : f_s.a) / denCoef,
+                    f_s.denominator().degree() - 1
+                ).setInputSignal(new Step()),
+            };
+        }
         const coefs = [];
+        const zeros = f_s.orderedZeros,
+            poles = f_s.orderedPoles; // shortcuts
         for (let i = 0; i < poles.length; i++) {
             // for(let j  = 0; j < poles[i].order; i++)
             const s = poles[i].value;
@@ -310,13 +359,18 @@ export default class TransferFunction extends Fraction {
             coefs.push(num.devide(den));
             if (poles[i].order > 1) {
                 coefs[i] = [coefs[i]];
-                let dF = TransferFunction.Specials.$Roots(
+                let dF = TransferFunction.Shortcuts.$Roots(
                     zeros.map((z) => z.value),
                     otherPoles.map((p) => p.value)
                 );
+                let factoriel = 1;
                 for (let q = 1; q < poles[i].order; q++) {
                     dF = dF.derivative();
-                    coefs[i].push(dF.$(s));
+                    let coef = dF.$(s);
+                    coef =
+                        coef instanceof Complex ? coef : new Complex(coef, 0);
+                    factoriel *= q;
+                    coefs[i].push(coef.devide(factoriel));
                 }
             }
         }
@@ -328,7 +382,7 @@ export default class TransferFunction extends Fraction {
                 const n = poles[i].order;
                 for (let q = 0; q < n; q++) {
                     g_s = g_s.add(
-                        TransferFunction.Specials.$DelayedIntegrator(
+                        TransferFunction.Shortcuts.$DelayedIntegrator(
                             coefs[i][q].actual(),
                             poles[i].value.negation().actual(),
                             n - q
@@ -341,7 +395,13 @@ export default class TransferFunction extends Fraction {
                         coefs[i][q].actual(),
                         poles[i].order - q - 1
                     );
-                    c_t = c_t.add(new Exp(ap, poles[i].value.actual()));
+                    c_t = !poles[i].value.isZero()
+                        ? c_t.add(
+                              new Exp(ap, poles[i].value.actual(), "t", {
+                                  input: new Step(),
+                              })
+                          )
+                        : c_t.add(ap).multiply(new Step());
                 }
             } else {
                 g_s = g_s.add(
@@ -350,11 +410,17 @@ export default class TransferFunction extends Fraction {
                         poles[i].value.negation().actual(),
                     ])
                 );
-                // console.log( new Exp(coefs[i].actual(), poles[i].value.actual()).toString())
                 c_t = c_t.add(
                     !poles[i].value.isZero()
-                        ? new Exp(coefs[i].actual(), poles[i].value.actual())
-                        : new Poly(coefs[i].actual())
+                        ? new Exp(
+                              coefs[i].actual(),
+                              poles[i].value.actual(),
+                              "t",
+                              { input: new Step() }
+                          )
+                        : new Poly(coefs[i].actual(), "t", {
+                              input: new Step(),
+                          })
                 );
             }
         }
@@ -799,5 +865,21 @@ export default class TransferFunction extends Fraction {
             .numerator()
             .devide(cs_gs.numerator().add(cs_gs.denominator()))
             .toTransferFunction();
+    };
+
+    isIntegrator = () =>
+        !this.dot
+            ? (typeof this.a === "number" ||
+                  (this.a.length === 1 && typeof this.a[0] === "number")) &&
+              this.b[this.b.length - 1] === 0 &&
+              this.b.filter((bi) => bi !== 0).length === 1 &&
+              !this.plus &&
+              !this.previous
+            : this.copy().linkDot(null).multiply(this.dot).isIntegrator();
+
+    simplify = () => {
+        const [zeros, poles] = this.getSimplifiedRoots();
+        console.log("simpled: ", zeros,poles);
+        return TransferFunction.Shortcuts.$Roots(zeros, poles);
     };
 }

@@ -23,7 +23,7 @@ class Algebra {
 
         if (plus) {
             this.plus = plus.copy();
-            this.simplify();
+            this.removeZeros();
         } // add another Algebra with different type to this one
 
         this.previous = previous; // the previous term in the chained Algebra objects
@@ -66,6 +66,10 @@ class Algebra {
 
     linkPlus = (plus) => {
         this.plus = plus;
+        return this;
+    };
+    linkDot = (dot) => {
+        this.dot = dot;
         return this;
     };
 
@@ -212,7 +216,7 @@ class Algebra {
         return value;
     };
     // REMOVE REDUNDANT TERMS, SIGNS AND ETC.
-    simplify = () => {
+    removeZeros = () => {
         let term = this.first();
         while (term) {
             if (term instanceof Algebra) {
@@ -251,7 +255,7 @@ class Algebra {
         if (this.dot) result *= this.dot.$(t);
         if (this.plus) result += this.plus.$(t);
 
-        return result;
+        return (!this.input ? 1 : this.input.$(t)) * result;
     };
 
     label = (name = undefined, index = undefined) =>
@@ -313,6 +317,7 @@ class Algebra {
     static polynomial = (coefs, symbol) => {
         if (coefs instanceof Array) {
             const n = coefs.length - 1;
+            if(n < 0) return "0";
             if (
                 !n ||
                 !coefs.slice(0, n).filter((ci) => ci.toString() !== "0").length
@@ -433,7 +438,7 @@ class Algebra {
                     }
                 } else result = operand.copy(); // connect to next term
             }
-            return result.simplify();
+            return result.removeZeros();
         } else if (right instanceof StandardInputSignal) {
             const endTerm = result.end();
             endTerm.plus = right.copy();
@@ -729,7 +734,7 @@ class Algebra {
     // IT IS FORMATTED COMPATIBLE FOR MathJax component
     toString = (parenthesis = false) => {
         // this.arrangeDots();
-        this.simplify(); // simplify current chain that's left from unknown number of operations
+        this.removeZeros(); // removeZeros current chain that's left from unknown number of operations
         let formula = "";
         // if ... + 0 || 0 + ... appears ===>>>>> see below !!
         if (!this.a) return "0"; // what if **************************************** 0 / 0
@@ -777,22 +782,43 @@ class Algebra {
                         formula += this.symbol + "}";
                     }
                     if (this.input) formula += this.input.toString();
-                } else {
-                    if (a0 !== 1 || !this.dot)
-                        formula += strictPrecisionFormat(this.a);
-                }
+                } else if (a0 !== 1 || !this.dot)
+                    formula +=
+                        this.a instanceof Algebra
+                            ? this.a.toString()
+                            : strictPrecisionFormat(this.a);
+
                 // if (this.a < 0) formula += ")";
                 if (this.plus) formula += this.join(); // if there's a next term: casscade toString() calls
                 break;
             }
             case "poly":
+                if (
+                    !parenthesis &&
+                    this.input &&
+                    this.a.filter((ai) => ai).length > 1
+                ) {
+                    parenthesis = true;
+                    formula += "(";
+                }
                 formula += Algebra.polynomial(this.a, this.symbol);
                 if (this.dot instanceof Algebra)
                     formula += this.dot.toString(
                         this.dot instanceof Algebra && this.dot.hasMultiTerms()
                     );
-                if (this.input) {
-                    formula += (parenthesis ? ")" : "") + this.input.toString();
+                if (this.input && formula !== "0") {
+                    if (formula === "1")
+                        formula =
+                            (parenthesis ? ")" : "") + this.input.toString();
+                    else if (formula === "-1")
+                        formula =
+                            "- " +
+                            (parenthesis ? ")" : "") +
+                            this.input.toString();
+                    else {
+                        formula +=
+                            (parenthesis ? ")" : "") + this.input.toString();
+                    }
                     parenthesis = false;
                 }
                 if (this.plus) formula += this.join(); // if there's a next term: casscade toString() calls
@@ -914,6 +940,8 @@ class Algebra {
         }
         return x;
     };
+
+    isIntegrator = () => false;
 }
 
 export default Algebra;

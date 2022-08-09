@@ -70,7 +70,7 @@ const DesignSystemByCharacteristics = () => {
         }
     };
     useEffect(() => {
-        let gtf = TransferFunction.Specials.$design(+t_rise, +M_p);
+        let gtf = TransferFunction.Shortcuts.$design(+t_rise, +M_p);
         const tstep = gtf.step();
         $G_s(gtf);
         if (gtf) {

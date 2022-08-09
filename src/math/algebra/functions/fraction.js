@@ -96,4 +96,6 @@ export default class Fraction extends Algebra {
         ")";
 
     toTransferFunction = () => new TransferFunction(this.getA(), this.getB());
+
+    isIntegrator = () => this.toTransferFunction().isIntegrator();
 }

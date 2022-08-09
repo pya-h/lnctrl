@@ -49,9 +49,9 @@ export default class TransferFunction extends Fraction {
             Ti !== 0
                 ? new TransferFunction([Kp * Ti * Td, Kp * Ti, Kp], [Ti, 0])
                 : new TransferFunction([Kp * Td, Kp], [1]),
-        $Roots: (zeros, poles) => {
-            let num = new Poly([1], "s"),
-                den = new Poly([1], "s");
+        $Roots: (zeros, poles, numeratorGain = 1, denominatorGain = 1) => {
+            let num = new Poly([numeratorGain], "s"),
+                den = new Poly([denominatorGain], "s");
             for (let i = 0; i < zeros.length; i++) {
                 if (zeros[i] instanceof Complex)
                     num = num.multiply(new Poly([1, zeros[i].negation()], "s"));
@@ -332,7 +332,6 @@ export default class TransferFunction extends Fraction {
     laplaceInverse = () => {
         this.updateRoots();
         const f_s = this.simplify();
-        console.log(f_s.isIntegrator())
         if (f_s.isIntegrator()) {
             const denCoef = f_s.b.filter((bi) => bi !== 0)[0];
             return {
@@ -353,9 +352,9 @@ export default class TransferFunction extends Fraction {
             otherPoles.splice(i, 1);
             const num =
                     zeros.length > 0
-                        ? Complex.MultiplyFactors(zeros, s)
-                        : new Complex(1, 0),
-                den = Complex.MultiplyFactors(otherPoles, s);
+                        ? Complex.MultiplyFactors(zeros, s, f_s.numerator().mostSignificantCoefficient())
+                        : new Complex(f_s.numerator().mostSignificantCoefficient(), 0),
+                den = Complex.MultiplyFactors(otherPoles, s, f_s.denominator().mostSignificantCoefficient());
             coefs.push(num.devide(den));
             if (poles[i].order > 1) {
                 coefs[i] = [coefs[i]];
@@ -449,6 +448,7 @@ export default class TransferFunction extends Fraction {
                 // DEFINE U(T) IN ALGEBRA
             }
             if (n === 1) {
+
             } else if (n === 2) {
                 const a = -this.poles[0],
                     b = -this.poles[1];
@@ -872,14 +872,14 @@ export default class TransferFunction extends Fraction {
             ? (typeof this.a === "number" ||
                   (this.a.length === 1 && typeof this.a[0] === "number")) &&
               this.b[this.b.length - 1] === 0 &&
-              this.b.filter((bi) => bi !== 0).length === 1 &&
+              this.b.filter((bi) => bi instanceof Complex ? !bi.isZero() : bi).length === 1 &&
               !this.plus &&
               !this.previous
             : this.copy().linkDot(null).multiply(this.dot).isIntegrator();
 
+    
     simplify = () => {
         const [zeros, poles] = this.getSimplifiedRoots();
-        console.log("simpled: ", zeros,poles);
-        return TransferFunction.Shortcuts.$Roots(zeros, poles);
+        return TransferFunction.Shortcuts.$Roots(zeros, poles, this.numerator().mostSignificantCoefficient(), this.denominator().mostSignificantCoefficient());
     };
 }

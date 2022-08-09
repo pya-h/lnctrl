@@ -1,3 +1,5 @@
+import Algebra from "math/algebra";
+import Complex from "math/algebra/complex";
 import { makeProgress } from "toolshed";
 import LTI from "./lti";
 import ODE from "./ode";
@@ -280,23 +282,41 @@ export const evaluate = (raw) => {
 export const min = (nums) => {
     let value = nums[0],
         index = 0;
-    for (let i = 1; i < nums.length; i++)
-        if (nums[i] < value) {
-            value = nums[i];
+    for (let i = 1; i < nums.length; i++) {
+        let nActual = nums[i];
+        if (nActual instanceof Complex) {
+            if (typeof nActual.actual() !== "number") return { index: NaN, value: NaN };
+            nActual = nActual.actual();
+        } else if (nActual instanceof Algebra) {
+            // check better
+            return { index: NaN, value: NaN };
+        }
+        if (nActual < value) {
+            value = nActual;
             index = i;
         }
-    return {index, value};
+    }
+    return { index, value };
 };
 
 export const max = (nums) => {
     let value = nums[0],
         index = 0;
-    for (let i = 1; i < nums.length; i++)
-        if (nums[i] > value) {
-            value = nums[i];
+    for (let i = 1; i < nums.length; i++) {
+        let nActual = nums[i];
+        if (nActual instanceof Complex) {
+            if (typeof nActual.actual() !== "number") return { index: NaN, value: NaN };
+            nActual = nActual.actual();
+        } else if (nActual instanceof Algebra) {
+            // check better
+            return { index: NaN, value: NaN };
+        }
+        if (nActual > value) {
+            value = nActual;
             index = i;
         }
-    return {index, value};
+    }
+    return { index, value };
 };
 const calculus = {
     ODE,

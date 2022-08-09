@@ -25,8 +25,9 @@ export default class Exp extends Algebra {
         const exp = this.copy();
         if (exp.type === "exp" && exp.b instanceof Complex) {
             if (exp.b instanceof Complex && exp.b.real() === 0) {
-                const cos = new Cos(exp.a, exp.b.imaginary());
-                const sin = new Sin(exp.a, exp.b.imaginary());
+                const b = exp.b.imaginary();
+                const cos = new Cos(exp.a, b);
+                const sin = b >= 0 ? new Sin(exp.a, b) : new Sin(exp.a instanceof Algebra ? exp.a.negation() : -exp.a, -b);
                 return new Complex(cos, sin);
             }
         }

@@ -1,4 +1,5 @@
 import Algebra from "math/algebra";
+import Complex from "../complex";
 import Poly from "./poly";
 import TransferFunction from "./transfer";
 
@@ -15,7 +16,7 @@ export default class Fraction extends Algebra {
             // this.b
             else if (den.length === 0) den = [1];
         }
-        super(num, { symbol, type: "frac", b: den, ...params });
+        super(num, { symbol, type: "frac", b: den instanceof Array ? den.map(di => di instanceof Complex ? di.actual() : di) : den, ...params });
     }
 
     copy = (
@@ -98,4 +99,8 @@ export default class Fraction extends Algebra {
     toTransferFunction = () => new TransferFunction(this.getA(), this.getB());
 
     isIntegrator = () => this.toTransferFunction().isIntegrator();
+
+    add2gether = (operand) => {
+        
+    }
 }

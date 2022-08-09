@@ -276,12 +276,13 @@ class Complex extends Algebra {
     };
 
     isZero = () => this.a === 0 && this.b === 0;
+    isUnit = () => this.a === 1 && this.b === 0;
 
-    static MultiplyFactors = (factors, s) => {
+    static MultiplyFactors = (factors, s, gain = 1) => {
         // list of factors (usually roots) multiply at a certain point
         // (s + f1) * (s + f2) * ... * (s + fn)
         if (!(s instanceof Complex)) s = new Complex(s, 0);
-        let result = new Complex(1, 0);
+        let result = new Complex(gain, 0);
         for (const factor of factors) {
             let term = s.substract(factor.value);
             if (factor.order > 1) term = term.raiseTo(factor.order);

@@ -35,7 +35,7 @@ const realAdditionalCoefficientValue = (coef) => {
 };
 const stepResponse = (k, a) =>
     "$$\\begin{cases}G(s) = " +
-    TransferFunction.Specials.$1(k, -a).toString() +
+    TransferFunction.Shortcuts.$1(k, -a).toString() +
     (a !== 0
         ? " \\\\ \\\\ c(t) = " +
           realCoeficientValue(k / a) +
@@ -49,7 +49,7 @@ const indexedStepResponse = (k, a, index) =>
     "$$\\begin{cases}G_{" +
     index +
     "}(s) = " +
-    TransferFunction.Specials.$1(k, -a).toString() +
+    TransferFunction.Shortcuts.$1(k, -a).toString() +
     (a !== 0
         ? " \\\\ \\\\ c_{" +
           index +
@@ -63,7 +63,7 @@ const indexedStepResponse = (k, a, index) =>
 
 const rampResponse = (k, a) =>
     "$$\\begin{cases}G(s) = " +
-    TransferFunction.Specials.$1(k, -a).toString() +
+    TransferFunction.Shortcuts.$1(k, -a).toString() +
     (a !== 0
         ? " \\\\ \\\\ c(t) = " +
           realCoeficientValue(k / a) +
@@ -81,7 +81,7 @@ const indexedRampResponse = (k, a, index) =>
     "$$\\begin{cases}G_{" +
     index +
     "}(s) = " +
-    TransferFunction.Specials.$1(k, -a).toString() +
+    TransferFunction.Shortcuts.$1(k, -a).toString() +
     (a !== 0
         ? " \\\\ \\\\ c_{" +
           index +

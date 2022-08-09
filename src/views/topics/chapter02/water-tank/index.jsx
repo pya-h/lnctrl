@@ -203,7 +203,7 @@ const WaterTankLevelExample = () => {
                             <VisualWaterTank
                                 dt={deltaX}
                                 y={currentY}
-                                max={Math.max.apply(Math, currentY)}
+                                max={calculus.max(currentY).value}
                             />
                         )}
                     </Grid>

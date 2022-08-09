@@ -200,7 +200,6 @@ export default class Equation {
                     xs[0] = x0;
                     for (let i = 0; i < N; i++) {
                         // const dfxsi = df(xs[i]);
-                        // console.log("xs[i] = ", xs[i].toString(), "=> f(x) = ", f(xs[i]).toString(), "=> df =", dfxsi.toString(), "res = ", f(xs[i]).devide(df(xs[i])))
                         xs[i + 1] = xs[i].substract(f(xs[i]).devide(df(xs[i])));
                     }
 

@@ -70,7 +70,7 @@ const SOTFExamineByParams = () => {
         }
     };
     useEffect(() => {
-        let gtf = TransferFunction.Specials.$WnZ(w_n, zeta);
+        let gtf = TransferFunction.Shortcuts.$WnZ(w_n, zeta);
         const tstep = gtf.step();
         $G_s(gtf);
         if (gtf) {

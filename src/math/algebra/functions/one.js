@@ -2,9 +2,9 @@ import Poly from "./poly";
 import Fraction from './fraction';
 
 export default class One extends Poly {
-    constructor(params = {}) {
+    constructor() {
         // ke^ct
-        super([1], null, { ...params });
+        super([1], null);
     }
 
     degree = () => 0;

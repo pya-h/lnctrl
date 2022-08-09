@@ -19,7 +19,6 @@ const NavBar = () => {
             "test = ",
             `${routes.root}${routes.chapter}02/${routes.hydraulic_systems_modeling}`
         );
-        // console.log(current[0]);
         setCurrentChapter(current[0]);
         // setActive(
         //     path.hierarchy(pathname)[0] ===

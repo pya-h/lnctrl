@@ -1,9 +1,9 @@
-import Poly from "./poly";
+import Algebra from "math/algebra";
 
-export default class Zero extends Poly {
-    constructor(params = {}) {
+export default class Zero extends Algebra {
+    constructor(params) {
         // ke^ct
-        super([0], null, {...params} );
+        super(0, { symbol: null, type: "poly"});
     }
 
     degree = () => 0;

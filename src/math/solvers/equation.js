@@ -101,7 +101,7 @@ export default class Equation {
                 const magnitude = terms[0].replace("*i", "");
                 return magnitude === terms[0]
                     ? new Complex(Number(magnitude))
-                    : new Complex(0, Number(magnitude));
+                    : Complex.jX(Number(magnitude));
             } else return new Complex(Number(terms[0]), Number(terms[1]));
         });
     };
@@ -145,7 +145,7 @@ export default class Equation {
                     const rx = round(x);
                     if (isUnique(rx)) allRoots.push(rx);
                 }
-                x = method(this.algebra, new Complex(0, x0), N);
+                x = method(this.algebra, Complex.jX(x0), N);
                 if (isUniqueComplex(x)) allRoots.push(x);
             }
         }

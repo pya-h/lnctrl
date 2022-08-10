@@ -45,6 +45,7 @@ class Algebra {
         else if (!parameter) return 0;
         throw new NotScalarError(parameter);
     };
+    
     setA = (a) => {
         this.a = Algebra.identify(a);
         return this;
@@ -372,6 +373,8 @@ class Algebra {
         this.type === "cos" ||
         this.type === "tan" ||
         this.type === "cot";
+
+    
 
     // MATHEMATICAL OPERATIONS
     // static add = (expressions) => expressions.map((el) => el.toString()).join(" + ");

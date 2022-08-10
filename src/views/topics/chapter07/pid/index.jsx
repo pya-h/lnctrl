@@ -41,11 +41,7 @@ const PIDController = () => {
     const [responseTime, setResponseTime] = useState(0);
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
     // const [currentProgressSignal, currentProgressSignal] = useState(new AbortController());
-    const je = new Exp(new Complex(1, 2), new Complex(0, 3));
-    const j_e = new Exp(new Complex(1, -2), new Complex(0, -3));
-    // console.log(je.toSin().toString());
-    // console.log(j_e.toSin().toString());
-    console.log(je.toSin().add(j_e.toSin()).toString());
+
     // EDIT J * J
     useEffect(() => {
         // plot

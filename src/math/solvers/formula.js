@@ -90,7 +90,7 @@ export default class Formula {
                 const magnitude = terms[0].replace("*i", "").replace("i", "1");
                 return magnitude === terms[0]
                     ? new Complex(+magnitude)
-                    : new Complex(0, +magnitude);
+                    : Complex.jX(+magnitude);
             } else {
                 let b = terms[1].replace("*i", "").replace("i", "1");
                 if (b !== terms[1]) return new Complex(+terms[0], +b);

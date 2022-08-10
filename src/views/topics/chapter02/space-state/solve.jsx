@@ -150,15 +150,15 @@ const solve = (A) => {
         // Fi_12_s: laplace
         a0 = A[0][1];
         kImg = a0 / (2 * b);
-        k1 = new Complex(0, kImg);
-        k2 = new Complex(0, -kImg);
+        k1 = Complex.jX(kImg);
+        k2 = Complex.jX(-kImg);
         [fi12_s, fi12_t] = Fi_ij(delta, k1, k2, p1, p2);
 
         // Fi_21_s: laplace
         a0 = A[1][0];
         kImg = a0 / (2 * b);
-        k1 = new Complex(0, kImg);
-        k2 = new Complex(0, -kImg);
+        k1 = Complex.jX(kImg);
+        k2 = Complex.jX(-kImg);
         [fi21_s, fi21_t] = Fi_ij(delta, k1, k2, p1, p2);
 
         // Fi_22_s: laplace

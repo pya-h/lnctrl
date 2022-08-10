@@ -94,7 +94,10 @@ export default class TransferFunction extends Fraction {
     getSimplifiedRoots = () => {
         let temp = this.copy();
         for (let i = 0; i < temp.zeros.length; i++) {
-            temp.zeros[i] = temp.zeros[i] instanceof Complex ? temp.zeros[i] : new Complex(temp.zeros[i], 0);
+            temp.zeros[i] =
+                temp.zeros[i] instanceof Complex
+                    ? temp.zeros[i]
+                    : new Complex(temp.zeros[i], 0);
             const pi = temp.poles.findIndex((p) => temp.zeros[i].equals(p));
             if (pi !== -1) {
                 // temp.zeros.splice(i, 1);
@@ -352,9 +355,20 @@ export default class TransferFunction extends Fraction {
             otherPoles.splice(i, 1);
             const num =
                     zeros.length > 0
-                        ? Complex.MultiplyFactors(zeros, s, f_s.numerator().mostSignificantCoefficient())
-                        : new Complex(f_s.numerator().mostSignificantCoefficient(), 0),
-                den = Complex.MultiplyFactors(otherPoles, s, f_s.denominator().mostSignificantCoefficient());
+                        ? Complex.MultiplyFactors(
+                              zeros,
+                              s,
+                              f_s.numerator().mostSignificantCoefficient()
+                          )
+                        : new Complex(
+                              f_s.numerator().mostSignificantCoefficient(),
+                              0
+                          ),
+                den = Complex.MultiplyFactors(
+                    otherPoles,
+                    s,
+                    f_s.denominator().mostSignificantCoefficient()
+                );
             coefs.push(num.devide(den));
             if (poles[i].order > 1) {
                 coefs[i] = [coefs[i]];
@@ -409,18 +423,26 @@ export default class TransferFunction extends Fraction {
                         poles[i].value.negation().actual(),
                     ])
                 );
-                c_t = c_t.add(
-                    !poles[i].value.isZero()
-                        ? new Exp(
-                              coefs[i].actual(),
-                              poles[i].value.actual(),
-                              "t",
-                              { input: new Step() }
-                          )
-                        : new Poly(coefs[i].actual(), "t", {
-                              input: new Step(),
-                          })
-                );
+                // if (poles[i].value.isComplex()) {
+                //     const sinje = new Exp(
+                //         coefs[i].actual(),
+                //         poles[i].value.actual(),
+                //         "t",
+                //         { input: new Step() }
+                //     ).toSin();
+                // } else
+                    c_t = c_t.add(
+                        !poles[i].value.isZero()
+                            ? new Exp(
+                                  coefs[i].actual(),
+                                  poles[i].value.actual(),
+                                  "t",
+                                  { input: new Step() }
+                              ).toSin()
+                            : new Poly(coefs[i].actual(), "t", {
+                                  input: new Step(),
+                              })
+                    );
             }
         }
         return { $s: g_s, $t: c_t };
@@ -429,7 +451,7 @@ export default class TransferFunction extends Fraction {
     stepify = () => {
         const lstep = this.copy();
         lstep.b.push(0); //update denominator
-        lstep.poles.push(new Complex(0, 0));
+        lstep.poles.push(Complex.jX(0));
         return lstep;
     };
     step = () => {
@@ -448,7 +470,6 @@ export default class TransferFunction extends Fraction {
                 // DEFINE U(T) IN ALGEBRA
             }
             if (n === 1) {
-
             } else if (n === 2) {
                 const a = -this.poles[0],
                     b = -this.poles[1];
@@ -596,7 +617,7 @@ export default class TransferFunction extends Fraction {
 
     amplitude = (w) => {
         // w === omega
-        const jw = new Complex(0, w);
+        const jw = Complex.jX(w);
         const num = this.numerator(),
             den = this.denominator();
         const numAmp = !(num instanceof Exp)
@@ -624,7 +645,7 @@ export default class TransferFunction extends Fraction {
     };
 
     phase = (w) => {
-        const jw = new Complex(0, w);
+        const jw = Complex.jX(w);
         let num = this.numerator(),
             den = this.denominator();
         const numPhase = !(num instanceof Exp)
@@ -648,7 +669,7 @@ export default class TransferFunction extends Fraction {
         new Complex(A * Math.cos(phi), A * Math.sin(phi));
     nyquist = (w, method = "complex") =>
         method === "complex"
-            ? this.$(new Complex(0, w))
+            ? this.$(Complex.jX(w))
             : TransferFunction.PolarToComplex(this.amplitude(w), this.phase(w));
 
     bode = (w) => 20 * Math.log10(this.amplitude(w));
@@ -872,14 +893,19 @@ export default class TransferFunction extends Fraction {
             ? (typeof this.a === "number" ||
                   (this.a.length === 1 && typeof this.a[0] === "number")) &&
               this.b[this.b.length - 1] === 0 &&
-              this.b.filter((bi) => bi instanceof Complex ? !bi.isZero() : bi).length === 1 &&
+              this.b.filter((bi) => (bi instanceof Complex ? !bi.isZero() : bi))
+                  .length === 1 &&
               !this.plus &&
               !this.previous
             : this.copy().linkDot(null).multiply(this.dot).isIntegrator();
 
-    
     simplify = () => {
         const [zeros, poles] = this.getSimplifiedRoots();
-        return TransferFunction.Shortcuts.$Roots(zeros, poles, this.numerator().mostSignificantCoefficient(), this.denominator().mostSignificantCoefficient());
+        return TransferFunction.Shortcuts.$Roots(
+            zeros,
+            poles,
+            this.numerator().mostSignificantCoefficient(),
+            this.denominator().mostSignificantCoefficient()
+        );
     };
 }

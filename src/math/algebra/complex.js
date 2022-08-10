@@ -2,8 +2,17 @@ import Algebra from ".";
 import { round, isDigit } from "../calculus";
 
 class Complex extends Algebra {
+    static jX = (X) => new Complex(0, X);
     constructor(preal, pimage = 0, params = {}) {
         super(preal, { symbol: "j", type: "complex", b: pimage, ...params });
+        if (pimage instanceof Complex) {
+            if (this.a instanceof Algebra)
+                this.a = this.a.substract(pimage.imaginary());
+            else if (pimage.imaginary() instanceof Algebra)
+                this.a = pimage.negation().add(this.a);
+            else this.a -= pimage.imaginary();
+            this.b = pimage.real();
+        } 
     }
     static ToCouples = (arrComplex) => {
         const n = arrComplex.length;
@@ -103,7 +112,7 @@ class Complex extends Algebra {
         return NaN;
     };
     isReal = () => this.b === 0;
-
+    isComplex = () => this.b !== 0 && this.b.toString() !== 0;
     hasSameTypeWith = (x) =>
         (this.isReal() && x.isReal()) || (!this.isReal() && !x.isReal()); // both full imaginray or both real
     realify = () => new Complex(this.a, 0); // return a simple real value in Complex object format (for methods that only accept Complex values)
@@ -277,7 +286,6 @@ class Complex extends Algebra {
 
     isZero = () => this.a === 0 && this.b === 0;
     isUnit = () => this.a === 1 && this.b === 0;
-
     static MultiplyFactors = (factors, s, gain = 1) => {
         // list of factors (usually roots) multiply at a certain point
         // (s + f1) * (s + f2) * ... * (s + fn)
@@ -292,6 +300,27 @@ class Complex extends Algebra {
     };
 
     actual = () => (this.isReal() ? this.real() : this);
+
+    simplify = () => {
+        const result = this.copy();
+        if (result.b instanceof Complex) {
+            if (result.a instanceof Algebra)
+                result.a = result.a.substract(result.b.imaginary());
+            else if (result.b.imaginary() instanceof Algebra)
+                result.a = result.b.negation().add(result.a);
+            else result.a -= result.b.imaginary();
+            result.b = result.b.real();
+        } else if (result.b instanceof Algebra) {
+            // j(x + jy)
+            const x = result.b.a;
+            if (x instanceof Complex && !x.real()) {
+                x.a = x.b === +x.b ? -x.b : x.b.negation();
+                x.b = 0;
+            }
+            return result.b.copy().add(result.a.copy());
+        }
+        return result;
+    };
 }
 
 export default Complex;

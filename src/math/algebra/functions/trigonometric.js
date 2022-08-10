@@ -29,9 +29,9 @@ export class Sin extends Algebra {
         });
     toExp = () => {
         const sin = this.copy();
-        const exp1 = new Exp(sin.a / 2, new Complex(0, -sin.b));
-        const exp2 = new Exp(-sin.a / 2, new Complex(0, sin.b));
-        return new Complex(0, exp1.add(exp2));
+        const exp1 = new Exp(sin.a / 2, Complex.jX(-sin.b));
+        const exp2 = new Exp(-sin.a / 2, Complex.jX(sin.b));
+        return Complex.jX(exp1.add(exp2));
     };
 
     valueAt = (t) => {
@@ -63,8 +63,8 @@ export class Cos extends Algebra {
         });
     toExp = () => {
         const cos = this.copy();
-        const exp1 = new Exp(cos.a / 2, new Complex(0, cos.b));
-        const exp2 = new Exp(cos.a / 2, new Complex(0, -cos.b));
+        const exp1 = new Exp(cos.a / 2, Complex.jX(cos.b));
+        const exp2 = new Exp(cos.a / 2, Complex.jX(-cos.b));
         return exp1.add(exp2);
     };
 
@@ -96,9 +96,9 @@ export class Tan extends Algebra {
         });
     toExp = () => {
         const tan = this.copy();
-        const exp1 = new Exp(1, new Complex(0, -tan.b));
-        const numeratorExp2 = new Exp(-1, new Complex(0, tan.b));
-        const denominatorExp2 = new Exp(1, new Complex(0, tan.b));
+        const exp1 = new Exp(1, Complex.jX(-tan.b));
+        const numeratorExp2 = new Exp(-1, Complex.jX(tan.b));
+        const denominatorExp2 = new Exp(1, Complex.jX(tan.b));
         return new Fraction(exp1.add(numeratorExp2), exp1.add(denominatorExp2));
     };
 
@@ -130,9 +130,9 @@ export class Cot extends Algebra {
         });
     toExp = () => {
         const cot = this.copy();
-        const exp1 = new Exp(1, new Complex(0, -cot.b));
-        const numeratorExp2 = new Exp(-1, new Complex(0, cot.b));
-        const denominatorExp2 = new Exp(1, new Complex(0, cot.b));
+        const exp1 = new Exp(1, Complex.jX(-cot.b));
+        const numeratorExp2 = new Exp(-1, Complex.jX(cot.b));
+        const denominatorExp2 = new Exp(1, Complex.jX(cot.b));
         return new Fraction(exp1.add(denominatorExp2), exp1.add(numeratorExp2));
     };
 

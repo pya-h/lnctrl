@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import "./input-boxes.css";
-import calculus from "math/calculus/index";
+import calculus from "math/calculus";
 import { useState, useEffect, useRef } from "react";
 import ReactCursorPosition from "react-cursor-position";
 import { Grid, InputAdornment, TextField, Typography } from "@mui/material";

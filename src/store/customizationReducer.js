@@ -1,6 +1,6 @@
 // project imports
 import config from "config";
-import { precision } from "math/calculus/index";
+import { precision } from "math/calculus";
 // action - state management
 import { ActionTypes } from "./actions";
 

@@ -8,7 +8,7 @@ import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
-import calculus from "math/calculus/index";
+import calculus from "math/calculus";
 import Complex from "math/algebra/complex";
 import TransferFunction from "math/algebra/functions/transfer";
 import Exp from "math/algebra/functions/exp";

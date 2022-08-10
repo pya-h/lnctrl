@@ -1,4 +1,4 @@
-import {precision} from "math/calculus/index";
+import {precision} from "math/calculus";
 
 // action - customization reducer
 const SET_MENU = "@customization/SET_MENU";

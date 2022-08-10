@@ -702,8 +702,14 @@ class Algebra {
                     symbol: this.symbol,
                 });
             }
-            return this.copy(); // for now just to avoid crashes
+            if (operand.type === 'poly' && this.symbol === operand.symbol) {
+                return new Algebra(this.getA(), {type: "frac", b: operand.getA(), symbol: this.symbol});
+            }
+            if (operand === +operand) return this.multiply(1 / +(operand));
+            
+            return new Algebra(this.getA(), {type: "frac",  b: operand, symbol: this.symbol});
         }
+        return this.copy(); // for now just to avoid crashes
     };
 
     devideInverse = (k) => {

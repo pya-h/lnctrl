@@ -285,7 +285,8 @@ export const min = (nums) => {
     for (let i = 1; i < nums.length; i++) {
         let nActual = nums[i];
         if (nActual instanceof Complex) {
-            if (typeof nActual.actual() !== "number") return { index: NaN, value: NaN };
+            if (typeof nActual.actual() !== "number")
+                return { index: NaN, value: NaN };
             nActual = nActual.actual();
         } else if (nActual instanceof Algebra) {
             // check better
@@ -305,7 +306,8 @@ export const max = (nums) => {
     for (let i = 1; i < nums.length; i++) {
         let nActual = nums[i];
         if (nActual instanceof Complex) {
-            if (typeof nActual.actual() !== "number") return { index: NaN, value: NaN };
+            if (typeof nActual.actual() !== "number")
+                return { index: NaN, value: NaN };
             nActual = nActual.actual();
         } else if (nActual instanceof Algebra) {
             // check better
@@ -341,6 +343,8 @@ const calculus = {
     mCircle,
     nCircle,
     pointifyAsync,
+    min,
+    max,
 };
 
 export default calculus;

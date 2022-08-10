@@ -157,6 +157,7 @@ const RouthHurwitzCriterionSolveBox = ({ a_i, epsilon, showEpsilonBar }) => {
                         step && (
                             <Grid xs={12} item>
                                 <SubCard
+                                    background={index < steps.length - 2 ? "light" : "lightcoral"}
                                     sx={{
                                         direction:
                                             index < propertySectionIndex

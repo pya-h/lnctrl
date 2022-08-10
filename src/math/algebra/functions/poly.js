@@ -1,7 +1,5 @@
 import Algebra from "math/algebra";
 import Complex from "../complex";
-import Fraction from "./fraction";
-
 export default class Poly extends Algebra {
     static atn = (a, n, symbol = "t") => {
         const aArray = Array(n + 1).fill(0);
@@ -111,18 +109,6 @@ export default class Poly extends Algebra {
                 .join(""); // joins all the coefficients, symbols, etc all together as for polynomal functions
         }
         return this.a.toString();
-    };
-
-    devide = (operand) => {
-        if (operand instanceof Poly && this.symbol === operand.symbol) {
-            return new Fraction(this.getA(), operand.getA(), this.symbol);
-        }
-        if (operand === +operand) return this.multiply(1 / Number(operand));
-        else if (operand instanceof Algebra)
-            return new Fraction(this.getA(), operand, this.symbol);
-        return this.copy();
-        // is it true??
-        // return super.devide();
     };
 
     // edit this function to remove unnecessary white spaces

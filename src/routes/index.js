@@ -13,8 +13,8 @@ import CH05Routes from './CH05Routes';
 import CH06Routes from './CH06Routes';
 import CH07Routes from './CH07Routes';
 
-// const git = [];
-const git = githubRoutes([MainRoutes]);
+const git = [];
+// const git = githubRoutes([MainRoutes]);
 
 export default function ThemeRoutes() {
     // return useRoutes([MainRoutes], config.basename);

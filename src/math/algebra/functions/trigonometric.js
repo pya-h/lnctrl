@@ -40,6 +40,18 @@ export class Sin extends Algebra {
         const teta = Algebra.valueOf(this.teta, t);
         return A * Math.sin(w * t + teta);
     };
+    static ConvertToMe = (algebra) =>
+        new Sin(
+            algebra.getA(),
+            algebra.getB() ? algebra.getB() : 0,
+            algebra.symbol,
+            {
+                dot: this.dot,
+                plus: this.plus,
+                previous: this.previous,
+                input: this.input,
+            }
+        );
 }
 
 export class Cos extends Algebra {
@@ -74,6 +86,18 @@ export class Cos extends Algebra {
         const teta = Algebra.valueOf(this.teta, t);
         return A * Math.cos(w * t + teta);
     };
+    static ConvertToMe = (algebra) =>
+        new Cos(
+            algebra.getA(),
+            algebra.getB() ? algebra.getB() : 0,
+            algebra.symbol,
+            {
+                dot: this.dot,
+                plus: this.plus,
+                previous: this.previous,
+                input: this.input,
+            }
+        );
 }
 
 export class Tan extends Algebra {
@@ -108,6 +132,18 @@ export class Tan extends Algebra {
         const teta = Algebra.valueOf(this.teta, t);
         return A * Math.tan(w * t + teta);
     };
+    static ConvertToMe = (algebra) =>
+        new Tan(
+            algebra.getA(),
+            algebra.getB() ? algebra.getB() : 0,
+            algebra.symbol,
+            {
+                dot: this.dot,
+                plus: this.plus,
+                previous: this.previous,
+                input: this.input,
+            }
+        );
 }
 
 export class Cot extends Algebra {
@@ -142,4 +178,16 @@ export class Cot extends Algebra {
         const teta = Algebra.valueOf(this.teta, t);
         return A * Math.cot(w * t + teta);
     };
+    static ConvertToMe = (algebra) =>
+        new Cot(
+            algebra.getA(),
+            algebra.getB() ? algebra.getB() : 0,
+            algebra.symbol,
+            {
+                dot: this.dot,
+                plus: this.plus,
+                previous: this.previous,
+                input: this.input,
+            }
+        );
 }

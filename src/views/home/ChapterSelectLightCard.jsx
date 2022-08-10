@@ -6,7 +6,7 @@ import { Avatar, Box, List, ListItem, ListItemAvatar, ListItemText, Typography }
 
 // project imports
 import MainCard from 'views/ui-component/cards/MainCard';
-import TotalIncomeCard from 'views/ui-component/cards/Skeleton/SectionCard';
+import TotalIncomeCard from 'views/ui-component/cards/SectionCard';
 
 // assets
 import StorefrontTwoToneIcon from '@mui/icons-material/StorefrontTwoTone';

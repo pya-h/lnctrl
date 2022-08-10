@@ -44,7 +44,7 @@ export default class Exp extends Algebra {
                                       : -exp.a,
                                   -b
                               );
-                    return (new Complex(cos, sin));
+                    return new Complex(cos, sin);
                 } else
                     return new Exp(
                         new Exp(
@@ -87,7 +87,7 @@ export default class Exp extends Algebra {
             );
         return this.copy();
     };
-    
+
     valueAt = (t) => {
         const numericT = +t;
         if (numericT === t) {
@@ -117,12 +117,24 @@ export default class Exp extends Algebra {
         }
     };
 
+    static ConvertToMe = (algebra) =>
+        new Exp(
+            algebra.getA(),
+            algebra.getB() ? algebra.getB() : 0,
+            algebra.symbol,
+            {
+                dot: this.dot,
+                plus: this.plus,
+                previous: this.previous,
+                input: this.input,
+            }
+        );
     // simplifyComplexes = () => {
     //     let result = this.copy();
     //     let x = result;
     //     while(x){
     //         if(this.a instanceof Algebra)
-                
+
     //         x = x.plus;
     //     }
     // }

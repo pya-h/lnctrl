@@ -5,7 +5,7 @@ import { styled, useTheme } from '@mui/material/styles';
 import { Avatar, Box, List, ListItem, ListItemText, Typography } from '@mui/material';
 // project imports
 import MainCard from 'views/ui-component/cards/MainCard';
-import TotalIncomeCard from 'views/ui-component/cards/Skeleton/SectionCard';
+import TotalIncomeCard from 'views/ui-component/cards/SectionCard';
 
 // assets
 import TableChartOutlinedIcon from '@mui/icons-material/TableChartOutlined';

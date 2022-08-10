@@ -5,12 +5,12 @@ import Fraction from "./fraction";
 import { Step } from "math/input-signals/signals";
 import Poly from "./poly";
 import { Cos, Sin } from "./trigonometric";
-import { round } from "math/calculus/index";
+import { round } from "math/calculus";
 import Equation from "math/solvers/equation";
 import { makeProgress } from "toolshed";
 import Formula from "math/solvers/formula";
 import Zero from "./zero";
-import { min } from "../../calculus/index";
+import { min } from "../../calculus";
 
 export default class TransferFunction extends Fraction {
     static Shortcuts = {
@@ -68,16 +68,29 @@ export default class TransferFunction extends Fraction {
                     poles[i] = new Complex(poles[i], 0);
                 }
             }
-            return num.devide(den).toTransferFunction().setRoots(zeros, poles);
+            return TransferFunction.ConvertToMe(num.devide(den)).setRoots(
+                zeros,
+                poles
+            );
         },
         $DelayedIntegrator: (amplitude, delay, degree) =>
             // k / (s + a) ^ n : k =amplitude, a = delay, n = degree
-            // new TransferFunction(amplitude, [new Poly([1, delay], "s"), ...Array(degree).fill(0)])
             new TransferFunction(1, [1, delay])
                 .raise(degree)
                 .multiply(amplitude),
     };
 
+    static ConvertToMe = (algebra) =>
+        new TransferFunction(
+            algebra.getA(),
+            algebra.getB() ? algebra.getB() : [1],
+            {
+                dot: this.dot,
+                plus: this.plus,
+                previous: this.previous,
+                input: this.input,
+            }
+        );
     static RootOrders = (Roots) => {
         Roots = Roots.sort((p1, p2) => p1.real() - p2.real());
         const orders = [];
@@ -334,7 +347,6 @@ export default class TransferFunction extends Fraction {
     };
     laplace = () => this.copy(); // actually it has no laplace, this is for disfunctioning the laplace method in the parent class Algebra
     laplaceInverse = () => {
-
         this.updateRoots();
         const f_s = this.simplify();
         if (f_s.isIntegrator()) {
@@ -349,7 +361,7 @@ export default class TransferFunction extends Fraction {
         }
         const coefs = [];
         const zeros = f_s.orderedZeros,
-        poles = f_s.orderedPoles; // shortcuts
+            poles = f_s.orderedPoles; // shortcuts
         for (let i = 0; i < poles.length; i++) {
             // for(let j  = 0; j < poles[i].order; i++)
             const s = poles[i].value;
@@ -445,7 +457,6 @@ export default class TransferFunction extends Fraction {
 
     stepify = () => {
         const lstep = this.copy();
-        console.log(lstep.toString())
         lstep.b.push(0); //update denominator
         lstep.poles.push(Complex.jX(0));
         return lstep;
@@ -877,11 +888,10 @@ export default class TransferFunction extends Fraction {
     };
 
     controlFeedback = (controller) => {
-        const cs_gs = this.multiply(controller);
-        return cs_gs
-            .numerator()
-            .devide(cs_gs.numerator().add(cs_gs.denominator()))
-            .toTransferFunction();
+        const cs_gs = TransferFunction.ConvertToMe(this.multiply(controller));
+        return TransferFunction.ConvertToMe(
+            cs_gs.numerator().devide(cs_gs.numerator().add(cs_gs.denominator()))
+        );
     };
 
     isIntegrator = () =>

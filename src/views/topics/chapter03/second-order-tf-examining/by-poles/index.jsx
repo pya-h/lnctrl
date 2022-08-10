@@ -2,7 +2,7 @@ import SOTFByPolesLecture from "./lecture";
 
 // project imports
 import SubCard from "views/ui-component/cards/SubCard";
-import calculus from "math/calculus/index";
+import calculus from "math/calculus";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
 import { Grid } from "@mui/material";

@@ -20,5 +20,10 @@ export default class StandardInputSignal {
         return str + `${this.type}(${this.symbol})`;
     };
 
+    simplify = () => {
+        const result = this.copy();
+        // ADD CODE TO REMOVE REDUNDANTS 
+        return result;
+    }
     ampiltude = () => this.amp;
 }

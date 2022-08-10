@@ -3,6 +3,8 @@ import { round, isDigit } from "../calculus";
 
 class Complex extends Algebra {
     static jX = (X) => new Complex(0, X);
+    static Zero = () => new Complex(0, 0);
+
     constructor(preal, pimage = 0, params = {}) {
         super(preal, { symbol: "j", type: "complex", b: pimage, ...params });
         if (pimage instanceof Complex) {
@@ -142,6 +144,11 @@ class Complex extends Algebra {
 
     substract = (operand) => this.add(operand.negation());
 
+    valueAt = t => {
+        const real = this.a instanceof Algebra ? this.a.$(t) : this.a,
+            image = this.b instanceof Algebra ? this.b.$(t) : this.b;
+        return new Complex(real, image).actual();
+    }
     equals = (operand) => {
         if (operand instanceof Complex) {
             // two complex number are equal to eachother if both thier real parts are the same, and their imaginary parts are the same
@@ -300,7 +307,7 @@ class Complex extends Algebra {
     };
 
     actual = () => (this.isReal() ? this.real() : this);
-
+    
     simplify = () => {
         const result = this.copy();
         if (result.b instanceof Complex) {

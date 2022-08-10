@@ -247,6 +247,23 @@ class Algebra {
         return this;
     };
 
+    simplify = () => {
+        // COMPLETE THIS METHOD TO REMOVE ALL REDUNDANTS
+        const result = this.copy().removeZeros();
+        let x = result;
+        while(x){
+            if(x.a instanceof Algebra)
+                x.a = x.a.simplify();
+            if(x.b instanceof Algebra)
+                x.b = x.b.simplify();
+            if(x.teta instanceof Algebra)
+                x.teta = x.teta.simplify();
+            if(x.input)
+                x.input = x.input.simplify();
+            x = x.plus;
+        }
+        return result;
+    }
     $ = (t, params = { showSteps: false }) => {
         // valueOf function in certain point
         // I used character $ in many places as acronym for "set" in setters, so $ here means that set the t ( or x or whatever) with a certain point

@@ -172,7 +172,8 @@ export default class TransferFunction extends Fraction {
         if (this.a.length === 1 && !this.w_n) {
             if (
                 this.b.length === 3 &&
-                this.b[this.b.length - 1] === this.a[0]
+                this.b[this.b.length - 1] === this.a[0] &&
+                this.a[0] ** 2 === this.b[2]
             ) {
                 this.w_n = this.a[0];
                 this.zeta = this.b[1] / (2 * this.w_n);
@@ -333,6 +334,7 @@ export default class TransferFunction extends Fraction {
     };
     laplace = () => this.copy(); // actually it has no laplace, this is for disfunctioning the laplace method in the parent class Algebra
     laplaceInverse = () => {
+
         this.updateRoots();
         const f_s = this.simplify();
         if (f_s.isIntegrator()) {
@@ -347,7 +349,7 @@ export default class TransferFunction extends Fraction {
         }
         const coefs = [];
         const zeros = f_s.orderedZeros,
-            poles = f_s.orderedPoles; // shortcuts
+        poles = f_s.orderedPoles; // shortcuts
         for (let i = 0; i < poles.length; i++) {
             // for(let j  = 0; j < poles[i].order; i++)
             const s = poles[i].value;
@@ -423,33 +425,27 @@ export default class TransferFunction extends Fraction {
                         poles[i].value.negation().actual(),
                     ])
                 );
-                // if (poles[i].value.isComplex()) {
-                //     const sinje = new Exp(
-                //         coefs[i].actual(),
-                //         poles[i].value.actual(),
-                //         "t",
-                //         { input: new Step() }
-                //     ).toSin();
-                // } else
-                    c_t = c_t.add(
-                        !poles[i].value.isZero()
-                            ? new Exp(
-                                  coefs[i].actual(),
-                                  poles[i].value.actual(),
-                                  "t",
-                                  { input: new Step() }
-                              ).toSin()
-                            : new Poly(coefs[i].actual(), "t", {
-                                  input: new Step(),
-                              })
-                    );
+
+                c_t = c_t.add(
+                    !poles[i].value.isZero()
+                        ? new Exp(
+                              coefs[i].actual(),
+                              poles[i].value.actual(),
+                              "t",
+                              { input: new Step() }
+                          ).toSin()
+                        : new Poly(coefs[i].actual(), "t", {
+                              input: new Step(),
+                          })
+                );
             }
         }
-        return { $s: g_s, $t: c_t };
+        return { $s: g_s, $t: c_t.simplify() };
     };
 
     stepify = () => {
         const lstep = this.copy();
+        console.log(lstep.toString())
         lstep.b.push(0); //update denominator
         lstep.poles.push(Complex.jX(0));
         return lstep;

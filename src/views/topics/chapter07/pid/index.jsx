@@ -10,7 +10,6 @@ import PIDParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
-import Poly from "math/algebra/functions/poly";
 
 const symbols = {
     in: "jw",

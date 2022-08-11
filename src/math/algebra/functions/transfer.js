@@ -68,16 +68,15 @@ export default class TransferFunction extends Fraction {
                     poles[i] = new Complex(poles[i], 0);
                 }
             }
-            return TransferFunction.ConvertToMe(num.devide(den)).setRoots(
-                zeros,
-                poles
-            );
+            return num.devide(den).toTransferFunction().setRoots(zeros, poles);
         },
         $DelayedIntegrator: (amplitude, delay, degree) =>
             // k / (s + a) ^ n : k =amplitude, a = delay, n = degree
+
             new TransferFunction(1, [1, delay])
                 .raise(degree)
-                .multiply(amplitude),
+                .multiply(amplitude)
+                .toTransferFunction(),
     };
 
     static ConvertToMe = (algebra) =>
@@ -103,6 +102,12 @@ export default class TransferFunction extends Fraction {
         }
         return orders;
     };
+
+    parentMultiply = (operand) =>
+        TransferFunction.ConvertToMe(this.toAlgebra().multiply(operand));
+
+    // raise = (degree) =>
+    //     TransferFunction.ConvertToMe(this.toAlgebra().raise(degree));
 
     getSimplifiedRoots = () => {
         let temp = this.copy();
@@ -285,6 +290,8 @@ export default class TransferFunction extends Fraction {
 
     updateRoots = () => {
         const [zeros, poles] = this.roots();
+        console.log("simplified roots ", zeros.map(t => t.toString()), poles.map(t => t.toString()))
+
         return this.setRoots(zeros, poles);
     };
     getDampingSystemCharasteristics = () =>
@@ -333,21 +340,32 @@ export default class TransferFunction extends Fraction {
         if (against === this.symbol) {
             const rplus = result.plus;
             if (!result.dot) {
-                const f = this.numerator(),
-                    g = this.denominator();
-                const num = f
-                    .derivative()
-                    .multiply(g)
-                    .substract(g.derivative().multiply(f));
-                result = num.devide(g.multiply(g)).toTransferFunction();
+                if (!result.isIntegrator()) {
+                    const f = result.numerator(),
+                        g = result.denominator();
+                    const num = f
+                        .derivative()
+                        .multiply(g)
+                        .substract(g.derivative().multiply(f));
+                    result = num.devide(g.multiply(g)).toTransferFunction();
+                } else {
+                     if(typeof result.a === "number")
+                        result.a = [result.a];
+                    const n = this.b.length - 1;
+                    result.a *= -n;
+                    result.b.push(0);
+                }
             }
             if (rplus) result.plus = rplus.derivative();
         }
+        
         return result;
     };
-    laplace = () => this.copy(); // actually it has no laplace, this is for disfunctioning the laplace method in the parent class Algebra
+    laplace = () => this.copy(true); // actually it has no laplace, this is for disfunctioning the laplace method in the parent class Algebra
     laplaceInverse = () => {
+        console.log("simplified roots ", this.zeros.map(t => t.toString()), this.poles.map(t => t.toString()))
         this.updateRoots();
+
         const f_s = this.simplify();
         if (f_s.isIntegrator()) {
             const denCoef = f_s.b.filter((bi) => bi !== 0)[0];
@@ -415,9 +433,7 @@ export default class TransferFunction extends Fraction {
                             n - q
                         )
                     );
-                    // const ap = [coefs[i][q].actual()];
-                    // for(let k = 0; k < poles[i].order - q - 1; k++)
-                    //     ap.push(0);
+
                     const ap = Poly.atn(
                         coefs[i][q].actual(),
                         poles[i].order - q - 1
@@ -437,7 +453,6 @@ export default class TransferFunction extends Fraction {
                         poles[i].value.negation().actual(),
                     ])
                 );
-
                 c_t = c_t.add(
                     !poles[i].value.isZero()
                         ? new Exp(
@@ -888,10 +903,11 @@ export default class TransferFunction extends Fraction {
     };
 
     controlFeedback = (controller) => {
-        const cs_gs = TransferFunction.ConvertToMe(this.multiply(controller));
-        return TransferFunction.ConvertToMe(
-            cs_gs.numerator().devide(cs_gs.numerator().add(cs_gs.denominator()))
-        );
+        const cs_gs = this.multiply(controller);
+        return cs_gs
+            .numerator()
+            .devide(cs_gs.numerator().add(cs_gs.denominator()))
+            .toTransferFunction();
     };
 
     isIntegrator = () =>

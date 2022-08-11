@@ -19,7 +19,7 @@ const App = () => {
         <StyledEngineProvider injectFirst>
             <ThemeProvider theme={themes(customization)}>
                 <div dir="ltr">
-              d      <CssBaseline />
+                    <CssBaseline />
                     <NavigationScroll>
                         <MathJaxContext
                             version={2}

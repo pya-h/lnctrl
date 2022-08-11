@@ -129,13 +129,14 @@ export default class Exp extends Algebra {
                 input: this.input,
             }
         );
-    // simplifyComplexes = () => {
-    //     let result = this.copy();
-    //     let x = result;
-    //     while(x){
-    //         if(this.a instanceof Algebra)
-
-    //         x = x.plus;
-    //     }
-    // }
+    toAlgebra = () =>
+        new Algebra(this.a, {
+            type: "exp",
+            symbol: this.symbol,
+            b: this.b,
+            dot: this.dot,
+            plus: this.plus,
+            previous: this.previous,
+            input: this.input,
+        });
 }

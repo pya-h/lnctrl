@@ -321,10 +321,8 @@ class Algebra {
                     s += " - ";
                     a_i *= -1;
                 } else s += " + ";
-
+                
                 if (a_i === 1 && i < n) return s;
-
-                console.log("a i = ", a_i)
                 return s + strictPrecisionFormat(a_i);
             }
             if (a_i === 1) return "";

@@ -118,17 +118,30 @@ export default class Formula {
 
     static RepetitiveFactors = (f, roots, symbol) => {
         const fullRoots = [];
+        roots = roots.sort(
+            (p1, p2) =>
+                p1.isZero() ||
+                p2.isZero() ||
+                p1.real() - p2.real() ||
+                p2.imaginary() - p1.imaginary()
+        );
         for (const root of roots) {
             const knowns = [];
             knowns[symbol] = root.toString(false, true).replace("j", "i*");
             let order = 0;
             for (
                 let fi = f;
-                !+nerdamer(fi, {...knowns}).toDecimal();
+                !+nerdamer(fi, { ...knowns }).toDecimal();
                 fullRoots.push(root.copy()), fi = nerdamer.diff(fi), order++
             );
-            if(root.isZero()) // zero factors cause problem in determining other factors order
-                f = nerdamer(`${f.toString()} / (${symbol}^${order})`);
+            if (root && root.isZero()) {
+                // zero factors cause problem in determining other factors order
+                while (order >= 0) {
+                    f = nerdamer(`${f} / s`);
+                    console.log(f.toString());
+                    order--;
+                }
+            }
         }
         return fullRoots;
     };

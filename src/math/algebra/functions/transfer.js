@@ -290,7 +290,6 @@ export default class TransferFunction extends Fraction {
 
     updateRoots = () => {
         const [zeros, poles] = this.roots();
-        console.log("simplified roots ", zeros.map(t => t.toString()), poles.map(t => t.toString()))
 
         return this.setRoots(zeros, poles);
     };
@@ -363,7 +362,6 @@ export default class TransferFunction extends Fraction {
     };
     laplace = () => this.copy(true); // actually it has no laplace, this is for disfunctioning the laplace method in the parent class Algebra
     laplaceInverse = () => {
-        console.log("simplified roots ", this.zeros.map(t => t.toString()), this.poles.map(t => t.toString()))
         this.updateRoots();
 
         const f_s = this.simplify();
@@ -380,6 +378,7 @@ export default class TransferFunction extends Fraction {
         const coefs = [];
         const zeros = f_s.orderedZeros,
             poles = f_s.orderedPoles; // shortcuts
+        console.log(zeros, poles);
         for (let i = 0; i < poles.length; i++) {
             // for(let j  = 0; j < poles[i].order; i++)
             const s = poles[i].value;

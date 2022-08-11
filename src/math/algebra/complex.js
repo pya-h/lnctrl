@@ -14,8 +14,9 @@ class Complex extends Algebra {
                 this.a = pimage.negation().add(this.a);
             else this.a -= pimage.imaginary();
             this.b = pimage.real();
-        } 
+        }
     }
+
     static ToCouples = (arrComplex) => {
         const n = arrComplex.length;
         if (n >= 1) {
@@ -144,11 +145,11 @@ class Complex extends Algebra {
 
     substract = (operand) => this.add(operand.negation());
 
-    valueAt = t => {
+    valueAt = (t) => {
         const real = this.a instanceof Algebra ? this.a.$(t) : this.a,
             image = this.b instanceof Algebra ? this.b.$(t) : this.b;
         return new Complex(real, image).actual();
-    }
+    };
     equals = (operand) => {
         if (operand instanceof Complex) {
             // two complex number are equal to eachother if both thier real parts are the same, and their imaginary parts are the same
@@ -307,7 +308,7 @@ class Complex extends Algebra {
     };
 
     actual = () => (this.isReal() ? this.real() : this);
-    
+
     simplify = () => {
         const result = this.copy();
         if (result.b instanceof Complex) {
@@ -328,6 +329,17 @@ class Complex extends Algebra {
         }
         return result;
     };
+    
+    toAlgebra = () =>
+        new Algebra(this.a, {
+            type: "complex",
+            symbol: this.symbol,
+            b: this.b,
+            dot: this.dot,
+            plus: this.plus,
+            previous: this.previous,
+            input: this.input,
+        });
 }
 
 export default Complex;

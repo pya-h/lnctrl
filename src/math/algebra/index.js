@@ -305,6 +305,7 @@ class Algebra {
                     } else str += " + ";
                 } else str += " + ";
             }
+
             return str + ai.toString(i < n && a_i.hasMultiTerms());
         }
         if (a_i instanceof StandardInputSignal) {
@@ -322,6 +323,8 @@ class Algebra {
                 } else s += " + ";
 
                 if (a_i === 1 && i < n) return s;
+
+                console.log("a i = ", a_i)
                 return s + strictPrecisionFormat(a_i);
             }
             if (a_i === 1) return "";
@@ -685,6 +688,7 @@ class Algebra {
         for (let i = 1; i < degree; i++) result = result.multiply(this);
         return !negative ? result : result.devideInverse(1);
     };
+
     negation = () => this.multiply(-1);
 
     substract = (operand) => this.add(operand.negation());
@@ -968,6 +972,7 @@ class Algebra {
     };
 
     isIntegrator = () => false;
+
 }
 
 export default Algebra;

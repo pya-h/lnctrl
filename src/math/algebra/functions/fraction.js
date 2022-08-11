@@ -1,6 +1,7 @@
 import Algebra from "math/algebra";
 import Complex from "../complex";
 import Poly from "./poly";
+import TransferFunction from 'math/algebra/functions/transfer';
 
 export default class Fraction extends Algebra {
     constructor(num, den = [1], symbol = "t", params = {}) {
@@ -109,6 +110,19 @@ export default class Fraction extends Algebra {
 
     add2gether = (operand) => {};
 
+    toAlgebra = () =>
+        new Algebra(this.a, {
+            type: "frac",
+            symbol: this.symbol,
+            b: this.b,
+            dot: this.dot,
+            plus: this.plus,
+            previous: this.previous,
+            input: this.input,
+        });
+
+    toTransferFunction = () => new TransferFunction(this.getA(), this.getB());
+    
     static ConvertToMe = (algebra) =>
         new Fraction(
             algebra.getA(),

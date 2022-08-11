@@ -1,5 +1,6 @@
 import Algebra from "math/algebra";
 import Complex from "../complex";
+import Fraction from "./fraction";
 export default class Poly extends Algebra {
     static atn = (a, n, symbol = "t") => {
         const aArray = Array(n + 1).fill(0);
@@ -137,10 +138,27 @@ export default class Poly extends Algebra {
 
     mostSignificantCoefficient = () => {
         const an = this.a.filter((bi) => bi !== 0)[0];
-        return an instanceof Complex
-            ? !an.isUnit()
-                ? an
-                : 1
-            : an;
+        return an instanceof Complex ? (!an.isUnit() ? an : 1) : an;
     };
+
+    devide = (operand) => {
+        if (operand instanceof Poly && this.symbol === operand.symbol)
+            return new Fraction(this.getA(), operand.getA(), this.symbol);
+
+        if (operand === +operand) return this.multiply(1 / +operand);
+        else if (operand instanceof Algebra)
+            return new Fraction(this.getA(), operand, this.symbol);
+        return this.toAlgebra().devide(operand); // if none of the conditions are met use the parent class devide function
+        // is it true??
+        // return super.devide();
+    };
+    toAlgebra = () =>
+        new Algebra(this.a, {
+            type: "poly",
+            symbol: this.symbol,
+            dot: this.dot,
+            plus: this.plus,
+            previous: this.previous,
+            input: this.input,
+        });
 }

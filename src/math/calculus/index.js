@@ -45,7 +45,7 @@ export const pointifyAsync = async (
     }
     const ts = Array.from(Array(N + 1), (_, k) => k * dt + ti);
     const ys = Array(N + 1);
-    for (let i = 0; i <= N; i++) {
+    for (let i = 0; i <= N; i++) {  
         if (progressBar) {
             if (i % progressStep === 0)
                 await makeProgress(progressBar, (100 * i) / N);

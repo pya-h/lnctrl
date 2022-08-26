@@ -97,7 +97,7 @@ export default class Fraction extends Algebra {
             y = num.devide(this.denominator());
         }
         if (this.plus) y.plus = this.plus.multiply(operand);
-        return y;
+        return this instanceof TransferFunction ? y.toTransferFunction() : y;
     };
     toFormula = () =>
         "(" +
@@ -121,7 +121,7 @@ export default class Fraction extends Algebra {
             input: this.input,
         });
 
-    toTransferFunction = () => new TransferFunction(this.getA(), this.getB());
+    toTransferFunction = () => new TransferFunction(this.a, this.b);
     
     static ConvertToMe = (algebra) =>
         new Fraction(

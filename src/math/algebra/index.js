@@ -45,7 +45,7 @@ class Algebra {
         else if (!parameter) return 0;
         throw new NotScalarError(parameter);
     };
-    
+
     setA = (a) => {
         this.a = Algebra.identify(a);
         return this;
@@ -107,6 +107,7 @@ class Algebra {
         //while (fst.previous) fst = fst.previous;
         return fst;
     };
+
     link = () => {
         // some times .previous links are broken; so i decided to write this method just to make sure everything is connected
         let term = this.first();
@@ -251,19 +252,15 @@ class Algebra {
         // COMPLETE THIS METHOD TO REMOVE ALL REDUNDANTS
         const result = this.copy().removeZeros();
         let x = result;
-        while(x){
-            if(x.a instanceof Algebra)
-                x.a = x.a.simplify();
-            if(x.b instanceof Algebra)
-                x.b = x.b.simplify();
-            if(x.teta instanceof Algebra)
-                x.teta = x.teta.simplify();
-            if(x.input)
-                x.input = x.input.simplify();
+        while (x) {
+            if (x.a instanceof Algebra) x.a = x.a.simplify();
+            if (x.b instanceof Algebra) x.b = x.b.simplify();
+            if (x.teta instanceof Algebra) x.teta = x.teta.simplify();
+            if (x.input) x.input = x.input.simplify();
             x = x.plus;
         }
         return result;
-    }
+    };
     $ = (t, params = { showSteps: false }) => {
         // valueOf function in certain point
         // I used character $ in many places as acronym for "set" in setters, so $ here means that set the t ( or x or whatever) with a certain point
@@ -272,8 +269,10 @@ class Algebra {
         let result = this.valueAt(t);
         if (this.dot) result *= this.dot.$(t);
         if (this.plus) result += this.plus.$(t);
-
-        return (!this.input ? 1 : this.input.$(t)) * result;
+        const inputSignalValue = !this.input ? 1 : this.input.$(t);
+        return result instanceof Algebra
+            ? result.multiply(inputSignalValue)
+            : result * inputSignalValue;
     };
 
     label = (name = undefined, index = undefined) =>
@@ -321,7 +320,7 @@ class Algebra {
                     s += " - ";
                     a_i *= -1;
                 } else s += " + ";
-                
+
                 if (a_i === 1 && i < n) return s;
                 return s + strictPrecisionFormat(a_i);
             }
@@ -336,7 +335,7 @@ class Algebra {
     static polynomial = (coefs, symbol) => {
         if (coefs instanceof Array) {
             const n = coefs.length - 1;
-            if(n < 0) return "0";
+            if (n < 0) return "0";
             if (
                 !n ||
                 !coefs.slice(0, n).filter((ci) => ci.toString() !== "0").length
@@ -391,8 +390,6 @@ class Algebra {
         this.type === "cos" ||
         this.type === "tan" ||
         this.type === "cot";
-
-    
 
     // MATHEMATICAL OPERATIONS
     // static add = (expressions) => expressions.map((el) => el.toString()).join(" + ");
@@ -704,12 +701,20 @@ class Algebra {
                     symbol: this.symbol,
                 });
             }
-            if (operand.type === 'poly' && this.symbol === operand.symbol) {
-                return new Algebra(this.getA(), {type: "frac", b: operand.getA(), symbol: this.symbol});
+            if (operand.type === "poly" && this.symbol === operand.symbol) {
+                return new Algebra(this.getA(), {
+                    type: "frac",
+                    b: operand.getA(),
+                    symbol: this.symbol,
+                });
             }
-            if (operand === +operand) return this.multiply(1 / +(operand));
-            
-            return new Algebra(this.getA(), {type: "frac",  b: operand, symbol: this.symbol});
+            if (operand === +operand) return this.multiply(1 / +operand);
+
+            return new Algebra(this.getA(), {
+                type: "frac",
+                b: operand,
+                symbol: this.symbol,
+            });
         }
         return this.copy(); // for now just to avoid crashes
     };
@@ -970,7 +975,6 @@ class Algebra {
     };
 
     isIntegrator = () => false;
-
 }
 
 export default Algebra;

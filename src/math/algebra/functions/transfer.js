@@ -378,11 +378,11 @@ export default class TransferFunction extends Fraction {
         const coefs = [];
         const zeros = f_s.orderedZeros,
             poles = f_s.orderedPoles; // shortcuts
-        console.log(zeros, poles);
+
         for (let i = 0; i < poles.length; i++) {
             // for(let j  = 0; j < poles[i].order; i++)
             const s = poles[i].value;
-            const otherPoles = [...poles];
+            const otherPoles = [...poles]; 
             otherPoles.splice(i, 1);
             const num =
                     zeros.length > 0
@@ -403,12 +403,15 @@ export default class TransferFunction extends Fraction {
             coefs.push(num.devide(den));
             if (poles[i].order > 1) {
                 coefs[i] = [coefs[i]];
+
                 let dF = TransferFunction.Shortcuts.$Roots(
                     zeros.map((z) => z.value),
                     otherPoles.map((p) => p.value)
                 );
+
                 let factoriel = 1;
-                for (let q = 1; q < poles[i].order; q++) {
+                for (let q = 1; q < poles[i].order; q++) 
+                {
                     dF = dF.derivative();
                     let coef = dF.$(s);
                     coef =

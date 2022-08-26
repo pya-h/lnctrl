@@ -35,7 +35,6 @@ const RootLocus = () => {
     const [responseTime, setResponseTime] = useState(null); //the time that takes for plotting rootlocus
     const [method, changeMethod] = useState("fast");
     const [N, $N] = useState(1000);
-    console.log("this is: ",  calculus)
 
     //update
     useEffect(() => {

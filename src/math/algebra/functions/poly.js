@@ -38,7 +38,7 @@ export default class Poly extends Algebra {
                 let powerTerm = 1,
                     result =
                         this.a[n] instanceof Complex
-                            ? this.a[n].copy()
+                        ? this.a[n].copy()
                             : new Complex(this.a[n], 0);
                 for (let i = n - 1; i >= 0; i--) {
                     powerTerm = t.multiply(powerTerm);

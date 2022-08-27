@@ -73,13 +73,13 @@ const NyquistPlotParameters = ({
                     </Grid>
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button
-                            onClick={() => changeMethod("complex")}
+                            onClick={() => changeMethod("cartesian")}
                             style={{ width: "100%", textTransform: "none" }}
                             variant={
-                                method === "complex" ? "contained" : "outlined"
+                                method === "cartesian" ? "contained" : "outlined"
                             }
                         >
-                            مختلط
+                            دکارتی
                         </Button>
                     </Grid>
                 </Grid>

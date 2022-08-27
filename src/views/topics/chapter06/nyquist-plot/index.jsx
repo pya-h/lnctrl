@@ -76,8 +76,8 @@ const NyquistPlot = () => {
     const [rawDenominator, $rawDenominator] = useState("1 1");
     const [fraction, $fraction] = useState([[1], [1, 1]]);
     const [H_s, $H_s] = useState(null);
-    const [w_min, $w_min] = useState(-10);
-    const [w_max, $w_max] = useState(10);
+    const [w_min, $w_min] = useState(-50);
+    const [w_max, $w_max] = useState(50);
     // gradiant of u(t) is 0 and unit ramp is one
     const [systems, $systems] = useState([]);
     const [traces, $traces] = useState([]);
@@ -85,7 +85,7 @@ const NyquistPlot = () => {
     const [thickness, $thickness] = useState(1.0); // graph line thickness
     const [isGraphCatured, $graphCaptured] = useState(false);
     const [is3DPlotEnabled, $3DPlotEnabled] = useState(false);
-    const [N, $N] = useState(1000);
+    const [N, $N] = useState(10000);
     const [responseTime, setResponseTime] = useState(null);
     const [method, changeMethod] = useState("polar");
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
@@ -141,7 +141,7 @@ const NyquistPlot = () => {
                             (w) => systems[i].H_s.nyquist(w, method),
                             +w_min,
                             +w_max,
-                            method === "complex" && !sensitiveSystem,
+                            method === "cartesian" && !sensitiveSystem,
                             +N
                         );
                         // if (systemIsPainInTheA)
@@ -178,7 +178,7 @@ const NyquistPlot = () => {
                             (w) => h_s.nyquist(w, method),
                             +w_min,
                             +w_max,
-                            method === "complex" && !sensitiveSystem,
+                            method === "cartesian" && !sensitiveSystem,
                             +N,
                             currentPlotProgressBarElement
                         );
@@ -337,9 +337,9 @@ const NyquistPlot = () => {
                                 />
                             </SubCard>
                             <hr />
-                            <Grid lg={12} md={12} sm={12} xs={12} item>
+                            <Grid xs={12} item>
                                 <SubCard>
-                                    <Grid lg={12} md={12} sm={12} xs={12} item>
+                                    <Grid xs={12} item>
                                         <GraphBox
                                             title="نمودار نایکويیست"
                                             traces={traces}

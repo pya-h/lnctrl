@@ -245,13 +245,13 @@ const SOTFExamineByPoles = () => {
                         />
                     </SubCard>
                     <hr />
-                    <Grid lg={12} md={12} sm={12} xs={12} item>
+                    <Grid xs={12} item>
                         <SubCard>
                             <GraphBox title="پاسخ پله" traces={traces} />
                         </SubCard>
                     </Grid>
                     <hr />
-                    <Grid lg={12} md={12} sm={12} xs={12} item>
+                    <Grid xs={12} item>
                         {GInfo && <GInfo.Explain />}
                     </Grid>
                 </Grid>

@@ -307,16 +307,16 @@ const BodePlotExample = () => {
                                 />
                             </SubCard>
                             <hr />
-                            <Grid lg={12} md={12} sm={12} xs={12} item>
+                            <Grid xs={12} item>
                                 <SubCard>
-                                    <Grid lg={9} md={9} sm={12} xs={12} item>
+                                    <Grid xs={12} item>
                                         <GraphBox
                                             logX={true}
                                             title="نمودار بود"
                                             traces={traces.amplitude}
                                         />
                                     </Grid>
-                                    <Grid lg={9} md={9} sm={12} xs={12} item>
+                                    <Grid xs={12} item>
                                         <GraphBox
                                             title="فاز"
                                             logX={true}

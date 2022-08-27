@@ -62,7 +62,7 @@ const PIDController = () => {
                     // so that the traces will be loaded with new conditions
                     const startTime = new Date();
 
-                    const c_t = G_s.step();
+                    // const c_t = G_s.step();
                     let [x, y] = await calculus.pointifyAsync(
                         // c_t.$,
                         lp.$t.$,
@@ -79,7 +79,7 @@ const PIDController = () => {
                         `${symbols.out}(${symbols.in})`,
                         is3DPlotEnabled
                     );
-                    const c_pid = controlledSystem.step();
+                    // const c_pid = controlledSystem.step();
                     [x, y] = await calculus.pointifyAsync(
                         // c_pid.$,
                         clp.$t.$,

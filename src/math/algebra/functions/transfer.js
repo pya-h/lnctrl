@@ -689,12 +689,12 @@ export default class TransferFunction extends Fraction {
         // return NaN;
     };
 
-    static PolarToComplex = (A, phi) =>
+    static PolarToCartesian = (A, phi) =>
         new Complex(A * Math.cos(phi), A * Math.sin(phi));
-    nyquist = (w, method = "complex") =>
-        method === "complex"
+    nyquist = (w, method = "cartesian") =>
+        method === "cartesian"
             ? this.$(Complex.jX(w))
-            : TransferFunction.PolarToComplex(this.amplitude(w), this.phase(w));
+            : TransferFunction.PolarToCartesian(this.amplitude(w), this.phase(w));
 
     bode = (w) => 20 * Math.log10(this.amplitude(w));
 

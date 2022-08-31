@@ -7,12 +7,17 @@ import { routes } from 'config';
 
 const HurwitzCriterion = Loadable(lazy(() => import('views/topics/chapter04/hurwitz-criterion')));
 const RouthHurwitzCriterion = Loadable(lazy(() => import('views/topics/chapter04/routh-hurwitz-criterion')));
+const Ch04Intro = Loadable(lazy(() => import('views/topics/chapter04/intro')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 const CH04Routes = {
     path:  `${routes.root}${routes.chapter}04`,
     element: <MainLayout />,
     children: [
+        {
+            path: `${routes.root}${routes.chapter}04`,
+            element: <Ch04Intro />
+        },
         {
             path:  `${routes.root}${routes.chapter}04/${routes.hurwitz_criterion}`,
             element: <HurwitzCriterion />

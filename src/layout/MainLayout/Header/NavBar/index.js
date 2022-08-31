@@ -30,27 +30,27 @@ const NavBar = () => {
         { title: "Topics", link: "/" },
         {
             title: "Chapter 2",
-            link: `${routes.root}${routes.chapter}02/${routes.hydraulic_systems_modeling}`,
+            link: `${routes.root}${routes.chapter}02`,
         },
         {
             title: "Chapter 3",
-            link: `${routes.root}${routes.chapter}03/${routes.fst_order_tf}`,
+            link: `${routes.root}${routes.chapter}03`,
         },
         {
             title: "Chapter 4",
-            link: `${routes.root}${routes.chapter}04/${routes.hurwitz_criterion}`,
+            link: `${routes.root}${routes.chapter}04`,
         },
         {
             title: "Chapter 5",
-            link: `${routes.root}${routes.chapter}05/${routes.root_locus}`,
+            link: `${routes.root}${routes.chapter}05`,
         },
         {
             title: "Chapter 6",
-            link: `${routes.root}${routes.chapter}06/${routes.rc_filter_frequency_response}`,
+            link: `${routes.root}${routes.chapter}06`,
         },
         {
             title: "Chapter 7",
-            link: `${routes.root}${routes.chapter}07/${routes.pid}`,
+            link: `${routes.root}${routes.chapter}07`,
         },
 
         { title: "Tools", link: "/toolbox" },

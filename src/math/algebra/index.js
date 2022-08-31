@@ -43,6 +43,7 @@ class Algebra {
         } else if (typeof parameter === "number") return round(parameter);
         else if (typeof parameter === "string") return parameter;
         else if (!parameter) return 0;
+        console.log(parameter)
         throw new NotScalarError(parameter);
     };
 

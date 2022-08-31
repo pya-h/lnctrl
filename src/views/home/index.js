@@ -14,34 +14,28 @@ const sections = [
     {
         title: "Chapter Two",
         subtitle: "Representation of Control Systems",
-        link: `${routes.root}${routes.chapter}02/${routes.hydraulic_systems_modeling}`,
-    },
+        link: `${routes.root}${routes.chapter}02`},
     {
         title: "Chapter Three",
         subtitle: "Analysis of the transient and steady-state performance of control systems",
-        link: `${routes.root}${routes.chapter}03/${routes.fst_order_tf}`,
-    },
+        link: `${routes.root}${routes.chapter}03`},
     {
         title: "Chapter Four",
         subtitle: "Stability",
-        link: `${routes.root}${routes.chapter}04/${routes.hurwitz_criterion}`,
-    },
+        link: `${routes.root}${routes.chapter}04`},
     {
         title: 'Chapter Five',
         subtitle: 'Root locus',
-        link: `${routes.root}${routes.chapter}05/${routes.root_locus}`
-    },
+        link: `${routes.root}${routes.chapter}05`},
     {
         title: 'Chapter Six',
         subtitle: 'Frequency response',
-        link: `${routes.root}${routes.chapter}06/${routes.rc_filter_frequency_response}`
-
+        link: `${routes.root}${routes.chapter}06`
     },
     {
         title: 'Chapter Seven',
         subtitle: 'Design of Linear Control Systems',
-        link: `${routes.root}${routes.chapter}07/${routes.pid}`
-        
+        link: `${routes.root}${routes.chapter}07`  
     },
     
 ];

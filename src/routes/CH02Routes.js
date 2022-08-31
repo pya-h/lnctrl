@@ -6,6 +6,7 @@ import Loadable from 'views/ui-component/Loadable';
 import { routes } from 'config';
 
 // utilities routing *** EDIT THIS USING config.js
+const Ch02Intro = Loadable(lazy(() => import('views/topics/chapter02/intro')));
 const HydraulicSystemsModeling = Loadable(lazy(() => import('views/topics/chapter02/HydraulicSystemsModeling')));
 const MechanicSystemsModeling = Loadable(lazy(() => import('views/topics/chapter02/MechanicSystemsModeling')));
 const SpaceStateEquations = Loadable(lazy(() => import('views/topics/chapter02/SpaceStateEquations')));
@@ -16,6 +17,10 @@ const CH02Routes = {
     path: `${routes.root}${routes.chapter}02`,
     element: <MainLayout />,
     children: [
+        {
+            path: `${routes.root}${routes.chapter}02`,
+            element: <Ch02Intro />
+        },
         {
             path: `${routes.root}${routes.chapter}02/${routes.hydraulic_systems_modeling}`,
             element: <HydraulicSystemsModeling />

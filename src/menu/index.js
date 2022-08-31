@@ -8,6 +8,10 @@ import HubIcon from "@mui/icons-material/Hub";
 import ShowerIcon from "@mui/icons-material/Shower";
 import WebhookIcon from "@mui/icons-material/Webhook";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart";
+import Filter1Icon from '@mui/icons-material/Filter1';
+import Filter2Icon from '@mui/icons-material/Filter2';
+import NumbersIcon from '@mui/icons-material/Numbers';
+import BalanceIcon from '@mui/icons-material/Balance';
 // constant
 const icons = {
     BubbleChartIcon,
@@ -20,6 +24,12 @@ const icons = {
     HubIcon,
     ShowerIcon,
     WebhookIcon,
+    FirstOrder: Filter1Icon,
+    SecondOrder: Filter2Icon,
+    DesignByCharacteristics: NumbersIcon,
+    HurwitzCriterion: BalanceIcon,
+    RouthHurwitzCriterion: BalanceIcon,
+
 };
 
 const load = (pathname) => {
@@ -106,7 +116,7 @@ const load = (pathname) => {
                     title: "Study of First-Order Transfer Functions",
                     type: "item",
                     url: `${routes.chapter}03/${routes.fst_order_tf}`,
-                    icon: icons.IconBike,
+                    icon: icons.FirstOrder,
                     breadcrumbs: false,
                 },
                 {
@@ -114,7 +124,7 @@ const load = (pathname) => {
                     title: "Study of Second-Order Transfer Functions",
                     type: "item",
                     url: `${routes.chapter}03/${routes.snd_order_tf}`,
-                    icon: icons.IconBike,
+                    icon: icons.SecondOrder,
                     breadcrumbs: false,
                 },
                 {
@@ -122,8 +132,8 @@ const load = (pathname) => {
                     title: "System Design via Specifications",
                     type: "item",
                     url: `${routes.chapter}03/${routes.design_by_characteristics}`,
-                    icon: icons.IconBike,
-                    breadcrumbs: false,
+                    icon: icons.DesignByCharacteristics,
+                    breadcrumbs: false, 
                 },
             ],
         };
@@ -146,7 +156,7 @@ const load = (pathname) => {
                     title: "Hurwitz stability criterion",
                     type: "item",
                     url: `${routes.chapter}04/${routes.hurwitz_criterion}`,
-                    icon: icons.IconBike,
+                    icon: icons.HurwitzCriterion,
                     breadcrumbs: false,
                 },
                 {
@@ -154,7 +164,7 @@ const load = (pathname) => {
                     title: "Routh-Hurwitz Stability Criterion",
                     type: "item",
                     url: `${routes.chapter}04/${routes.routh_hurwitz_criterion}`,
-                    icon: icons.IconBike,
+                    icon: icons.RouthHurwitzCriterion,
                     breadcrumbs: false,
                 },
             ],
@@ -178,6 +188,14 @@ const load = (pathname) => {
                     title: "Root locus",
                     type: "item",
                     url: `${routes.chapter}05/${routes.root_locus}`,
+                    icon: icons.IconBike,
+                    breadcrumbs: false,
+                },
+                {
+                    id: routes.sketching_root_locus,
+                    title: "Drawing the root locus",
+                    type: "item",
+                    url: `${routes.chapter}05/${routes.sketching_root_locus}`,
                     icon: icons.IconBike,
                     breadcrumbs: false,
                 },

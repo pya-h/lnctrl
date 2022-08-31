@@ -30,27 +30,27 @@ const NavBar = () => {
         { title: "سرفصل ها", link: "/" },
         {
             title: "فصل ۲",
-            link: `${routes.root}${routes.chapter}02/${routes.hydraulic_systems_modeling}`,
+            link: `${routes.root}${routes.chapter}02`,
         },
         {
             title: "فصل ۳",
-            link: `${routes.root}${routes.chapter}03/${routes.fst_order_tf}`,
+            link: `${routes.root}${routes.chapter}03`,
         },
         {
             title: "فصل ۴",
-            link: `${routes.root}${routes.chapter}04/${routes.hurwitz_criterion}`,
+            link: `${routes.root}${routes.chapter}04`,
         },
         {
             title: "فصل ۵",
-            link: `${routes.root}${routes.chapter}05/${routes.root_locus}`,
+            link: `${routes.root}${routes.chapter}05`,
         },
         {
             title: "فصل ۶",
-            link: `${routes.root}${routes.chapter}06/${routes.rc_filter_frequency_response}`,
+            link: `${routes.root}${routes.chapter}06`,
         },
         {
             title: "فصل ۷",
-            link: `${routes.root}${routes.chapter}07/${routes.pid}`,
+            link: `${routes.root}${routes.chapter}07`,
         },
 
         { title: "ابزار", link: "/toolbox" },

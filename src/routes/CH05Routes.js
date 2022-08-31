@@ -6,6 +6,8 @@ import Loadable from 'views/ui-component/Loadable';
 import { routes } from 'config';
 
 const RootLocus = Loadable(lazy(() => import('views/topics/chapter05/root-locus')));
+const SketchingRootLocus = Loadable(lazy(() => import('views/topics/chapter05/sketching-root-locus')));
+const Ch05Intro = Loadable(lazy(() => import('views/topics/chapter05/intro')));
 
 // ==============================|| MAIN ROUTING ||============================== //
 const CH05Routes = {
@@ -13,10 +15,17 @@ const CH05Routes = {
     element: <MainLayout />,
     children: [
         {
+            path: `${routes.root}${routes.chapter}05`,
+            element: <Ch05Intro />
+        },
+        {
             path:  `${routes.root}${routes.chapter}05/${routes.root_locus}`,
             element: <RootLocus />
         },
-
+        {
+            path:  `${routes.root}${routes.chapter}05/${routes.sketching_root_locus}`,
+            element: <SketchingRootLocus />
+        },
     ]
 };
 

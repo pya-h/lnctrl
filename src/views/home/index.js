@@ -14,34 +14,28 @@ const sections = [
     {
         title: "فصل دوم",
         subtitle: "نمایش سیستم های کنترلی",
-        link: `${routes.root}${routes.chapter}02/${routes.hydraulic_systems_modeling}`,
-    },
+        link: `${routes.root}${routes.chapter}02`},
     {
         title: "فصل سوم",
         subtitle: "تحلیل عملکرد گذرا و ماندگار سیستم های کنترلی",
-        link: `${routes.root}${routes.chapter}03/${routes.fst_order_tf}`,
-    },
+        link: `${routes.root}${routes.chapter}03`},
     {
         title: "فصل چهارم",
         subtitle: "پایداری",
-        link: `${routes.root}${routes.chapter}04/${routes.hurwitz_criterion}`,
-    },
+        link: `${routes.root}${routes.chapter}04`},
     {
         title: 'فصل پنجم',
         subtitle: 'مکان هندسی',
-        link: `${routes.root}${routes.chapter}05/${routes.root_locus}`
-    },
+        link: `${routes.root}${routes.chapter}05`},
     {
         title: 'فصل ششم',
         subtitle: 'پاسخ فرکانسی',
-        link: `${routes.root}${routes.chapter}06/${routes.rc_filter_frequency_response}`
-
+        link: `${routes.root}${routes.chapter}06`
     },
     {
         title: 'فصل هفتم',
         subtitle: 'طراحی سیستم های کنترل خطی',
-        link: `${routes.root}${routes.chapter}07/${routes.pid}`
-        
+        link: `${routes.root}${routes.chapter}07`  
     },
     
 ];

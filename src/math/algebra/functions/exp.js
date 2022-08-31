@@ -34,15 +34,25 @@ export default class Exp extends Algebra {
             if (exp.b instanceof Complex) {
                 if (exp.b.real() === 0 || exp.b.toString() === "0") {
                     const b = exp.b.imaginary();
-                    const cos = new Cos(exp.a, b);
+                    const cos = new Cos(exp.a, b, 0, this.symbol, {
+                        input: this.input,
+                        plus: this.plus,
+                        previous: this.previous,
+                        dot: this.dot,
+                    });
                     const sin =
                         b >= 0
-                            ? new Sin(exp.a, b)
+                            ? new Sin(exp.a, b, 0, this.symbol, {
+                                  dot: this.dot,
+                              })
                             : new Sin(
                                   exp.a instanceof Algebra
                                       ? exp.a.negation()
                                       : -exp.a,
-                                  -b
+                                  -b,
+                                  0,
+                                  this.symbol,
+                                  { dot: this.dot }
                               );
                     return new Complex(cos, sin);
                 } else
@@ -53,7 +63,13 @@ export default class Exp extends Algebra {
                             exp.symbol
                         ).toSin(),
                         exp.b.real(),
-                        exp.symbol
+                        exp.symbol,
+                        {
+                            dot: this.dot,
+                            input: this.input,
+                            plus: this.plus,
+                            previous: this.previous,
+                        }
                     );
             }
         }

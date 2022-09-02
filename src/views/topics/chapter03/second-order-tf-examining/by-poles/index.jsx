@@ -6,7 +6,7 @@ import calculus from "math/calculus";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
 import { Grid } from "@mui/material";
-import GraphBox from "views/plotter/GraphBox";
+import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 import SOTFByPolesInputs from "./parameters";
 import Complex from "math/algebra/complex";
@@ -247,7 +247,7 @@ const SOTFExamineByPoles = () => {
                     <hr />
                     <Grid xs={12} item>
                         <SubCard>
-                            <GraphBox title="Step response" traces={traces} />
+                            <PlotlyBox title="Step response" traces={traces} />
                         </SubCard>
                     </Grid>
                     <hr />

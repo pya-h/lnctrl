@@ -320,6 +320,10 @@ export const max = (nums) => {
     }
     return { index, value };
 };
+
+export const randomize = (max, min = 0) =>
+    Math.floor(Math.random() * max - min + 1);
+
 const calculus = {
     ODE,
     LTI,
@@ -345,6 +349,7 @@ const calculus = {
     pointifyAsync,
     min,
     max,
+    randomize
 };
 
 export default calculus;

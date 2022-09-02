@@ -32,7 +32,22 @@ import {
 } from "store/actions";
 import { gridSpacing } from "store/constant";
 // ==============================|| LIVE CUSTOMIZATION ||============================== //
-
+const getSelectedFont = (selection) => {
+    switch (selection) {
+        case "Georgia":
+            return `'Georgia', sans-serif`;
+        case "Calibri":
+            return `'Calibri', sans-serif`;
+        case "Arial":
+            return `'Arial', sans-serif`;
+        case "Verdana":
+            return `'Verdana', sans-serif`;
+        case "Roboto":
+            return `'Roboto', sans-serif`;
+        default:
+            return "sans-serif";
+    }
+};
 const Customization = () => {
     const theme = useTheme();
     const dispatch = useDispatch();
@@ -61,36 +76,12 @@ const Customization = () => {
         dispatch(ReduxSetBorderRadius(borderRadius));
     }, [dispatch, borderRadius]);
 
-    let initialFont;
-    switch (customization.fontFamily) {
-        case `'Georgia', sans-serif`:
-            initialFont = "Georgia";
-            break;
-        case `'Calibri', sans-serif`:
-            initialFont = "Calibri";
-            break;
-        case `'Arial', sans-serif`:
-        default:
-            initialFont = "Arial";
-            break;
-    }
+    const initialFont = getSelectedFont(customization.fontFamily);
 
     // state - font family
     const [fontFamily, setFontFamily] = useState(initialFont);
     useEffect(() => {
-        let newFont;
-        switch (fontFamily) {
-            case "Georgia":
-                newFont = `'Georgia', sans-serif`;
-                break;
-            case "Calibri":
-                newFont = `'Calibri', sans-serif`;
-                break;
-            case "Arial":
-            default:
-                newFont = `'Arial', sans-serif`;
-                break;
-        }
+        const newFont = getSelectedFont(fontFamily);
         dispatch(ReduxSetFontFamily(newFont));
     }, [dispatch, fontFamily]);
 
@@ -193,6 +184,36 @@ const Customization = () => {
                                                     },
                                             }}
                                         />
+                                        <FormControlLabel
+                                            value="Verdana"
+                                            control={<Radio />}
+                                            label="Verdana"
+                                            sx={{
+                                                "& .MuiSvgIcon-root": {
+                                                    fontSize: 28,
+                                                },
+                                                "& .MuiFormControlLabel-label":
+                                                    {
+                                                        color: theme.palette
+                                                            .grey[900],
+                                                    },
+                                            }}
+                                        />
+                                        <FormControlLabel
+                                            value="Roboto"
+                                            control={<Radio />}
+                                            label="Roboto"
+                                            sx={{
+                                                "& .MuiSvgIcon-root": {
+                                                    fontSize: 28,
+                                                },
+                                                "& .MuiFormControlLabel-label":
+                                                    {
+                                                        color: theme.palette
+                                                            .grey[900],
+                                                    },
+                                            }}
+                                        />
                                     </RadioGroup>
                                 </FormControl>
                             </SubCard>
@@ -200,14 +221,11 @@ const Customization = () => {
                         <Grid item xs={12}>
                             {/* border radius */}
                             <SubCard title="Calculation precision">
-                            <Grid item>
-                                        <Typography
-                                            variant="h6"
-                                            color="secondary"
-                                        >
-                                            {precision} Digit after the decimal point
-                                        </Typography>
-                                    </Grid>
+                                <Grid item>
+                                    <Typography variant="h6" color="secondary">
+                                        {precision} Digit after the decimal point
+                                    </Typography>
+                                </Grid>
                                 <Grid
                                     item
                                     xs={12}

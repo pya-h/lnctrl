@@ -9,7 +9,7 @@ import WaterTankParameters from "./parameters";
 import GraphMenu from "views/plotter/GraphMenu";
 import { Grid } from "@mui/material";
 import VisualWaterTank from "./visual/WaterTank";
-import GraphBox from "views/plotter/GraphBox";
+import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 
 const hydraulicSystemEquation = (R, C, Qin) =>
@@ -220,7 +220,7 @@ const WaterTankLevelExample = () => {
                     <hr />
                     <Grid xs={12} item>
                         <SubCard>
-                            <GraphBox title="ارتفاع آب مخزن" traces={traces} />
+                            <PlotlyBox title="ارتفاع آب مخزن" traces={traces} />
                         </SubCard>
                     </Grid>
                 </Grid>

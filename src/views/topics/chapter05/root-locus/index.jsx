@@ -5,7 +5,7 @@ import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "math/calculus";
 import { useState, useEffect } from "react";
 import { Grid, Typography } from "@mui/material";
-import GraphBox from "views/plotter/GraphBox";
+import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 import RootLocusParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
@@ -184,7 +184,7 @@ const RootLocus = () => {
                         <Grid md={8} sm={12} xs={12} item>
                             <Grid xs={12} item>
                                 <SubCard>
-                                    <GraphBox
+                                    <PlotlyBox
                                         title="مکان هندسی"
                                         traces={[
                                             rootLocusTrace,

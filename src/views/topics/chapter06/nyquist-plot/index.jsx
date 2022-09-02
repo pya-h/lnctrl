@@ -4,7 +4,7 @@ import calculus from "../../../../math/calculus";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
 import { Grid, Typography } from "@mui/material";
-import GraphBox from "views/plotter/GraphBox";
+import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 import TransferFunction from "math/algebra/functions/transfer";
 import MainCard from "views/ui-component/cards/MainCard";
@@ -340,7 +340,7 @@ const NyquistPlot = () => {
                             <Grid xs={12} item>
                                 <SubCard>
                                     <Grid xs={12} item>
-                                        <GraphBox
+                                        <PlotlyBox
                                             title="نمودار نایکويیست"
                                             traces={traces}
                                         />

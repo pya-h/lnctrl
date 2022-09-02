@@ -4,7 +4,7 @@ import calculus from "../../../../math/calculus";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
 import { Grid, Typography } from "@mui/material";
-import GraphBox from "views/plotter/GraphBox";
+import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 import PIDParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
@@ -216,13 +216,13 @@ const PIDController = () => {
                             <Grid xs={12} item>
                                 <SubCard>
                                     <Grid lg={9} md={9} sm={12} xs={12} item>
-                                        <GraphBox
+                                        <PlotlyBox
                                             title="پاسخ پله ی سیستم اولیه"
                                             traces={traces.main}
                                         />
                                     </Grid>
                                     <Grid lg={9} md={9} sm={12} xs={12} item>
-                                        <GraphBox
+                                        <PlotlyBox
                                             title="پاسخ پله ی سیستم کنترل شده"
                                             traces={traces.controlled}
                                         />

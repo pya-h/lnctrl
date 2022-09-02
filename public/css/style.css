@@ -1,12 +1,3 @@
-@font-face {
-    font-family: 'Vazir-Bold';
-    src: url('../fonts/Vazir-Bold.eot') format("eot"),
-        url('../fonts/Vazir-Bold.ttf') format("truetype"),
-        url('../fonts/Vazir-Bold.woff') format("woff"),
-        url('../fonts/Vazir-Bold.woff2') format("woff2");
-    font-weight: normal;
-    font-style: normal;
-}
 
 body {
     width: auto;

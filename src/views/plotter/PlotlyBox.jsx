@@ -1,7 +1,7 @@
 import React from "react";
 import Plot from "react-plotly.js";
 
-const GraphBox = ({ traces, title, width, height = 500, logX }) => {
+const PlotlyBox = ({ traces, title, width, height = 500, logX, hideX, hideY, yRange, hideLegends }) => {
     /*const temp_layout = {
         xaxis: {
             zeroline: true,
@@ -26,15 +26,15 @@ const GraphBox = ({ traces, title, width, height = 500, logX }) => {
             tickcolor: "#000",
         },
     };*/
-
     return (
-        <Plot 
+        <Plot
             style={{ textAlign: "center" }}
-            //id="graphBox"
+            //id="PlotlyBox"
             data={traces}
             layout={{
                 // width: 1000,
                 // autosize: true,
+                showlegend: !hideLegends,
                 margin: {
                     t: 30, //top margin
                     l: 30, //left margin
@@ -44,21 +44,25 @@ const GraphBox = ({ traces, title, width, height = 500, logX }) => {
                 xaxis: {
                     rangemode: "tozero",
                     zeroline: true,
-                    type: !logX ? "dec" : "log"
+                    type: !logX ? "dec" : "log",
+                    visible: !hideX
                 },
                 yaxis: {
                     rangemode: "tozero",
-                    zeroline: true
-
+                    zeroline: true,
+                    visible: !hideY,
+                    range: yRange
                 },
+
                 height,
                 title,
                 // hoverlabel: { bgcolor: "#FFF" },
                 hoverlabel: {align:'auto', boxmode: 'overlay', font:{color:'#000000FF'}},
                 legend: {orientation: 'h'}//, y: -0.3},
+                
             }}
         />
     );
 };
 
-export default GraphBox;
+export default PlotlyBox;

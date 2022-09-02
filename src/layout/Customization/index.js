@@ -32,7 +32,22 @@ import {
 } from "store/actions";
 import { gridSpacing } from "store/constant";
 // ==============================|| LIVE CUSTOMIZATION ||============================== //
-
+const getSelectedFont = (selection) => {
+    switch (selection) {
+        case "B Nazanin":
+            return `'B Nazanin', sans-serif`;
+        case "Calibri":
+            return `'Calibri', sans-serif`;
+        case "Vazir-Bold":
+            return `'Vazir-Bold', sans-serif`;
+        case "BYekan":
+            return `'BYekan', sans-serif`;
+        case "Roboto":
+            return `'Roboto', sans-serif`;
+        default:
+            return "sans-serif";
+    }
+};
 const Customization = () => {
     const theme = useTheme();
     const dispatch = useDispatch();
@@ -61,36 +76,12 @@ const Customization = () => {
         dispatch(ReduxSetBorderRadius(borderRadius));
     }, [dispatch, borderRadius]);
 
-    let initialFont;
-    switch (customization.fontFamily) {
-        case `'B Nazanin', sans-serif`:
-            initialFont = "B Nazanin";
-            break;
-        case `'Calibri', sans-serif`:
-            initialFont = "Calibri";
-            break;
-        case `'Vazir-Bold', sans-serif`:
-        default:
-            initialFont = "Vazir-Bold";
-            break;
-    }
+    const initialFont = getSelectedFont(customization.fontFamily);
 
     // state - font family
     const [fontFamily, setFontFamily] = useState(initialFont);
     useEffect(() => {
-        let newFont;
-        switch (fontFamily) {
-            case "B Nazanin":
-                newFont = `'B Nazanin', sans-serif`;
-                break;
-            case "Calibri":
-                newFont = `'Calibri', sans-serif`;
-                break;
-            case "Vazir-Bold":
-            default:
-                newFont = `'Vazir-Bold', sans-serif`;
-                break;
-        }
+        const newFont = getSelectedFont(fontFamily);
         dispatch(ReduxSetFontFamily(newFont));
     }, [dispatch, fontFamily]);
 
@@ -193,6 +184,36 @@ const Customization = () => {
                                                     },
                                             }}
                                         />
+                                        <FormControlLabel
+                                            value="BYekan"
+                                            control={<Radio />}
+                                            label="BYekan"
+                                            sx={{
+                                                "& .MuiSvgIcon-root": {
+                                                    fontSize: 28,
+                                                },
+                                                "& .MuiFormControlLabel-label":
+                                                    {
+                                                        color: theme.palette
+                                                            .grey[900],
+                                                    },
+                                            }}
+                                        />
+                                        <FormControlLabel
+                                            value="Roboto"
+                                            control={<Radio />}
+                                            label="Roboto"
+                                            sx={{
+                                                "& .MuiSvgIcon-root": {
+                                                    fontSize: 28,
+                                                },
+                                                "& .MuiFormControlLabel-label":
+                                                    {
+                                                        color: theme.palette
+                                                            .grey[900],
+                                                    },
+                                            }}
+                                        />
                                     </RadioGroup>
                                 </FormControl>
                             </SubCard>
@@ -200,14 +221,11 @@ const Customization = () => {
                         <Grid item xs={12}>
                             {/* border radius */}
                             <SubCard title="دقت محاسبات">
-                            <Grid item>
-                                        <Typography
-                                            variant="h6"
-                                            color="secondary"
-                                        >
-                                            {precision} رقم پس از ممیز
-                                        </Typography>
-                                    </Grid>
+                                <Grid item>
+                                    <Typography variant="h6" color="secondary">
+                                        {precision} رقم پس از ممیز
+                                    </Typography>
+                                </Grid>
                                 <Grid
                                     item
                                     xs={12}

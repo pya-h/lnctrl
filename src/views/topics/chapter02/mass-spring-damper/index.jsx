@@ -8,7 +8,7 @@ import MassSpringDamperParameters from "./parameters";
 
 import GraphMenu from "views/plotter/GraphMenu";
 import { Grid } from "@mui/material";
-import GraphBox from "views/plotter/GraphBox";
+import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 
 const mechanicSystemEquation = (m, c, k, F_t) =>
@@ -320,7 +320,7 @@ const MassSpringDamperExample = () => {
                     <hr />
                     <Grid xs={12} item>
                         <SubCard>
-                            <GraphBox
+                            <PlotlyBox
                                 title="منحنی مشخصه های گاری"
                                 traces={traces}
                             />

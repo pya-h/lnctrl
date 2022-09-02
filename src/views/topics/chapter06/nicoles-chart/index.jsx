@@ -4,7 +4,7 @@ import calculus from "../../../../math/calculus";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
 import { Grid, Typography } from "@mui/material";
-import GraphBox from "views/plotter/GraphBox";
+import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 import NicolesChartParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
@@ -285,7 +285,7 @@ const NicolesChart = () => {
                             <Grid xs={12} item>
                                 <SubCard>
                                     <Grid xs={12} item>
-                                        <GraphBox
+                                        <PlotlyBox
                                             title="نمودار نیکولز"
                                             traces={
                                                 phaseInRadianScale

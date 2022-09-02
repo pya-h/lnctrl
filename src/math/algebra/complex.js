@@ -30,7 +30,7 @@ class Complex extends Algebra {
             }
             return [reals, imaginaries];
         }
-        return [];
+        return [[], []];
     };
     hasMultiTerms = () =>
         this.plus || (this.a.toString() !== "0" && this.b.toString() !== "0");

@@ -40,7 +40,7 @@ const DelayedSystemsExample = () => {
 
     useEffect(() => {
         // plot
-        if (H_s) {
+        if (H_s instanceof TransferFunction) {
             (async () => {
                 try {
                     // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),

@@ -10,6 +10,7 @@ import PIDParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/transfer";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
+import Poly from 'math/algebra/functions/poly';
 
 const symbols = {
     in: "jw",
@@ -17,6 +18,8 @@ const symbols = {
 };
 let currentRawNum = "",
     currentRawDen = "";
+// ********************* SYSTEMS THAT HAVE BUG ****************************//
+// DEN = [1 1 2 2]
 const PIDController = () => {
     const [rawNumerator, $rawNumerator] = useState("1");
     const [rawDenominator, $rawDenominator] = useState("1 1");
@@ -38,11 +41,12 @@ const PIDController = () => {
     const [N, $N] = useState(1000);
     const [responseTime, setResponseTime] = useState(0);
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
+    console.log(new Poly([0, 1, 2]));
     // const [currentProgressSignal, currentProgressSignal] = useState(new AbortController());
     // EDIT J * J
     useEffect(() => {
         // plot
-        if (G_s) {
+        if (G_s instanceof TransferFunction) {
             (async () => {
                 try {
                     const lp = G_s.stepify().laplaceInverse();

@@ -35,24 +35,23 @@ import { gridSpacing } from "store/constant";
 const getSelectedFont = (selection) => {
     switch (selection) {
         case "Georgia":
-            return `'Georgia', sans-serif`;
+            return 'Georgia';
         case "Calibri":
-            return `'Calibri', sans-serif`;
-        case "Arial":
-            return `'Arial', sans-serif`;
+            return 'Calibri';
         case "Verdana":
-            return `'Verdana', sans-serif`;
+            return 'Verdana';
         case "Roboto":
-            return `'Roboto', sans-serif`;
+            return 'Roboto';
+        case "Arial":
+            return 'Arial';
         default:
-            return "sans-serif";
+            return 'sans-serif';
     }
 };
 const Customization = () => {
     const theme = useTheme();
     const dispatch = useDispatch();
     const customization = useSelector((state) => state.customization);
-
     // drawer on/off
     const [open, setOpen] = useState(false);
     const handleToggle = () => {

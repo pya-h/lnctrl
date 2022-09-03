@@ -136,7 +136,9 @@ const BodePlotExampleParameters = ({
                 container
             >
                 <Grid xs={12} item>
-                    Effect of scalar multiplication of the system on the Bode plot
+                    <Typography>
+                        Effect of scalar multiplication of the system on the Bode plot
+                    </Typography>
                 </Grid>
                 <Grid xs={4} item>
                     <Fab

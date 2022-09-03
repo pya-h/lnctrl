@@ -296,6 +296,14 @@ const load = (pathname) => {
             type: "group",
             children: [
                 {
+                    id: `${routes.chapter}07`,
+                    title: "Introduction",
+                    type: "item",
+                    url: `${routes.chapter}07`,
+                    icon: icons.IconBike,
+                    breadcrumbs: false,
+                },
+                {
                     id: routes.pid,
                     title: "PID controller",
                     type: "item",

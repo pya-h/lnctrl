@@ -10,8 +10,6 @@ export default class NotScalarError extends Error {
         this.cause = cause;
     }
 
-    describe = () => {
-        console.log(this.message + (this.cause ? "\n" + this.cause : ""));
-        return this.message + (this.cause ? "\n" + this.cause.toString() : "");
-    }
+    describe = () => this.message + (this.cause ? "\n" + this.cause.toString() : "");
+    
 }

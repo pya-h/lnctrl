@@ -60,7 +60,7 @@ const BodePlotExample = () => {
 
     useEffect(() => {
         // plot
-        if (H_s) {
+        if (H_s instanceof TransferFunction) {
             (async () => {
                 try {
                     $response("$$" + H_s.label("H") + "$$");

@@ -42,7 +42,7 @@ module.exports = {
     // like '/berry-material-react/react/default'
     basename: "/",
     defaultPath: "/",
-    fontFamily: `'Vazir-Bold', sans-serif`,
+    fontFamily: "BYekan",
     borderRadius: 12,
     routes,
     error_codes,

@@ -36,6 +36,12 @@ const NicolesChart = () => {
     const [is3DPlotEnabled, $3DPlotEnabled] = useState(false);
     const [phaseInRadianScale, setPhaseInRadianScale] = useState(true); // for degree => 180 / PI, for radian scale => 1.0
     const [N, $N] = useState(1000);
+    const [K, $K] = useState(1);
+    const [ktrace, $ktrace] = useState({
+        deg: [],
+        rad: [],
+    });
+
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
     const capture = () => {
         const capturedSystems = [...systems];
@@ -55,7 +61,7 @@ const NicolesChart = () => {
 
     useEffect(() => {
         // plot
-        if (H_s) {
+        if (H_s instanceof TransferFunction) {
             (async () => {
                 try {
                     $response("$$" + H_s.label("H") + "$$");
@@ -153,6 +159,35 @@ const NicolesChart = () => {
         else $systems(newSystemList);
         $H_s(multipliedSystem);
     };
+    useEffect(() => {
+        if (H_s instanceof TransferFunction && +K && +K !== 1) {
+            const KH_s = H_s.multiply(K);
+            const [, phase] = calculus.pointify(KH_s.phase, +w_min, +w_max, +N);
+
+            const [, amplitude] = calculus.pointify(
+                KH_s.bode,
+                +w_min,
+                +w_max,
+                +N
+            );
+
+            const rad = calculus.arrayToTrace(
+                    phase,
+                    amplitude,
+                    thickness,
+                    `K=${K}`,
+                    is3DPlotEnabled
+                ),
+                deg = calculus.arrayToTrace(
+                    phase.map((phi) => phi * calculus.RadianToDegree),
+                    amplitude,
+                    thickness,
+                    `K=${K}`,
+                    is3DPlotEnabled
+                );
+            $ktrace({ rad, deg });
+        } else $ktrace({ rad: [], phase: [] });
+    }, [K, H_s, N, is3DPlotEnabled, w_min, w_max, thickness]);
     useEffect(() => {
         try {
             if (
@@ -268,6 +303,7 @@ const NicolesChart = () => {
                                     }
                                     N={N}
                                     $N={$N}
+                                    $K={$K}
                                     multiplier={multiplyPlotBy}
                                 />
                             </Grid>
@@ -289,8 +325,14 @@ const NicolesChart = () => {
                                             title="نمودار نیکولز"
                                             traces={
                                                 phaseInRadianScale
-                                                    ? traces.rad
-                                                    : traces.deg
+                                                    ? [
+                                                          ...traces.rad,
+                                                          ktrace.rad,
+                                                      ]
+                                                    : [
+                                                          ...traces.deg,
+                                                          ktrace.deg,
+                                                      ]
                                             }
                                         />
                                     </Grid>

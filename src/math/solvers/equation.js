@@ -8,8 +8,8 @@ export default class Equation {
     static zeroPrecision = round(10 ** -precision.get());
     constructor(exp, symbol = "x") {
         if (exp instanceof Array) {
-            this.algebra = new Poly(exp);
             this.symbol = symbol;
+            this.algebra = new Poly(exp, this.symbol);
             this.expression = "";
             const n = exp.length - 1;
             this.degree = n;
@@ -57,6 +57,7 @@ export default class Equation {
     }
 
     static GetAlgebriteTerm = (termDegree, coef, index, symbol) => {
+        if (!coef) return "";
         if (coef === +coef) {
             // means that coef is not a string
             const intExpI = coef | 0;
@@ -74,6 +75,8 @@ export default class Equation {
     };
     solve = () => {
         // for factorable equations use: algebrite.roots
+        if (this.algebra && this.algebra.toString() === this.symbol)
+            return [Complex.jX(0)];
         let x = Algebrite.nroots(this.expression)
             .toString()
             .replaceAll("...", "");
@@ -96,7 +99,7 @@ export default class Equation {
             terms.push(xi.slice(0, separatorIndex));
             if (separatorIndex < xi.length)
                 terms.push(xi.slice(separatorIndex, xi.length - 2));
-            
+
             if (terms.length === 1) {
                 const magnitude = terms[0].replace("*i", "");
                 return magnitude === terms[0]

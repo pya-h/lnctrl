@@ -168,7 +168,6 @@ class Matrix {
             } else {
                 // error checks
                 // RETURN THE MISMATCH MATRIX
-                console.log("MISMATCH");
 
                 throw new DimensionMismatchError(
                     this.name && A.name ? { a: this.name, b: A.name } : null

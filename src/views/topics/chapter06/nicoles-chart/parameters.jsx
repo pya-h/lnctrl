@@ -1,9 +1,10 @@
-import { Grid, Button, Fab, Typography } from "@mui/material";
+import { Grid, Button, Fab, Typography, Slider, TextField } from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
 import { gridSpacing } from "store/constant";
 import AnimateButton from "../../../ui-component/extended/AnimateButton";
 import { MathJax } from "better-react-mathjax";
+import { useState } from "react";
 
 const parameterFormulas = [
     "$$Num = [$$",
@@ -27,8 +28,12 @@ const NicolesChartParameters = ({
     setPhaseInRadianScale,
     N,
     $N,
+    $K,
+
     multiplier,
 }) => {
+    const [kMax, setkMax] = useState(100);
+
     return (
         <SubCard
             darkBorder
@@ -94,7 +99,9 @@ const NicolesChartParameters = ({
                 container
             >
                 <Grid xs={12} item>
-                    تاثیر ضرب اسکالر سیستم در نمودار بود
+                    <Typography>
+                        تاثیر ضرب اسکالر سیستم در نمودار بود
+                    </Typography>
                 </Grid>
                 <Grid xs={4} item>
                     <Fab
@@ -128,6 +135,39 @@ const NicolesChartParameters = ({
                             <MathJax>{"$$\\lgroup - \\rgroup$$"}</MathJax>
                         </AnimateButton>
                     </Fab>
+                </Grid>
+            </Grid>
+            <hr />
+            <br />
+            <Grid
+                xs={12}
+                style={{
+                    textAlign: "center",
+                    border: "1px solid grey",
+                    borderRadius: "1rem",
+                    paddingBottom: "0.5rem",
+                    paddingRight: "0.5rem",
+                    margin: "auto",
+                }}
+                spacing={gridSpacing}
+                container
+            >
+                <Grid xs={12} item>
+                    <Typography>تاثیر تغییر بهره در نمودار بود</Typography>
+                </Grid>
+                <Grid xs={9} item>
+                    <Slider
+                        sx={{ mt: 1 }}
+                        aria-label="Volume"
+                        onChange={(e, value) => $K((value * kMax) / 100)}
+                    />
+                </Grid>
+                <Grid xs={3} item>
+                    <TextField
+                        onChange={(e) => setkMax(e.target.value)}
+                        value={kMax}
+                        sx={{ width: "100%" }}
+                    />
                 </Grid>
             </Grid>
         </SubCard>

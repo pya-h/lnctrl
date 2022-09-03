@@ -65,6 +65,7 @@ export default class Formula {
                     : ri.evaluate()
                 ).toDecimal()
             );
+            
         //roots = roots.split(",").filter((ri) => ri && ri !== ""); // now x is converted from a string to the array of x answers (as +s);
         // edit string to array
         return roots.map((ri, i) => {
@@ -138,7 +139,6 @@ export default class Formula {
                 // zero factors cause problem in determining other factors order
                 while (order >= 0) {
                     f = nerdamer(`${f} / s`);
-                    console.log(f.toString());
                     order--;
                 }
             }

@@ -22,6 +22,11 @@ const BodePlot = () => {
     const [rawNumerator, $rawNumerator] = useState("1");
     const [rawDenominator, $rawDenominator] = useState("1 1");
     const [H_s, $H_s] = useState(null);
+    const [ktrace, $ktrace] = useState({
+        amplitude: [],
+        phase: [],
+        degreePhase: [],
+    });
     const [w_min, $w_min] = useState(0);
     const [w_max, $w_max] = useState(10);
     // gradiant of u(t) is 0 and unit ramp is one
@@ -38,7 +43,6 @@ const BodePlot = () => {
     const [phaseInRadianScale, setPhaseInRadianScale] = useState(true); // for degree => 180 / PI, for radian scale => 1.0
     const [N, $N] = useState(1000);
     const [K, $K] = useState(1);
-
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
     const capture = () => {
         const capturedSystems = [...systems];
@@ -58,7 +62,7 @@ const BodePlot = () => {
 
     useEffect(() => {
         // plot
-        if (H_s) {
+        if (H_s instanceof TransferFunction) {
             (async () => {
                 try {
                     $response("$$" + H_s.label("H") + "$$");
@@ -133,6 +137,37 @@ const BodePlot = () => {
         }
     }, [H_s, systems, w_min, w_max, is3DPlotEnabled, thickness, N]);
 
+    useEffect(() => {
+        if (H_s instanceof TransferFunction && +K && +K !== 1) {
+            const KH_s = H_s.multiply(K);
+            const amplitude = calculus.systemToTrace(
+                KH_s.bode,
+                +w_min,
+                +w_max,
+                thickness,
+                `K=${K}`,
+                is3DPlotEnabled,
+                +N
+            );
+            const phase = calculus.systemToTrace(
+                KH_s.phase,
+                +w_min,
+                +w_max,
+                thickness,
+                `K=${K}`,
+                is3DPlotEnabled,
+                +N
+            );
+
+            const degreePhase = { ...phase };
+            degreePhase.y = degreePhase.y.map(
+                (yi) => yi * calculus.RadianToDegree
+            );
+
+            $ktrace({ amplitude, phase, degreePhase });
+        } else $ktrace({ amplitude: [], phase: [], degreePhase: [] });
+    }, [K, H_s, N, is3DPlotEnabled, w_min, w_max, thickness]);
+
     const multiplyPlotBy = (value) => {
         const currentLength = systems.length;
         const multipliedSystem = H_s.multiply(value);
@@ -143,18 +178,7 @@ const BodePlot = () => {
         else $systems(newSystemList);
         $H_s(multipliedSystem);
     };
-    const traceGainChange = () => {
-        const KH_s = H_s.multiply(K);
-        return calculus.systemToTrace(
-            KH_s.bode,
-            +w_min,
-            +w_max,
-            thickness,
-            `K=${K}`,
-            is3DPlotEnabled,
-            +N
-        );
-    };
+
     useEffect(() => {
         try {
             if (
@@ -166,8 +190,8 @@ const BodePlot = () => {
                 const h_s = new TransferFunction(num, den);
                 currentRawNum = rawNumerator;
                 currentRawDen = rawDenominator;
-                $H_s(h_s);
                 $K(1);
+                $H_s(h_s);
             }
         } catch (ex) {
             console.log(ex);
@@ -261,7 +285,6 @@ const BodePlot = () => {
                                     }
                                     N={N}
                                     $N={$N}
-                                    K={K}
                                     $K={$K}
                                     multiplier={multiplyPlotBy}
                                 />
@@ -283,14 +306,10 @@ const BodePlot = () => {
                                         <PlotlyBox
                                             logX={true}
                                             title="نمودار بود"
-                                            traces={
-                                                K !== 1
-                                                    ? [
-                                                          ...traces.amplitude,
-                                                          traceGainChange(),
-                                                      ]
-                                                    : traces.amplitude
-                                            }
+                                            traces={[
+                                                ...traces.amplitude,
+                                                ktrace.amplitude,
+                                            ]}
                                         />
                                     </Grid>
                                     <Grid xs={12} item>
@@ -299,8 +318,14 @@ const BodePlot = () => {
                                             logX={true}
                                             traces={
                                                 phaseInRadianScale
-                                                    ? traces.phase
-                                                    : traces.degreePhase
+                                                    ? [
+                                                          ...traces.phase,
+                                                          ktrace.phase,
+                                                      ]
+                                                    : [
+                                                          ...traces.degreePhase,
+                                                          ktrace.degreePhase,
+                                                      ]
                                             }
                                         />
                                     </Grid>

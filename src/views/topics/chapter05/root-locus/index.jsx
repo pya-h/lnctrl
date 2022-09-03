@@ -50,7 +50,7 @@ const RootLocus = () => {
     const updatePlot = async () => {
         try {
             // const updateProgressBar =
-            if (G_s) {
+            if (G_s instanceof TransferFunction) {
                 $rootLocusTrace({ x: [], y: [] });
                 const startTime = new Date();
 

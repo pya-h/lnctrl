@@ -136,7 +136,9 @@ const BodePlotExampleParameters = ({
                 container
             >
                 <Grid xs={12} item>
-                    تاثیر ضرب اسکالر سیستم در نمودار بود
+                    <Typography>
+                        تاثیر ضرب اسکالر سیستم در نمودار بود
+                    </Typography>
                 </Grid>
                 <Grid xs={4} item>
                     <Fab

@@ -21,15 +21,16 @@ class Algebra {
             this.dot = dot.copy();
         } // multiply a Algebra from different type into 'this'
 
-        if (plus) {
+        if (plus) 
             this.plus = plus.copy();
-            this.removeZeros();
-        } // add another Algebra with different type to this one
+        // add another Algebra with different type to this one
 
         this.previous = previous; // the previous term in the chained Algebra objects
         // term.plus => next term, term.previous => previous term, term.dot => an algebra from another type that is multiplied to actual term
         // F(u) = a.f(u).dot(u) + term.plus(u)
         this.link();
+        this.removeNonsense();
+
     }
     static identify = (parameter) => {
         if (parameter instanceof Array)
@@ -43,7 +44,6 @@ class Algebra {
         } else if (typeof parameter === "number") return round(parameter);
         else if (typeof parameter === "string") return parameter;
         else if (!parameter) return 0;
-        console.log(parameter)
         throw new NotScalarError(parameter);
     };
 
@@ -219,10 +219,13 @@ class Algebra {
         return value;
     };
     // REMOVE REDUNDANT TERMS, SIGNS AND ETC.
-    removeZeros = () => {
+    removeNonsense = () => {
         let term = this.first();
         while (term) {
             if (term instanceof Algebra) {
+                term.a = Algebra.RemoveArrayMeaninglessZeros(term.a);
+                term.b = Algebra.RemoveArrayMeaninglessZeros(term.b);
+                term.teta = Algebra.RemoveArrayMeaninglessZeros(term.teta);
                 if (
                     term.a === 0 ||
                     Algebra.polynomial(term.a, term.symbol) === 0
@@ -249,9 +252,24 @@ class Algebra {
         return this;
     };
 
+    static RemoveArrayMeaninglessZeros = (arr) => {
+        let firstNonZeroItemIndex = 0;
+        if (arr instanceof Array && arr.length > 1) {
+            for (
+                firstNonZeroItemIndex = 0;
+                firstNonZeroItemIndex < arr.length &&
+                !arr[firstNonZeroItemIndex];
+                delete arr[firstNonZeroItemIndex++]
+            );
+            return arr.slice(firstNonZeroItemIndex);
+        }
+        return arr;
+    };
+
     simplify = () => {
         // COMPLETE THIS METHOD TO REMOVE ALL REDUNDANTS
-        const result = this.copy().removeZeros();
+        const result = this.copy().removeNonsense();
+
         let x = result;
         while (x) {
             if (x.a instanceof Algebra) x.a = x.a.simplify();
@@ -457,7 +475,7 @@ class Algebra {
                     }
                 } else result = operand.copy(); // connect to next term
             }
-            return result.removeZeros();
+            return result.removeNonsense();
         } else if (right instanceof StandardInputSignal) {
             const endTerm = result.end();
             endTerm.plus = right.copy();
@@ -768,7 +786,7 @@ class Algebra {
     // IT IS FORMATTED COMPATIBLE FOR MathJax component
     toString = (parenthesis = false) => {
         // this.arrangeDots();
-        this.removeZeros(); // removeZeros current chain that's left from unknown number of operations
+        this.removeNonsense(); // removeNonsense current chain that's left from unknown number of operations
         let formula = "";
         // if ... + 0 || 0 + ... appears ===>>>>> see below !!
         if (!this.a) return "0"; // what if **************************************** 0 / 0

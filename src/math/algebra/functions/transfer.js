@@ -227,7 +227,15 @@ export default class TransferFunction extends Fraction {
             this.updateRoots();
     }
 
-    roots = () => {
+    getRootsByNerdamer = () => [
+        this.a.length > 1
+            ? new Formula(this.numerator().toFormula(), this.symbol).x()
+            : [],
+        this.b.length > 1
+            ? new Formula(this.denominator().toFormula(), this.symbol).x()
+            : [],
+    ];
+    roots = (useNerdamer = false) => {
         // roots hasnt been decided by user
         let zeros = [],
             poles = [];
@@ -238,19 +246,21 @@ export default class TransferFunction extends Fraction {
             !this.b.find((bi) => bi !== +bi)
         ) {
             // CONSTANT COEFFICIENT POLYNOMIAL EQUATIONS
-            zeros =
-                this.a.length > 1
-                    ? new Formula(this.numerator().toFormula(), this.symbol).x()
-                    : // ? new Equation(this.a, this.symbol).solve()
-                      [];
-            poles =
-                this.b.length > 1
-                    ? new Formula(
-                          this.denominator().toFormula(),
-                          this.symbol
-                      ).x()
-                    : //? new Equation(this.b, this.symbol).solve()
-                      [];
+            if (!useNerdamer) {
+                try {
+                    zeros =
+                        this.a.length > 1
+                            ? new Equation(this.a, this.symbol).solve()
+                            : [];
+                    poles =
+                        this.b.length > 1
+                            ? new Equation(this.b, this.symbol).solve()
+                            : [];
+                } catch (ex) {
+                    [zeros, poles] = this.getRootsByNerdamer();
+                }
+            } else [zeros, poles] = this.getRootsByNerdamer();
+
             if (zeros.length < this.a.length - 1) {
                 zeros = Formula.RepetitiveFactors(
                     this.numerator().toFormula(),
@@ -348,8 +358,7 @@ export default class TransferFunction extends Fraction {
                         .substract(g.derivative().multiply(f));
                     result = num.devide(g.multiply(g)).toTransferFunction();
                 } else {
-                     if(typeof result.a === "number")
-                        result.a = [result.a];
+                    if (typeof result.a === "number") result.a = [result.a];
                     const n = this.b.length - 1;
                     result.a *= -n;
                     result.b.push(0);
@@ -357,7 +366,7 @@ export default class TransferFunction extends Fraction {
             }
             if (rplus) result.plus = rplus.derivative();
         }
-        
+
         return result;
     };
     laplace = () => this.copy(true); // actually it has no laplace, this is for disfunctioning the laplace method in the parent class Algebra
@@ -382,7 +391,7 @@ export default class TransferFunction extends Fraction {
         for (let i = 0; i < poles.length; i++) {
             // for(let j  = 0; j < poles[i].order; i++)
             const s = poles[i].value;
-            const otherPoles = [...poles]; 
+            const otherPoles = [...poles];
             otherPoles.splice(i, 1);
             const num =
                     zeros.length > 0
@@ -410,8 +419,7 @@ export default class TransferFunction extends Fraction {
                 );
 
                 let factoriel = 1;
-                for (let q = 1; q < poles[i].order; q++) 
-                {
+                for (let q = 1; q < poles[i].order; q++) {
                     dF = dF.derivative();
                     let coef = dF.$(s);
                     coef =
@@ -694,7 +702,10 @@ export default class TransferFunction extends Fraction {
     nyquist = (w, method = "cartesian") =>
         method === "cartesian"
             ? this.$(Complex.jX(w))
-            : TransferFunction.PolarToCartesian(this.amplitude(w), this.phase(w));
+            : TransferFunction.PolarToCartesian(
+                  this.amplitude(w),
+                  this.phase(w)
+              );
 
     bode = (w) => 20 * Math.log10(this.amplitude(w));
 
@@ -730,7 +741,6 @@ export default class TransferFunction extends Fraction {
     };
 
     // ****************************************************** //
-    // SOLVE THIS WITH nerdamer again
     rootLocus = async (k_min, k_max, progressBarObject, N = 1000) => {
         // return root locus values for plotting
 

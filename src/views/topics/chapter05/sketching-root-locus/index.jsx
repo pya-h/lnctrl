@@ -93,9 +93,10 @@ const SketchingRootLocus = () => {
         try {
             let maxY = 0;
             const guides = [];
-            if (G_s) {
+            if (G_s instanceof TransferFunction) {
                 const traces = [];
                 const [zeros, poles] = G_s.roots();
+
                 let [zx, zy] = Complex.ToCouples(zeros);
                 guides.push("یافتن صفرها");
                 // step 0
@@ -211,7 +212,6 @@ const SketchingRootLocus = () => {
                                     finalStep={stepByStepTraces.length}
                                     guides={guides}
                                 />
-                            
                             </Grid>
                         </Grid>
                         <Grid md={8} sm={12} xs={12} item>

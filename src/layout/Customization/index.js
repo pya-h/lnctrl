@@ -35,24 +35,23 @@ import { gridSpacing } from "store/constant";
 const getSelectedFont = (selection) => {
     switch (selection) {
         case "B Nazanin":
-            return `'B Nazanin', sans-serif`;
+            return 'B Nazanin';
         case "Calibri":
-            return `'Calibri', sans-serif`;
-        case "Vazir-Bold":
-            return `'Vazir-Bold', sans-serif`;
+            return 'Calibri';
         case "BYekan":
-            return `'BYekan', sans-serif`;
+            return 'BYekan';
         case "Roboto":
-            return `'Roboto', sans-serif`;
+            return 'Roboto';
+        case "Vazir-Bold":
+            return 'Vazir-Bold';
         default:
-            return "sans-serif";
+            return 'sans-serif';
     }
 };
 const Customization = () => {
     const theme = useTheme();
     const dispatch = useDispatch();
     const customization = useSelector((state) => state.customization);
-
     // drawer on/off
     const [open, setOpen] = useState(false);
     const handleToggle = () => {

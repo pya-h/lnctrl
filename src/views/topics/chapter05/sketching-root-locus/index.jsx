@@ -13,11 +13,12 @@ import MainCard from "views/ui-component/cards/MainCard";
 import Complex from "math/algebra/complex";
 import { joinSorted } from "toolshed";
 import PlotlyBox from "views/plotter/PlotlyBox";
+import { MathJax } from "better-react-mathjax";
+import Equation from "../../../../math/solvers/equation";
 
 const tfFormula = (tf, index = undefined) =>
     "$$ " + tf.label("G", index) + " $$";
 
-const NEAR_POINT_LINE_OFFSET = 0.025;
 const pointByPointTrace = (x, y, name, markerStyle) => {
     const size = markerStyle?.size || 15,
         symbol = markerStyle?.symbol;
@@ -62,6 +63,15 @@ const lineDirection = (pzl, pzr) => {
     return traces;
 };
 
+const listRoots = (roots, _type = "قطب") =>
+    roots.length
+        ? "$$" +
+          roots
+              .map((zi, i) => `\\quad s_{${i + 1}} = ` + zi.toString())
+              .join(",") +
+          "$$"
+        : `.سیستم ${_type}ی ندارد`;
+
 const SketchingRootLocus = () => {
     const [rawNumerator, $rawNumerator] = useState("1");
     const [rawDenominator, $rawDenominator] = useState("1 5 6");
@@ -76,6 +86,7 @@ const SketchingRootLocus = () => {
     const [step, setStep] = useState(0);
     const [yRange, setYRange] = useState(null);
     const [guides, setGuides] = useState([]);
+    const [description, setDescription] = useState([]);
 
     //update
     useEffect(() => {
@@ -92,12 +103,14 @@ const SketchingRootLocus = () => {
     useEffect(() => {
         try {
             let maxY = 0;
-            const guides = [];
+            const guides = [],
+                description = [];
             if (G_s instanceof TransferFunction) {
                 const traces = [];
                 const [zeros, poles] = G_s.roots();
 
                 let [zx, zy] = Complex.ToCouples(zeros);
+                description.push({ formula: listRoots(zeros, "صفر") });
                 guides.push("یافتن صفرها");
                 // step 0
                 traces.push(pointByPointTrace(zx, zy, "Zeros"));
@@ -106,6 +119,7 @@ const SketchingRootLocus = () => {
                 traces.push(
                     pointByPointTrace(px, py, "Poles", { symbol: "x" })
                 );
+                description.push({ formula: listRoots(poles) });
                 guides.push("یافتن قطب ها");
                 // step 2
                 // aAxisPZs ==> zero/poles that are placesd right on the real axis
@@ -119,17 +133,16 @@ const SketchingRootLocus = () => {
                     ["zero", "pole"],
                     false
                 );
+                const g_delta = G_s.characteristicEquation();
+                const g_deltaRoots = new Equation(g_delta).solve();
+
                 for (let i = 0; i < xAxisPZs.length - 1; i++) {
-                    const pointOffset =
-                        xAxisPZs[i + 1].value - xAxisPZs[i].value >
-                        NEAR_POINT_LINE_OFFSET * 20
-                            ? NEAR_POINT_LINE_OFFSET
-                            : 0;
+                    
                     traces.push(
                         calculus.systemToTrace(
                             (x) => 0,
-                            xAxisPZs[i].value + pointOffset,
-                            xAxisPZs[i + 1].value - pointOffset,
+                            xAxisPZs[i].value,
+                            xAxisPZs[i + 1].value,
                             thickness,
                             `{RL${i}}`,
                             false,
@@ -142,13 +155,32 @@ const SketchingRootLocus = () => {
                         xAxisPZs[i + 1]
                     );
                     traces.push(...directions);
-                    for (let idx = 0; idx < directions.length; idx++)
+                    for (let idx = 0; idx < directions.length; idx++) {
                         guides.push(`یافتن جهت خط شماره ی (${i + 1})`);
+
+                        description.push({
+                            formula:
+                                "$$" +
+                                g_delta.toString() +
+                                " = 0 \\\\ $$ " +
+                                listRoots(g_deltaRoots, "ریشه"),
+                            persian: `تعداد شاخه ها = ${g_deltaRoots.length}`,
+                        });
+                    }
+                    description.push({
+                        formula:
+                            "$$" +
+                            g_delta.toString() +
+                            " = 0 \\\\ $$ " +
+                            listRoots(g_deltaRoots, "ریشه"),
+                        persian: `تعداد شاخه ها = ${g_deltaRoots.length}`,
+                    });
                 }
                 maxY = calculus.max([...zy, ...py]).value;
                 setYRange(!isNaN(maxY) ? [-maxY - 1, maxY + 1] : null);
                 $stepByStepTraces(traces);
                 setGuides(guides);
+                setDescription(description);
                 // $GInfo(new Describer(G_s));
             }
         } catch (ex) {
@@ -214,7 +246,14 @@ const SketchingRootLocus = () => {
                                 />
                             </Grid>
                         </Grid>
-                        <Grid md={8} sm={12} xs={12} item>
+                        <Grid
+                            sx={{ py: 2, pl: 2 }}
+                            md={8}
+                            sm={12}
+                            xs={12}
+                            container
+                            spacing={gridSpacing}
+                        >
                             <Grid xs={12} item>
                                 <SubCard>
                                     <PlotlyBox
@@ -226,6 +265,42 @@ const SketchingRootLocus = () => {
                                         yRange={yRange}
                                         hideLegends
                                     />
+                                </SubCard>
+                            </Grid>
+
+                            <Grid sx={{ margin: "auto", width: "100%" }} item>
+                                <SubCard>
+                                    <Grid
+                                        id="description"
+                                        container
+                                        direction="row"
+                                    >
+                                        {Boolean(step < description.length) && (
+                                            <Typography
+                                                sx={{
+                                                    m: "auto",
+                                                    textAlign: "center",
+                                                    py: 1,
+                                                }}
+                                            >
+                                                <MathJax
+                                                    style={{ margin: "auto" }}
+                                                >
+                                                    {description[step].formula}
+                                                </MathJax>
+                                                <hr />
+                                                <Typography
+                                                    sx={{
+                                                        m: "auto",
+                                                        textAlign: "center",
+                                                        fontSize: "18px",
+                                                    }}
+                                                >
+                                                    {description[step].persian}
+                                                </Typography>
+                                            </Typography>
+                                        )}
+                                    </Grid>
                                 </SubCard>
                             </Grid>
                         </Grid>

@@ -298,6 +298,11 @@ export default class TransferFunction extends Fraction {
         return this;
     };
 
+    characteristicEquation = (k = 1) =>
+        this.denominator().add(
+            k !== 1 ? this.numerator() : this.numerator().multiply(k)
+        );
+
     updateRoots = () => {
         const [zeros, poles] = this.roots();
 

@@ -70,7 +70,7 @@ const SketchingRootLocusParameters = ({
                 <Grid style={{ textAlign: "left" }} xs={3} item>
                     <Fab
                         size="large"
-                        sx={{ p: 4 }}
+                        sx={{ p: 2 }}
                         variant="circular"
                         disabled={step <= 0}
                         onClick={() => setStep(step - (step > 0 ? 1 : 0))}
@@ -101,7 +101,7 @@ const SketchingRootLocusParameters = ({
                 <Grid xs={3} item>
                     <Fab
                         size="large"
-                        sx={{ p: 4 }}
+                        sx={{ p: 2 }}
                         variant="circular"
                         disabled={step >= finalStep - 1}
                         onClick={() =>

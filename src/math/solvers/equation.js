@@ -31,8 +31,8 @@ export default class Equation {
         } else if (exp instanceof Poly) {
             this.expression = "";
             this.algebra = exp.copy();
-            this.symbol = this.exp.symbol;
-            const expression = this.getA();
+            this.symbol = this.algebra.symbol;
+            const expression = this.algebra.getA();
             const n = expression.length - 1;
             this.degree = n; // unknown
             for (

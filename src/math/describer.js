@@ -1,6 +1,6 @@
 import Complex from "math/algebra/complex";
 import Algebra from "math/algebra";
-import TransferFunction from "math/algebra/functions/transfer";
+import TransferFunction from "math/algebra/functions/fraction";
 import { MathJax } from "better-react-mathjax";
 import { Grid } from "@mui/material";
 import { gridSpacing } from "store/constant";

@@ -21,8 +21,7 @@ class Algebra {
             this.dot = dot.copy();
         } // multiply a Algebra from different type into 'this'
 
-        if (plus) 
-            this.plus = plus.copy();
+        if (plus) this.plus = plus.copy();
         // add another Algebra with different type to this one
 
         this.previous = previous; // the previous term in the chained Algebra objects
@@ -30,7 +29,6 @@ class Algebra {
         // F(u) = a.f(u).dot(u) + term.plus(u)
         this.link();
         this.removeNonsense();
-
     }
     static identify = (parameter) => {
         if (parameter instanceof Array)
@@ -219,6 +217,15 @@ class Algebra {
         return value;
     };
     // REMOVE REDUNDANT TERMS, SIGNS AND ETC.
+
+    clear = () => {
+        // isolate the object from other objects so that the garbage collection removes it
+        this.plus = this.dot = this.previous = null;
+        for(const key of Object.keys(this))
+            delete this[key];
+        return this;
+    }
+
     removeNonsense = () => {
         let term = this.first();
         while (term) {
@@ -232,19 +239,17 @@ class Algebra {
                 ) {
                     if (term.previous) {
                         term.previous.plus = term.plus;
-                    } else {
-                        // remove first term and transfer the second term to first one
-                        if (this === term) term.redundant = true;
-                        if (term.plus) {
-                            term = term.plus.copy(true);
-                            if (term.plus) {
-                                term.plus = term.plus.plus;
-                                if (term.plus) term.plus.previous = term;
-                            }
-                            term.previous = null;
-                        }
+                        if (term.plus) term.plus.previous = term.previous;
+                        const redundant = term;
+                        term = term.plus;
+                        delete redundant.clear();
+                        continue;
+                    } else if (term.plus) {
+                        const redundant = term;
+                        term = term.plus.copy();
+                        term.plus.previous = term;
+                        delete redundant.clear();
                     }
-                    // }
                 }
             }
             term = term.plus;
@@ -412,6 +417,7 @@ class Algebra {
 
     // MATHEMATICAL OPERATIONS
     // static add = (expressions) => expressions.map((el) => el.toString()).join(" + ");
+
     add = (right) => {
         // result = this + operand
         let result = this.link().copy();
@@ -437,7 +443,7 @@ class Algebra {
                                     i++
                                 )
                                     x.a[x.a.length - i] += y.a[y.a.length - i];
-                            } else {
+                            } else if (+y.a === y.a) {
                                 x.a[x.a.length - 1] += y.a;
                             }
                         } else {
@@ -476,6 +482,15 @@ class Algebra {
                 } else result = operand.copy(); // connect to next term
             }
             return result.removeNonsense();
+        } else if (+right === right) {
+            if (result.type === "poly") result.a[result.a.length - 1] += right;
+            else if (result.type === "frac") {
+            } else {
+                result.end().plus = new Algebra([right], {
+                    symbol: result.symbol,
+                    type: "poly",
+                });
+            }
         } else if (right instanceof StandardInputSignal) {
             const endTerm = result.end();
             endTerm.plus = right.copy();
@@ -834,11 +849,8 @@ class Algebra {
                         formula += this.symbol + "}";
                     }
                     if (this.input) formula += this.input.toString();
-                } else if (a0 !== 1 || !this.dot)
-                    formula +=
-                        this.a instanceof Algebra
-                            ? this.a.toString()
-                            : strictPrecisionFormat(this.a);
+                } else if (a0 === 1)
+                    formula += a0;
 
                 // if (this.a < 0) formula += ")";
                 if (this.plus) formula += this.join(); // if there's a next term: casscade toString() calls
@@ -994,6 +1006,15 @@ class Algebra {
     };
 
     isIntegrator = () => false;
+
+    replace = (operand) => {
+        this.a = operand.getA();
+        this.b = operand.getB();
+        this.teta = operand.getTeta();
+        this.symbol = operand.getSymbol();
+        this.type = operand.getType();
+        this.dot = operand.dot.copy();
+    };
 }
 
 export default Algebra;

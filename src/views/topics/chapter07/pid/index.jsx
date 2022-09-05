@@ -7,10 +7,9 @@ import { Grid, Typography } from "@mui/material";
 import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 import PIDParameters from "./parameters";
-import TransferFunction from "math/algebra/functions/transfer";
+import TransferFunction from "math/algebra/functions/fraction";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
-import Poly from 'math/algebra/functions/poly';
 
 const symbols = {
     in: "jw",
@@ -41,7 +40,6 @@ const PIDController = () => {
     const [N, $N] = useState(1000);
     const [responseTime, setResponseTime] = useState(0);
     const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
-    console.log(new Poly([0, 1, 2]));
     // const [currentProgressSignal, currentProgressSignal] = useState(new AbortController());
     // EDIT J * J
     useEffect(() => {

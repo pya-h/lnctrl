@@ -8,7 +8,7 @@ import { Grid, Typography } from "@mui/material";
 import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 import RootLocusParameters from "./parameters";
-import TransferFunction from "math/algebra/functions/transfer";
+import TransferFunction from "math/algebra/functions/fraction";
 import { gridSpacing } from "store/constant";
 // import Describer from "math/describer";
 import MainCard from "views/ui-component/cards/MainCard";

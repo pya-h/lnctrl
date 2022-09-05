@@ -1,6 +1,6 @@
 // project imports
 import config from "config";
-import { precision } from "math/calculus";
+import calculus from "math/calculus";
 // action - state management
 import { ActionTypes } from "./actions";
 
@@ -8,7 +8,7 @@ export const initialState = {
     isOpen: [], // for active default menu
     fontFamily: config.fontFamily,
     borderRadius: config.borderRadius,
-    mathPrecision: precision.get(),
+    mathPrecision: calculus.precision.get(),
     opened: true,
 };
 

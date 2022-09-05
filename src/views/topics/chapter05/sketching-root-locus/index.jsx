@@ -6,7 +6,7 @@ import calculus from "math/calculus";
 import { useState, useEffect } from "react";
 import { Grid, Typography } from "@mui/material";
 import SketchingRootLocusParameters from "./parameters";
-import TransferFunction from "math/algebra/functions/transfer";
+import TransferFunction from "math/algebra/functions/fraction";
 import { gridSpacing } from "store/constant";
 // import Describer from "math/describer";
 import MainCard from "views/ui-component/cards/MainCard";
@@ -95,6 +95,7 @@ const SketchingRootLocus = () => {
             calculus.stringToArray(rawNumerator),
             calculus.stringToArray(rawDenominator)
         );
+
         $G_s(g_s);
         $formula(tfFormula(g_s));
         setStep(0);
@@ -137,7 +138,6 @@ const SketchingRootLocus = () => {
                 const g_deltaRoots = new Equation(g_delta).solve();
 
                 for (let i = 0; i < xAxisPZs.length - 1; i++) {
-                    
                     traces.push(
                         calculus.systemToTrace(
                             (x) => 0,

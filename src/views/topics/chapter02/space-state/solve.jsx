@@ -10,9 +10,9 @@ import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrow
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
 import calculus from "math/calculus";
 import Complex from "math/algebra/complex";
-import TransferFunction from "math/algebra/functions/transfer";
-import Exp from "math/algebra/functions/exp";
-import Poly from "math/algebra/functions/poly";
+import TransferFunction from "math/algebra/functions/fraction";
+import {Exp} from "math/algebra/functions";
+import {Poly} from "math/algebra/functions";
 const constructStateSpaceFormula = (A, x_0) =>
     "$$\\begin{cases} \\dot{x}(t)  = " +
     new Matrix(A).toString() +
@@ -68,6 +68,7 @@ const Fi_ij = (delta, k1, k2, p1, p2 = p1) => {
         fi_t = new Exp(k1, p1 instanceof Algebra ? p1.negation() : -p1).add(
             new Exp(k2, p2 instanceof Algebra ? p2.negation() : -p2)
         );
+        console.log(fi_t.toString(), fi_t);
     } else {
         fi_s = new TransferFunction(k1, [1, p1]).add(
             new TransferFunction(k2, [1, 2 * p1, p1 ** 2])
@@ -243,7 +244,7 @@ const SpaceStateEquationSolveBox = ({ A, x_0, C }) => {
 
     useEffect(() => {
         if (Fi_t) {
-            const x_t = Fi_t.multiply(x_0);
+            const x_t = Fi_t.multiply(x_0, true);
             const y_t = new Matrix(C).multiply(x_t);
             $step3(constructStep3(Fi_t));
             $step4(constructStep4(x_t, y_t));

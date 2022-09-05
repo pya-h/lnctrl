@@ -7,7 +7,7 @@ import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
-import Poly from "math/algebra/functions/poly";
+import {Poly} from "math/algebra/functions";
 
 const delta_k = (a_i, k) => {
     const delta = [];

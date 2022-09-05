@@ -1,11 +1,12 @@
 import Algebra from "../algebra/index";
-import { isDigit, precision, round } from "math/calculus";
+import calculus from "math/calculus";
 import Complex from "math/algebra/complex";
-import Poly from "../algebra/functions/poly";
+import { Poly } from "math/algebra/functions";
+;
 const Algebrite = require("algebrite");
 
 export default class Equation {
-    static zeroPrecision = round(10 ** -precision.get());
+    static zeroPrecision = calculus.round(10 ** -calculus.precision.get());
     constructor(exp, symbol = "x") {
         if (exp instanceof Array) {
             this.symbol = symbol;
@@ -90,8 +91,8 @@ export default class Equation {
                 if (
                     (xi[separatorIndex] === "+" ||
                         xi[separatorIndex] === "-") &&
-                    isDigit(xi[separatorIndex - 1]) &&
-                    isDigit(xi[separatorIndex + 1])
+                    calculus.isDigit(xi[separatorIndex - 1]) &&
+                    calculus.isDigit(xi[separatorIndex + 1])
                 )
                     break;
 
@@ -145,7 +146,7 @@ export default class Equation {
             for (let x0 = -boundary; x0 <= boundary; x0++) {
                 let x = method(this.algebra, x0, N);
                 if (!isNaN(x)) {
-                    const rx = round(x);
+                    const rx = calculus.round(x);
                     if (isUnique(rx)) allRoots.push(rx);
                 }
                 x = method(this.algebra, Complex.jX(x0), N);
@@ -257,7 +258,7 @@ export default class Equation {
                             (2 * Math.max(Math.abs(xa), Math.abs(xb)));
                     }
                 }
-                if (!f(p)) poles.push(round(p));
+                if (!f(p)) poles.push(calculus.round(p));
             }
             return new Set(poles);
         },

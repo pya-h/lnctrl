@@ -3,7 +3,7 @@ import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
 
 import { MathJax } from "better-react-mathjax";
-import Poly from "../../../../math/algebra/functions/poly";
+import { Poly } from "math/algebra/functions";
 import hurwitz_symbolic_deltas from './images/hurwitz_deltas.jpg';
 
 const HurwitzCriterionLecture = () => {

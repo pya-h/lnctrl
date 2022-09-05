@@ -7,7 +7,7 @@ import { Grid, Typography } from "@mui/material";
 import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 import BodePlotParameters from "./parameters";
-import TransferFunction from "math/algebra/functions/transfer";
+import TransferFunction from "math/algebra/functions/fraction";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
 import { browserLockBreaker } from "toolshed";

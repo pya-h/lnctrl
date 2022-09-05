@@ -11,7 +11,7 @@ import { MathJax } from "better-react-mathjax";
 import SOTFByPolesInputs from "./parameters";
 import Complex from "math/algebra/complex";
 import Algebra from "math/algebra/index";
-import TransferFunction from "math/algebra/functions/transfer";
+import TransferFunction from "math/algebra/functions/fraction";
 import { gridSpacing } from "store/constant";
 import Describer from "math/describer";
 

@@ -1,10 +1,9 @@
 import SubCard from "../../../ui-component/cards/SubCard";
 import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
-
-import { MathJax } from "better-react-mathjax";
-import Poly from "../../../../math/algebra/functions/poly";
 import routh_hurwitz_symbolic_table from "./images/routh_hurwitz_table.png";
+import { MathJax } from "better-react-mathjax";
+import { Poly } from "math/algebra/functions";
 
 const transformSInverse = "$$s \\rightarrow \\frac{1}{s} $$";
 const sTransformInFormula =

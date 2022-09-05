@@ -7,11 +7,11 @@ import { Grid, Typography } from "@mui/material";
 import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 import DelayedSystemsExampleParameters from "./parameters";
-import TransferFunction from "math/algebra/functions/transfer";
+import TransferFunction from "math/algebra/functions/fraction";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
 import DelayedSystemsLecture from "./lecture";
-import Exp from "math/algebra/functions/exp";
+import {Exp} from "math/algebra/functions";
 const symbols = {
     in: "jw",
     out: "H",

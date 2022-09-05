@@ -12,9 +12,9 @@ const MatrixInput = ({ rows, columns, initial, setter }) => {
         if (event && event.target) {
             const temp = [...matrix];
             if(rows > 1)
-                temp[i][j] = Number(event.target.value);
+                temp[i][j] = +(event.target.value);
             else
-                temp[j] = Number(event.target.value);
+                temp[j] = +(event.target.value);
             setter(temp);
             setMatrix(temp);
         }

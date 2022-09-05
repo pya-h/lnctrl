@@ -1,5 +1,5 @@
 import Algebra from "./algebra";
-import Poly from "./algebra/functions/poly";
+import { Poly } from "./algebra/functions";
 import DimensionMismatchError from "errors/matrix/DimensionMismatchError";
 
 class Matrix {
@@ -113,6 +113,7 @@ class Matrix {
         const [m, n] = Matrix.dimens(this.M);
         const [p, q] = Matrix.dimens(A);
         let B = [];
+
         if (m === 1 && n === 1) {
             // mode 0 ,multiply by number
         } else if (p === 1 && q === 1) {
@@ -174,6 +175,7 @@ class Matrix {
                 );
             }
         }
+        console.log("DONE")
         return new Matrix(B);
     };
 }

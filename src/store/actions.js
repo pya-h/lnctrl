@@ -1,4 +1,4 @@
-import {precision} from "math/calculus";
+import calculus from "math/calculus";
 
 // action - customization reducer
 const SET_MENU = "@customization/SET_MENU";
@@ -45,7 +45,7 @@ export const ReduxSetBorderRadius = (borderRadius) => {
 
 export const ReduxSetMathPrecision = (mathPrecision) => {
     return async (dispatch, getState) => {
-        precision.set(mathPrecision);
+        calculus.precision.set(mathPrecision);
         await dispatch({ type: SET_MATH_PRECISION, mathPrecision: mathPrecision });
     };
 };

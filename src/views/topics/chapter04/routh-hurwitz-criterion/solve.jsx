@@ -6,7 +6,7 @@ import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
 import KeyboardDoubleArrowDownIcon from "@mui/icons-material/KeyboardDoubleArrowDown";
 import KeyboardDoubleArrowUpIcon from "@mui/icons-material/KeyboardDoubleArrowUp";
-import Poly from "math/algebra/functions/poly";
+import { Poly } from "math/algebra/functions";
 import { writeRow } from "toolshed";
 
 const putZeros = (arr, numberOfZeros) => {
@@ -157,7 +157,11 @@ const RouthHurwitzCriterionSolveBox = ({ a_i, epsilon, showEpsilonBar }) => {
                         step && (
                             <Grid xs={12} item>
                                 <SubCard
-                                    background={index < steps.length - 2 ? "light" : "lightcoral"}
+                                    background={
+                                        index < steps.length - 2
+                                            ? "light"
+                                            : "lightcoral"
+                                    }
                                     sx={{
                                         direction:
                                             index < propertySectionIndex
@@ -165,7 +169,7 @@ const RouthHurwitzCriterionSolveBox = ({ a_i, epsilon, showEpsilonBar }) => {
                                                 : "rtl",
                                     }}
                                 >
-                                    <Grid sx={{ width: '100%' }} container>
+                                    <Grid sx={{ width: "100%" }} container>
                                         <Grid>
                                             <MathJax>{step}</MathJax>
                                         </Grid>

@@ -1,14 +1,15 @@
 import Algebra from "math/algebra";
 import Complex from "math/algebra/complex";
+import { Zero } from "math/algebra/functions";
 import { makeProgress } from "toolshed";
 import LTI from "./lti";
 import ODE from "./ode";
 
 const defaultMathPrecision = 4;
-export const RadianToDegree = 180 / Math.PI;
-export const DegreeToRadian = Math.PI / 180;
+const RadianToDegree = 180 / Math.PI;
+const DegreeToRadian = Math.PI / 180;
 
-export const precision = {
+const precision = {
     get: () => localStorage.getItem("precision") || defaultMathPrecision, // digits allowed after dcimal point (private)
     set: (newPrecision) => {
         if (newPrecision > 0 && Math.floor(newPrecision) === newPrecision) {
@@ -45,7 +46,7 @@ export const pointifyAsync = async (
     }
     const ts = Array.from(Array(N + 1), (_, k) => k * dt + ti);
     const ys = Array(N + 1);
-    for (let i = 0; i <= N; i++) {  
+    for (let i = 0; i <= N; i++) {
         if (progressBar) {
             if (i % progressStep === 0)
                 await makeProgress(progressBar, (100 * i) / N);
@@ -55,7 +56,7 @@ export const pointifyAsync = async (
     return [ts, ys];
 };
 
-export const verticalLine = (at, xi, xf, N) => {
+const verticalLine = (at, xi, xf, N) => {
     let dx = (xf - xi) / N;
     while (dx >= 1) {
         N *= 10;
@@ -156,7 +157,7 @@ export const arrayToTrace = (x, y, thickness, legend, _3d, mode = "lines") => {
     };
 };
 
-export const mCircle = (M, x_i, x_f, iterations) => {
+const mCircle = (M, x_i, x_f, iterations) => {
     const m2 = M ** 2;
     const m2minus1 = m2 - 1;
     const temp = m2 / m2minus1;
@@ -171,7 +172,7 @@ export const mCircle = (M, x_i, x_f, iterations) => {
     return [x, y];
 };
 
-export const nCircle = (N, x_i, x_f, iterations) => {
+const nCircle = (N, x_i, x_f, iterations) => {
     const iN = Math.abs(1 / N);
     while (x_i > -iN) x_i -= iN;
     while (x_f < iN) x_f += iN;
@@ -230,8 +231,8 @@ export const stringToArray = (raw) =>
         .filter((el) => el && !isNaN(el))
         .map((el) => +el);
 
-export const isFloat = (x) => x === +x && x !== (x | 0);
-export const evaluate = (raw) => {
+const isFloat = (x) => x === +x && x !== (x | 0);
+const evaluate = (raw) => {
     // evaluate basic math operations in string
     // when pressing = we can convert the expression to final value
     // const inlineOperators = ['+', '-', '*', '/', '^'];
@@ -324,6 +325,72 @@ export const max = (nums) => {
 export const randomize = (max, min = 0) =>
     Math.floor(Math.random() * max - min + 1);
 
+const tan = (angle, unit = null) =>
+    Math.tan(
+        unit && unit.toLowerCase() === "rad" ? angle : angle * DegreeToRadian
+    );
+const cot = (angle, unit = null) => 1 / tan(angle, unit);
+const sin = (angle, unit = null) =>
+    Math.sin(
+        unit && unit.toLowerCase() === "rad" ? angle : angle * DegreeToRadian
+    );
+const cos = (angle, unit = null) =>
+    Math.cos(
+        unit && unit.toLowerCase() === "rad" ? angle : angle * DegreeToRadian
+    );
+
+export const addArrays = (arr1, arr2) => {
+    if (arr1 === +arr1 && arr2 === +arr2)
+        // both numbers
+        return arr1 + arr2;
+
+    let first, second;
+    if ((arr1.length || 0) >= (arr2.length || 0)) {
+        first = [...arr1];
+        second = arr2;
+    } else {
+        first = [...arr2];
+        second = arr1;
+    }
+
+    const lastItem = first.length - 1;
+    if (second instanceof Array) {
+        for (let i = 1; i <= second.length; i++) {
+            // second.length always is < first.length
+            const f = first.length - i,
+                s = second.length - i;
+            if (first[f] === +first[f] && second[s] === +second[s])
+                first[f] += second[second.length - i];
+            else if (first[f] instanceof Algebra)
+                first[f] = first[f].add(second[s]);
+            else first[f] = second[s].add(first[f]);
+        }
+    } else if (second instanceof Algebra)
+        first[lastItem] = second.add(first[lastItem]);
+    else {
+        if (first[lastItem] instanceof Algebra)
+            first[lastItem] = first[lastItem].add(second);
+        else first[lastItem] += second;
+    }
+
+    return first;
+};
+
+const sum = (list) => {
+    let s;
+    if(list.filter(x => +x !== x).length){
+        s = new Zero();
+        for(const item of list)
+            s = s.add(item);
+    }
+    else {
+        s = 0;
+        for(const item of list)
+            s += item;
+        
+    }
+    return s;
+}
 const calculus = {
     ODE,
     LTI,
@@ -349,7 +416,12 @@ const calculus = {
     pointifyAsync,
     min,
     max,
-    randomize
+    randomize,
+    sin,
+    cos,
+    tan,
+    cot,
+    addArrays
 };
 
 export default calculus;

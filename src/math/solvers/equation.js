@@ -1,4 +1,4 @@
-import Algebra from "../algebra/index";
+import Algebra from "math/algebra";
 import calculus from "math/calculus";
 import Complex from "math/algebra/complex";
 import { Poly } from "math/algebra/functions";

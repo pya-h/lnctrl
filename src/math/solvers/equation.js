@@ -76,12 +76,11 @@ export default class Equation {
     };
     solve = () => {
         // for factorable equations use: algebrite.roots
-        if (this.algebra && this.algebra.toString() === this.symbol)
-            return [Complex.jX(0)];
         let x = Algebrite.nroots(this.expression)
             .toString()
             .replaceAll("...", "");
-        x = x.slice(1, x.length - 1);
+        if(x[0] === '[') // && x[x.length - 1] === ']'
+            x = x.slice(1, x.length - 1);
         x = x.split(",").filter((xi) => xi && xi !== ""); // now x is converted from a string to the array of x answers (as Numbers);
         // edit string to array
         return x.map((xi, i) => {

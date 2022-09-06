@@ -30,12 +30,7 @@ export class Poly extends Algebra {
             previous: linkPrevious ? this.previous : null,
             input: this.input,
         });
-    hardcopy = () =>
-        // shallow copy; signle term copy
-        new Poly(this.a, this.symbol, {
-            dot: this.dot,
-            input: this.input,
-        });
+
     degree = () => this.a.length - 1;
 
     valueAt = (t) => {
@@ -223,12 +218,6 @@ export class Exp extends Algebra {
             input: this.input,
         });
 
-    hardcopy = () =>
-        // shallow copy just for single term copy
-        new Exp(this.a, this.b, this.symbol, {
-            dot: this.dot,
-            input: this.input,
-        });
     toSin = () => {
         const exp = this.copy();
         if (
@@ -380,12 +369,7 @@ export class Sin extends Algebra {
             previous: linkPrevious ? this.previous : null,
             input: this.input,
         });
-    hardcopy = () =>
-        // shallow copy; copy signle term
-        new Sin(this.a, this.b, this.teta, this.symbol, {
-            dot: this.dot,
-            input: this.input,
-        });
+
     toExp = () => {
         const sin = this.copy();
         const exp1 = new Exp(sin.a / 2, Complex.jX(-sin.b));
@@ -426,12 +410,7 @@ export class Cos extends Algebra {
             previous: linkPrevious ? this.previous : null,
             input: this.input,
         });
-    hardcopy = () =>
-        // shallow copy; copy signle term
-        new Cos(this.a, this.b, this.teta, this.symbol, {
-            dot: this.dot,
-            input: this.input,
-        });
+
     toExp = () => {
         const cos = this.copy();
         const exp1 = new Exp(cos.a / 2, Complex.jX(cos.b));
@@ -471,12 +450,7 @@ export class Tan extends Algebra {
             previous: linkPrevious ? this.previous : null,
             input: this.input,
         });
-    hardcopy = () =>
-        // shallow copy; copy signle term
-        new Tan(this.a, this.b, this.teta, this.symbol, {
-            dot: this.dot,
-            input: this.input,
-        });
+
     toExp = () => {
         const tan = this.copy();
         const exp1 = new Exp(1, Complex.jX(-tan.b));
@@ -517,12 +491,7 @@ export class Cot extends Algebra {
             previous: linkPrevious ? this.previous : null,
             input: this.input,
         });
-    hardcopy = () =>
-        // shallow copy; copy signle term
-        new Cot(this.a, this.b, this.teta, this.symbol, {
-            dot: this.dot,
-            input: this.input,
-        });
+
     toExp = () => {
         const cot = this.copy();
         const exp1 = new Exp(1, Complex.jX(-cot.b));

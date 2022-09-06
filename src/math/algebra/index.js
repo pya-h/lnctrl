@@ -1,6 +1,6 @@
 import NotScalarError from "errors/algebra/NotScalarError";
 import StandardInputSignal from "math/input-signals";
-import { round, strictPrecisionFormat } from "../calculus";
+import { addArrays, round, strictPrecisionFormat } from "../calculus";
 
 class Algebra {
     // symbolic expressions
@@ -485,6 +485,7 @@ class Algebra {
         } else if (+right === right) {
             if (result.type === "poly") result.a[result.a.length - 1] += right;
             else if (result.type === "frac") {
+                result.a = addArrays(result.a, result.b.map(bi => bi * right));
             } else {
                 result.end().plus = new Algebra([right], {
                     symbol: result.symbol,

@@ -95,7 +95,7 @@ const SketchingRootLocus = () => {
             calculus.stringToArray(rawNumerator),
             calculus.stringToArray(rawDenominator)
         );
-
+            console.log(g_s.asymptotes());
         $G_s(g_s);
         $formula(tfFormula(g_s));
         setStep(0);

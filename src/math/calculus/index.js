@@ -1,6 +1,5 @@
 import Algebra from "math/algebra";
 import Complex from "math/algebra/complex";
-import { Zero } from "math/algebra/functions";
 import { makeProgress } from "toolshed";
 import LTI from "./lti";
 import ODE from "./ode";
@@ -376,21 +375,18 @@ export const addArrays = (arr1, arr2) => {
     return first;
 };
 
-const sum = (list) => {
+export const sum = (list) => {
+    const { Zero } = require("../algebra/functions");
     let s;
-    if(list.filter(x => +x !== x).length){
+    if (list.filter((x) => +x !== x).length) {
         s = new Zero();
-        for(const item of list)
-            s = s.add(item);
-    }
-    else {
+        for (const item of list) s = s.add(item);
+    } else {
         s = 0;
-        for(const item of list)
-            s += item;
-        
+        for (const item of list) s += item;
     }
     return s;
-}
+};
 const calculus = {
     ODE,
     LTI,
@@ -421,7 +417,8 @@ const calculus = {
     cos,
     tan,
     cot,
-    addArrays
+    sum,
+    addArrays,
 };
 
 export default calculus;

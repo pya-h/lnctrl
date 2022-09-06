@@ -2,11 +2,10 @@ import Algebra from "../index";
 import Complex from "../complex";
 import { Step } from "math/input-signals/signals";
 import { Cos, Sin, Poly, Exp, Zero } from ".";
-import { round } from "math/calculus";
+import { round, min, sum } from "math/calculus";
 import Equation from "math/solvers/equation";
 import { makeProgress } from "toolshed";
 import Formula from "math/solvers/formula";
-import { min } from "../../calculus";
 
 export class Fraction extends Algebra {
     constructor(num, den = [1], symbol = "t", params = {}) {
@@ -127,7 +126,7 @@ export class Fraction extends Algebra {
         });
 
     toTransferFunction = () => new TransferFunction(this.a, this.b);
-    
+
     static ConvertToMe = (algebra) =>
         new Fraction(
             algebra.getA(),
@@ -1078,7 +1077,25 @@ export default class TransferFunction extends Fraction {
         );
     };
 
-    asymptotes = () => {
-        // const sigma = 
-    }
+    asymptotes = (angleScale = "deg") => {
+        if (!this.zeros.length && !this.poles.length)
+            [this.zeros, this.poles] = this.roots();
+        const n = this.poles.length, m = this.zeros.length;
+        const sigma = (sum(this.zeros.map(zi => zi instanceof Complex ? zi.real() : zi)) - this.poles.map(pi => pi instanceof Complex ? pi.real() : pi)) / (n - m);
+        const numberOfInfiniteZeros = n - m;
+        const angles = [];
+        const pi = angleScale === "deg" ? 180 : Math.PI;
+        for(let i = 0; angles.length < numberOfInfiniteZeros; i++){
+            let ang = pi * (2 * i + 1) / 2;
+            if(Math.abs(ang) > pi) break;
+            if(!(ang in angles))
+                angles.push(ang);
+            ang = pi * (-2 * i + 1) / 2;
+            if(Math.abs(ang) > pi) break;
+            if(!(ang in angles))
+                angles.push(ang);
+        }
+
+        return {sigma, angles};
+    };
 }

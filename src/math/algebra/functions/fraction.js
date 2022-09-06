@@ -43,12 +43,6 @@ export class Fraction extends Algebra {
             input: this.input,
         });
 
-    hardcopy = () =>
-        // shallow copy just for copying single term
-        new Fraction(this.a, this.b, this.symbol, {
-            dot: this.dot,
-            input: this.input,
-        });
     lim = () => {
         // for all fractions with all kind of numerator and denominator
     };
@@ -699,12 +693,6 @@ export default class TransferFunction extends Fraction {
             input: this.input,
         }).setRoots(this.zeros, this.poles);
 
-    hardcopy = () =>
-        // shallow-singleterm copy
-        new TransferFunction(this.a, this.b, {
-            dot: this.dot,
-            input: this.input,
-        });
     lim = (s0) => {
         let num, den;
         // for simple polynomial numerator and denominator fractions
@@ -1080,22 +1068,31 @@ export default class TransferFunction extends Fraction {
     asymptotes = (angleScale = "deg") => {
         if (!this.zeros.length && !this.poles.length)
             [this.zeros, this.poles] = this.roots();
-        const n = this.poles.length, m = this.zeros.length;
-        const sigma = (sum(this.zeros.map(zi => zi instanceof Complex ? zi.real() : zi)) - this.poles.map(pi => pi instanceof Complex ? pi.real() : pi)) / (n - m);
+        const n = this.poles.length,
+            m = this.zeros.length;
+
+        const sigma =
+            (sum(
+                this.poles.map((pi) => (pi instanceof Complex ? pi.real() : pi))
+            ) -
+                sum(
+                    this.zeros.map((zi) =>
+                        zi instanceof Complex ? zi.real() : zi
+                    )
+                )) /
+            (n - m);
         const numberOfInfiniteZeros = n - m;
         const angles = [];
         const pi = angleScale === "deg" ? 180 : Math.PI;
-        for(let i = 0; angles.length < numberOfInfiniteZeros; i++){
-            let ang = pi * (2 * i + 1) / 2;
-            if(Math.abs(ang) > pi) break;
-            if(!(ang in angles))
-                angles.push(ang);
-            ang = pi * (-2 * i + 1) / 2;
-            if(Math.abs(ang) > pi) break;
-            if(!(ang in angles))
-                angles.push(ang);
+        for (
+            let i = 0;
+            angles.length < numberOfInfiniteZeros;
+            i = !i ? 1 : i > 0 ? -i : -i + 1
+        ) {
+            const ang = (pi * (2 * i + 1)) / numberOfInfiniteZeros;
+            if (Math.abs(ang) <= pi && !(ang in angles)) angles.push(ang);
         }
 
-        return {sigma, angles};
+        return { sigma, angles, PI: pi };
     };
 }

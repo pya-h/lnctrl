@@ -15,6 +15,7 @@ import { joinSorted } from "toolshed";
 import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 import Equation from "../../../../math/solvers/equation";
+import { PolyLine } from "math/algebra/functions";
 
 const tfFormula = (tf, index = undefined) =>
     "$$ " + tf.label("G", index) + " $$";
@@ -177,6 +178,26 @@ const SketchingRootLocus = () => {
                     });
                 }
                 maxY = calculus.max([...zy, ...py]).value;
+
+                const {sigma, angles, PI} = G_s.asymptotes();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+
+                for(const angle of angles){
+                    // change to for[i]
+                    const line = new PolyLine({x: sigma, y: 0}, angle);
+                    traces.push(
+                        angle !== PI ? calculus.syste1mToTrace( 
+                            line.$,
+                            0,1,
+                            // xAxisPZs[i].value,
+                            // xAxisPZs[i + 1].value,
+                            thickness,
+                            // `{RL${i}}`,
+                            "dfs",
+                            false,
+                            +N
+                        ) : null// arrayToTrace
+                    );
+                }
                 setYRange(!isNaN(maxY) ? [-maxY - 1, maxY + 1] : null);
                 $stepByStepTraces(traces);
                 setGuides(guides);

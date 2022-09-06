@@ -1,3 +1,4 @@
+import Algebra from "math/algebra";
 import StandardInputSignal from "math/input-signals";
 // import {Poly} from "math/algebra/functions";
 
@@ -16,7 +17,7 @@ export class Puls extends StandardInputSignal {
         this.Delta = Delta;
     }
     copy = () => new Puls(this.Delta, this.amp, this.symbol);
-    $ = (t) => (t >= 0 && t <= this.Delta) * this.amp / this.Delta;
+    $ = (t) => ((t >= 0 && t <= this.Delta) * this.amp) / this.Delta;
 }
 
 export class Impact extends StandardInputSignal {
@@ -28,24 +29,24 @@ export class Impact extends StandardInputSignal {
     $ = (t) => this.amp * (t === 0);
 }
 
-// export class Ramp extends Poly {
-//     constructor(amplitude, symbol = "t") {
-//         super([amplitude, 0], symbol);
-//         this.amplitude = amplitude; // just for calculating the value of this
-//         this.selfmultiply(Step());
-//     }
-//     copy = () => new Ramp(this.amplitude, this.symbol);
+export class Ramp extends Algebra {
+    constructor(amplitude, symbol = "t") {
+        super([amplitude, 0], { type: "poly", symbol });
+        this.amplitude = amplitude; // just for calculating the value of this
+        this.selfmultiply(Step());
+    }
+    copy = () => new Ramp(this.amplitude, this.symbol);
 
-//     $ = (t) => (t >= 0) * t * this.amplitude;
-// }
+    $ = (t) => (t >= 0) * t * this.amplitude;
+}
 
-
-// export class Parabolic extends Poly { //EDIT
-//     constructor(amplitude, symbol = "t") {
-//         super([amplitude, 0, 0], symbol);
-//         this.amplitude = amplitude; // just for calculating the value of this
-//         this.selfmultiply(Step());
-//     }
-//     copy = () => new Parabolic(this.amplitude, this.symbol);
-//     $ = (t) => (t >= 0 ? t * this.amplitude : 0);
-// }
+export class Parabolic extends Algebra {
+    //EDIT
+    constructor(amplitude, symbol = "t") {
+        super([amplitude, 0, 0], { type: "poly", symbol });
+        this.amplitude = amplitude; // just for calculating the value of this
+        this.selfmultiply(Step());
+    }
+    copy = () => new Parabolic(this.amplitude, this.symbol);
+    $ = (t) => (t >= 0 ? t * this.amplitude : 0);
+}

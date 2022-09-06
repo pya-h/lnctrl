@@ -77,11 +77,7 @@ class Complex extends Algebra {
             previous: linkPrevious ? this.previous : null,
             input: this.input,
         });
-    hardcopy = () =>
-        new Complex(this.a, this.b, {
-            dot: this.dot,
-            input: this.input,
-        });
+
 
     conjugate = () =>
         new Complex(

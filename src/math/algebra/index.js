@@ -1008,13 +1008,9 @@ class Algebra {
 
     isIntegrator = () => false;
 
-    replace = (operand) => {
-        this.a = operand.getA();
-        this.b = operand.getB();
-        this.teta = operand.getTeta();
-        this.symbol = operand.getSymbol();
-        this.type = operand.getType();
-        this.dot = operand.dot.copy();
+    replace = (replacement) => {
+        for(const key in Object.keys(replacement))
+            this[key] = replacement[key];
     };
 }
 

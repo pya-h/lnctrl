@@ -380,6 +380,11 @@ export default class TransferFunction extends Fraction {
                             ? new Equation(this.b, this.symbol).solve()
                             : [];
                 } catch (ex) {
+                    console.log(
+                        "algebrite failed because: ",
+                        ex,
+                        "; trying nerdamer..."
+                    );
                     [zeros, poles] = this.getRootsByNerdamer();
                 }
             } else [zeros, poles] = this.getRootsByNerdamer();
@@ -473,7 +478,7 @@ export default class TransferFunction extends Fraction {
         this.poles.filter((pi) => Algebra.areTheseTwoEqual(pole, pi)).length;
 
     derivative = (against = this.symbol) => {
-        let result = this.copy(true);
+        let result = this.copy();
         if (against === this.symbol) {
             const rplus = result.plus;
             if (!result.dot) {
@@ -1094,5 +1099,23 @@ export default class TransferFunction extends Fraction {
         }
 
         return { sigma, angles, PI: pi };
+    };
+
+    breakpoints = () => {
+        const eq = this.derivative()?.numerator();
+        let bps = [];
+        if (eq) {
+            try {
+                bps = new Equation(eq).solve();
+            } catch (ex) {
+                console.log(
+                    "algebrite failed because: ",
+                    ex,
+                    "; trying nerdamer..."
+                );
+                bps = new Formula(eq.toFormula(), this.symbol).x();
+            }
+        }
+        return {equation: eq, breakpoints: bps};
     };
 }

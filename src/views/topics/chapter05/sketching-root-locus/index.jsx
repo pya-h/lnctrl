@@ -96,7 +96,6 @@ const SketchingRootLocus = () => {
             calculus.stringToArray(rawNumerator),
             calculus.stringToArray(rawDenominator)
         );
-            console.log(g_s.asymptotes());
         $G_s(g_s);
         $formula(tfFormula(g_s));
         setStep(0);
@@ -178,26 +177,60 @@ const SketchingRootLocus = () => {
                     });
                 }
                 maxY = calculus.max([...zy, ...py]).value;
-
-                const {sigma, angles, PI} = G_s.asymptotes();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
-
-                for(const angle of angles){
-                    // change to for[i]
-                    const line = new PolyLine({x: sigma, y: 0}, angle);
-                    traces.push(
-                        angle !== PI ? calculus.syste1mToTrace( 
-                            line.$,
-                            0,1,
-                            // xAxisPZs[i].value,
-                            // xAxisPZs[i + 1].value,
-                            thickness,
-                            // `{RL${i}}`,
-                            "dfs",
-                            false,
+                const maxX = calculus.max([...zx, ...px], true).value;
+                const { sigma, angles, PI } = G_s.asymptotes();
+                const asympDescription =
+                    `:محاسبه زاویه $$ \\frac{(2N + 1)\\pi}{${
+                        poles.length - zeros.length
+                    }} = ` +
+                    angles.join(", ") +
+                    `$$ :محل تلاقی با محور افقی $$ \\sigma_{0} = ${calculus.strictPrecisionFormat(
+                        sigma
+                    )} $$`;
+                for (const angle of angles) {
+                    guides.push(`یافتن مجانب ها`);
+                    description.push({ formula: asympDescription });
+                    const line = new PolyLine({ x: sigma, y: 0 }, angle);
+                    if (angle !== PI / 2)
+                        traces.push(
+                            calculus.systemToTrace(
+                                line.$,
+                                -maxX,
+                                maxX,
+                                thickness,
+                                `\\alpha = ${angle}`,
+                                false,
+                                +N
+                            )
+                        );
+                    else {
+                        const [xs, ys] = calculus.verticalLine(
+                            sigma,
+                            -maxY,
+                            +maxY,
                             +N
-                        ) : null// arrayToTrace
-                    );
+                        );
+                        traces.push(
+                            calculus.arrayToTrace(
+                                xs,
+                                ys,
+                                thickness,
+                                `\\alpha = ${angle}`
+                            )
+                        );
+                    }
                 }
+
+                guides.push("یافتن نقاط شکست");
+                const { breakpoints, equation } = G_s.breakpoints();
+                const [bx, by] = Complex.ToCouples(breakpoints);
+                traces.push(pointByPointTrace(bx, by, "Zeros"));
+                description.push({
+                    formula:
+                        `$$ ${equation.toString()} = 0 $$ :نقاط شکست $$ ` +
+                        breakpoints.map((bp) => bp.toString()).join(", ") +
+                        " $$",
+                });
                 setYRange(!isNaN(maxY) ? [-maxY - 1, maxY + 1] : null);
                 $stepByStepTraces(traces);
                 setGuides(guides);

@@ -55,19 +55,19 @@ export const pointifyAsync = async (
     return [ts, ys];
 };
 
-const verticalLine = (at, xi, xf, N) => {
-    let dx = (xf - xi) / N;
-    while (dx >= 1) {
+const verticalLine = (at, yi, yf, N) => {
+    let dy = (yf - yi) / N;
+    while (dy >= 1) {
         N *= 10;
-        dx = (xf - xi) / N;
+        dy = (yf - yi) / N;
     }
     const xs = Array(N + 1);
     const ys = Array(N + 1);
     xs[0] = at;
-    ys[0] = xi;
+    ys[0] = yi;
     for (let i = 1; i <= N; i++) {
         xs[i] = at;
-        ys[i] = ys[i - 1] + dx;
+        ys[i] = ys[i - 1] + dy;
     }
     return [xs, ys];
 };
@@ -120,7 +120,7 @@ export const systemToTrace = (
     in_max,
     thickness,
     legend,
-    _3d,
+    _3d = false,
     N = 1000,
     mode = "lines"
 ) => {
@@ -141,7 +141,7 @@ export const systemToTrace = (
     };
 };
 
-export const arrayToTrace = (x, y, thickness, legend, _3d, mode = "lines") => {
+export const arrayToTrace = (x, y, thickness, legend, _3d = false, mode = "lines") => {
     return {
         x,
         y,
@@ -279,8 +279,8 @@ const evaluate = (raw) => {
     return NaN;
 };
 
-export const min = (nums) => {
-    let value = nums[0],
+export const min = (nums, absolute = false) => {
+    let value = absolute ? Math.abs(nums[0]) : nums[0],
         index = 0;
     for (let i = 1; i < nums.length; i++) {
         let nActual = nums[i];
@@ -292,6 +292,7 @@ export const min = (nums) => {
             // check better
             return { index: NaN, value: NaN };
         }
+        if(absolute) nActual = nActual >= 0 ? nActual : -nActual;
         if (nActual < value) {
             value = nActual;
             index = i;
@@ -300,8 +301,8 @@ export const min = (nums) => {
     return { index, value };
 };
 
-export const max = (nums) => {
-    let value = nums[0],
+export const max = (nums, absolute = false) => {
+    let value = absolute ? Math.abs(nums[0]) : nums[0],
         index = 0;
     for (let i = 1; i < nums.length; i++) {
         let nActual = nums[i];
@@ -313,6 +314,8 @@ export const max = (nums) => {
             // check better
             return { index: NaN, value: NaN };
         }
+        if(absolute)
+            nActual = nActual = nActual >= 0 ? nActual : -nActual;
         if (nActual > value) {
             value = nActual;
             index = i;

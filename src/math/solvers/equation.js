@@ -2,7 +2,6 @@ import Algebra from "math/algebra";
 import calculus from "math/calculus";
 import Complex from "math/algebra/complex";
 import { Poly } from "math/algebra/functions";
-;
 const Algebrite = require("algebrite");
 
 export default class Equation {
@@ -76,37 +75,41 @@ export default class Equation {
     };
     solve = () => {
         // for factorable equations use: algebrite.roots
-        let x = Algebrite.nroots(this.expression)
-            .toString()
-            .replaceAll("...", "");
-        if(x[0] === '[') // && x[x.length - 1] === ']'
-            x = x.slice(1, x.length - 1);
-        x = x.split(",").filter((xi) => xi && xi !== ""); // now x is converted from a string to the array of x answers (as Numbers);
-        // edit string to array
-        return x.map((xi, i) => {
-            // let [real, image] = xi.split(/\+|-/).filter((xi) => xi && xi !== "");
-            let separatorIndex = 1;
-            for (; separatorIndex < xi.length; separatorIndex++)
-                if (
-                    (xi[separatorIndex] === "+" ||
-                        xi[separatorIndex] === "-") &&
-                    calculus.isDigit(xi[separatorIndex - 1]) &&
-                    calculus.isDigit(xi[separatorIndex + 1])
-                )
-                    break;
+        if (this.expression.includes(this.symbol)) {
+            let x = Algebrite.nroots(this.expression)
+                .toString()
+                .replaceAll("...", "");
+            if (x[0] === "[")
+                // && x[x.length - 1] === ']'
+                x = x.slice(1, x.length - 1);
+            x = x.split(",").filter((xi) => xi && xi !== ""); // now x is converted from a string to the array of x answers (as Numbers);
+            // edit string to array
+            return x.map((xi, i) => {
+                // let [real, image] = xi.split(/\+|-/).filter((xi) => xi && xi !== "");
+                let separatorIndex = 1;
+                for (; separatorIndex < xi.length; separatorIndex++)
+                    if (
+                        (xi[separatorIndex] === "+" ||
+                            xi[separatorIndex] === "-") &&
+                        calculus.isDigit(xi[separatorIndex - 1]) &&
+                        calculus.isDigit(xi[separatorIndex + 1])
+                    )
+                        break;
 
-            let terms = [];
-            terms.push(xi.slice(0, separatorIndex));
-            if (separatorIndex < xi.length)
-                terms.push(xi.slice(separatorIndex, xi.length - 2));
+                let terms = [];
+                terms.push(xi.slice(0, separatorIndex));
+                if (separatorIndex < xi.length)
+                    terms.push(xi.slice(separatorIndex, xi.length - 2));
 
-            if (terms.length === 1) {
-                const magnitude = terms[0].replace("*i", "");
-                return magnitude === terms[0]
-                    ? new Complex(Number(magnitude))
-                    : Complex.jX(Number(magnitude));
-            } else return new Complex(Number(terms[0]), Number(terms[1]));
-        });
+                if (terms.length === 1) {
+                    const magnitude = terms[0].replace("*i", "");
+                    return magnitude === terms[0]
+                        ? new Complex(Number(magnitude))
+                        : Complex.jX(Number(magnitude));
+                } else return new Complex(Number(terms[0]), Number(terms[1]));
+            });
+        }
+        return [];
     };
 
     // AlgebraRoots = () => {

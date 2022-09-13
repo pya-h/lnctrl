@@ -10,6 +10,8 @@ import FrequencyResponseParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/fraction";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
+import FrequencyResponseLecture from "./lecture";
+
 const symbols = {
     in: "jw",
     out: "H",
@@ -158,7 +160,18 @@ const FrequencyResponse = () => {
                 </Typography>
             </Grid>
             <Grid item spacing={gridSpacing}>
-                <Grid container direction="column" spacing={1}>
+                <Grid container direction="column" spacing={gridSpacing}>
+                    <Grid
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            margin: "auto",
+                            direction: "ltr",
+                        }}
+                        item
+                    >
+                        <FrequencyResponseLecture />
+                    </Grid>
                     <Grid sx={{ margin: "auto", width: "100%" }} item>
                         <SubCard sx={{ direction: "ltr" }}>
                             <Grid

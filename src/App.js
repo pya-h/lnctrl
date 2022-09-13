@@ -24,7 +24,7 @@ const App = () => {
                     <NavigationScroll>
                         <MathJaxContext
                             version={2}
-                            config={{ "fast-preview": { disabled: true } }}
+                            config={{"fast-preview": { disabled: true } }}
                             onStartup={(mathJax) =>
                                 (mathJax.Hub.processSectionDelay = 0)
                             }

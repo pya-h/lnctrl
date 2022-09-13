@@ -6,7 +6,7 @@ const Algebrite = require("algebrite");
 
 export default class Equation {
     static zeroPrecision = calculus.round(10 ** -calculus.precision.get());
-    constructor(exp, symbol = "x") {
+    constructor(exp, symbol = "s") {
         if (exp instanceof Array) {
             this.symbol = symbol;
             this.algebra = new Poly(exp, this.symbol);

@@ -1021,7 +1021,6 @@ export default class TransferFunction extends Fraction {
             }
             // const roots = new Equation(new Poly(delta)).roots();
             const poles = new Equation(expression).solve();
-
             await makeProgress(
                 progressBarObject,
                 (100 * progress) / progressLength

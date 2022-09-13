@@ -175,7 +175,6 @@ class Matrix {
                 );
             }
         }
-        console.log("DONE")
         return new Matrix(B);
     };
 }

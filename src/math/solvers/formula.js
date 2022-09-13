@@ -4,7 +4,7 @@ import Complex from "math/algebra/complex";
 const nerdamer = require("nerdamer/all.min");
 
 export default class Formula {
-    constructor(mathPhrase, symbol = null, expressions = null) {
+    constructor(mathPhrase, symbol = "s", expressions = null) {
         /// all type of parameters must be converted to an string mathPhrases (f)
         if (mathPhrase instanceof Algebra) {
             this.f = mathPhrase.toFormula();

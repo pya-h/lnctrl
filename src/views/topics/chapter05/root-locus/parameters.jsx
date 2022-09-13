@@ -49,20 +49,20 @@ const RootLocusParameters = ({
         <Grid xs={12} container>
             <Grid xs={6} sx={{ py: 2, pr: 1 }} item>
                 <Button
-                    onClick={() => {changeMethod("accurate"); $N(200)}}
+                    onClick={() => {changeMethod("second"); $N(200)}}
                     style={{ width: "100%", textTransform: "none" }}
-                    variant={method === "accurate" ? "contained" : "outlined"}
+                    variant={method === "second" ? "contained" : "outlined"}
                 >
-                    More accurate method
+                    Second method
                 </Button>
             </Grid>
             <Grid xs={6} sx={{ py: 2, pl: 1 }} item>
                 <Button
-                    onClick={() => {changeMethod("fast"); $N(500)}}
+                    onClick={() => {changeMethod("first"); $N(500)}}
                     style={{ width: "100%", textTransform: "none" }}
-                    variant={method === "fast" ? "contained" : "outlined"}
+                    variant={method === "first" ? "contained" : "outlined"}
                 >
-                    Faster method
+                    First method
                 </Button>
             </Grid>
         </Grid>

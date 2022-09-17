@@ -40,7 +40,7 @@ const sections = [
     
 ];
 const HomePage = () => {
-    const [isLoading, setLoading] = useState(true);
+    const [ , setLoading] = useState(true);
     useEffect(() => {
         setLoading(false);
     }, []);

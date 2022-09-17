@@ -20,7 +20,7 @@ const BodePlotExampleLecture = () => {
                     </p>
                 </Grid>
                 <Grid item>
-                    <MathJax>{transferFunctionFormFormula}</MathJax>
+                    <MathJax style={{fontSize: "18px"}}>{transferFunctionFormFormula}</MathJax>
                 </Grid>
             </Typography>
         </SubCard>

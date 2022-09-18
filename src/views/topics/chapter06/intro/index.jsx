@@ -1,12 +1,12 @@
-import SubCard from "../../../ui-component/cards/SubCard";
 import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
 import img_in_out_signals from "./img/in_out_signals.jpg";
 import { MathJax } from "better-react-mathjax";
+import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 
 const Ch06Intro = () => {
     return (
-        <SubCard title="مقدمه" darkBorder={true} style={{ direction: "rtl" }}>
+        <PinchPanCard border={true} title="مقدمه">
             <Grid container>
                 <Grid item>
                     <Typography sx={{ p: 2 }} style={{ lineHeight: "2.5" }}>
@@ -147,7 +147,7 @@ const Ch06Intro = () => {
                     </Typography>
                 </Grid>
             </Grid>
-        </SubCard>
+        </PinchPanCard>
     );
 };
 

@@ -1,11 +1,12 @@
 import calculus from "math/calculus";
 
 // action - customization reducer
-const SET_MENU = "@customization/SET_MENU";
-const MENU_OPEN = "@customization/MENU_OPEN";
-const SET_FONT_FAMILY = "@customization/SET_FONT_FAMILY";
-const SET_BORDER_RADIUS = "@customization/SET_BORDER_RADIUS";
-const SET_MATH_PRECISION = "@calculus/SET_MATH_PRECISION";
+const SET_MENU = "@customization/SET_MENU",
+    MENU_OPEN = "@customization/MENU_OPEN",
+    SET_FONT_FAMILY = "@customization/SET_FONT_FAMILY",
+    SET_BORDER_RADIUS = "@customization/SET_BORDER_RADIUS",
+    SET_MATH_PRECISION = "@calculus/SET_MATH_PRECISION",
+    ENABLE_ZOOM = "@customization/ENABLE_ZOOM";
 
 export const ActionTypes = {
     SET_MENU,
@@ -13,6 +14,7 @@ export const ActionTypes = {
     SET_FONT_FAMILY,
     SET_BORDER_RADIUS,
     SET_MATH_PRECISION,
+    ENABLE_ZOOM,
 };
 
 export const ReduxSetMenu = (opened) => {
@@ -46,6 +48,12 @@ export const ReduxSetBorderRadius = (borderRadius) => {
 export const ReduxSetMathPrecision = (mathPrecision) => {
     return async (dispatch, getState) => {
         calculus.precision.set(mathPrecision);
-        await dispatch({ type: SET_MATH_PRECISION, mathPrecision: mathPrecision });
+        await dispatch({
+            type: SET_MATH_PRECISION,
+            mathPrecision,
+        });
     };
 };
+
+export const ReduxSetEnableZoom = (enableZoom) => async (dispatch, getState) =>
+    await dispatch({ type: ENABLE_ZOOM, enableZoom });

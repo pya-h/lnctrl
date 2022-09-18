@@ -1,8 +1,8 @@
-import SubCard from "../../../ui-component/cards/SubCard";
 import { Grid, Typography } from "@mui/material";
 import simple_LTI_system from "./visual/simple_lti_system.png";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
+import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 
 const firstOrderTransferFunctionFormFormula = "$$G(s) = \\frac{k}{s + a}$$";
 const firstOrderTransferFunctionSteadyStateTransientFormula =
@@ -32,132 +32,95 @@ const rampInputSteadyStateValueForFirstOrderTf =
 
 const FOTFLecture = () => {
     return (
-        <SubCard
-            title="تابع تبدیل مرتبه یک"
-            darkBorder={true}
-            sx={{ direction: "rtl" }}
-        >
-            <Typography>
-                <Grid className="lecture-text" item>
-                    <p>
-                        &nbsp; &nbsp; &nbsp; &nbsp; این توابع تبدیل به فرم زیر
-                        می باشند:
-                    </p>
-                </Grid>
-                <Grid item>
-                    <MathJax>{firstOrderTransferFunctionFormFormula}</MathJax>
-                </Grid>
-                <Grid className="lecture-text" item>
-                    <h1 style={{ marginTop: "5%", marginBottom: "3%" }}>
-                        &nbsp;پاسخ حالت ماندگار
-                    </h1>
-                    <p>
+        <PinchPanCard title="تابع تبدیل مرتبه یک" border={true}>
+            <Grid container>
+                <Grid xs={12} sx={{m: "auto"}}  item>
+                    <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
+                        این توابع تبدیل به فرم زیر می باشند:
+                        <MathJax style={{ fontSize: "18px" }}>
+                            {firstOrderTransferFunctionFormFormula}
+                        </MathJax>
+                        <h1 style={{ marginTop: "5%", marginBottom: "3%" }}>
+                            &nbsp;پاسخ حالت ماندگار
+                        </h1>
                         &nbsp; &nbsp; &nbsp; &nbsp; دیاگرام یک سیستم LTI ساده
                         بصورت زیر می باشد:
-                    </p>
+                    </Typography>
                 </Grid>
-                <Grid item>
+                <Grid xs={12} sx={{ m: "auto" }} item>
                     <img
                         className="lecture-image"
                         src={simple_LTI_system}
                         alt="بارگذاری تصویر با مشکل مواجه شد"
                     />
                 </Grid>
-                <Grid style={{ fontSize: "20px" }} item>
-                    <MathJax>
-                        {firstOrderTransferFunctionSteadyStateTransientFormula}
-                    </MathJax>
-                </Grid>
-                <Grid style={{ fontSize: "20px" }} item>
-                    <MathJax>{steadyStateCalculationsFormula}</MathJax>
-                </Grid>
-                <Grid className="lecture-text" item>
-                    <p>
+                <Grid xs={12} sx={{m: "auto"}} item>
+                    <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
+                        <MathJax style={{ fontSize: "18px" }}>
+                            {
+                                firstOrderTransferFunctionSteadyStateTransientFormula
+                            }
+                        </MathJax>
+                        <MathJax style={{ fontSize: "18px" }}>
+                            {steadyStateCalculationsFormula}
+                        </MathJax>
                         &nbsp; &nbsp; &nbsp; &nbsp; نکته:‌طبق قضیه مقدار نهایی
                         داریم:
-                    </p>
+                        <MathJax style={{ fontSize: "18px" }}>
+                            {resultOfFinalValueTheorem}
+                        </MathJax>
+                        <h1
+                            style={{
+                                marginTop: "5%",
+                                marginBottom: "3%",
+                            }}
+                        >
+                            &nbsp; پاسخ پله واحد
+                        </h1>
+                        &nbsp; &nbsp; &nbsp; &nbsp; حال پاسخ حالت ماندگار به
+                        ورودی پله واحد را برای سیستم مذکور را محاسبه می کنیم:
+                        <MathJax style={{ fontSize: "18px" }}>
+                            {stepFunctionFormula}
+                        </MathJax>
+                        <MathJax style={{ fontSize: "18px" }}>
+                            {stepResponseOfFirstOrderTfInLaplaceDomain}
+                        </MathJax>
+                        <MathJax style={{ fontSize: "18px" }}>
+                            {stepResponseOfFirstOrderTfInTimeDomain}
+                        </MathJax>
+                        &nbsp; &nbsp; &nbsp; &nbsp; در نتیجه مقدار حالت ماندگار
+                        سیستم عبارت است از:
+                        <MathJax style={{ fontSize: "18px" }}>
+                            {stepInputSteadyStateValueForFirstOrderTf}
+                        </MathJax>
+                        <h1
+                            style={{
+                                marginTop: "5%",
+                                marginBottom: "3%",
+                            }}
+                        >
+                            &nbsp; پاسخ شیب واحد
+                        </h1>
+                        &nbsp; &nbsp; &nbsp; &nbsp; حال پاسخ حالت ماندگار به
+                        ورودی شییب واحد را برای سیستم مذکور را محاسبه می کنیم:
+                        <MathJax style={{ fontSize: "18px" }}>
+                            {rampFunctionFormula}
+                        </MathJax>
+                        <MathJax style={{ fontSize: "18px" }}>
+                            {rampResponseOfFirstOrderTfInLaplaceDomain}
+                        </MathJax>
+                        <MathJax style={{ fontSize: "18px" }}>
+                            {rampResponseOfFirstOrderTfInTimeDomain}
+                        </MathJax>
+                        &nbsp; &nbsp; &nbsp; &nbsp; در نتیجه مقدار حالت ماندگار
+                        سیستم عبارت است از:
+                        <MathJax style={{ fontSize: "18px" }}>
+                            {rampInputSteadyStateValueForFirstOrderTf}
+                        </MathJax>
+                    </Typography>
                 </Grid>
-                <Grid style={{ fontSize: "20px" }} item>
-                    <MathJax>{resultOfFinalValueTheorem}</MathJax>
-                </Grid>
-                <Grid sx={{ mt: 1 }} item>
-                    <SubCard>
-                        <Grid className="lecture-text" item>
-                            <h1 style={{ marginTop: "5%", marginBottom: "3%" }}>
-                                &nbsp; پاسخ پله واحد
-                            </h1>
-                            <p>
-                                &nbsp; &nbsp; &nbsp; &nbsp; حال پاسخ حالت
-                                ماندگار به ورودی پله واحد را برای سیستم مذکور را
-                                محاسبه می کنیم:
-                            </p>
-                        </Grid>
-                        <Grid style={{ fontSize: "20px" }} item>
-                            <MathJax>{stepFunctionFormula}</MathJax>
-                        </Grid>
-                        <Grid style={{ fontSize: "20px" }} item>
-                            <MathJax>
-                                {stepResponseOfFirstOrderTfInLaplaceDomain}
-                            </MathJax>
-                        </Grid>
-                        <Grid style={{ fontSize: "20px" }} item>
-                            <MathJax>
-                                {stepResponseOfFirstOrderTfInTimeDomain}
-                            </MathJax>
-                        </Grid>
-                        <Grid className="lecture-text" item>
-                            <p>
-                                &nbsp; &nbsp; &nbsp; &nbsp; در نتیجه مقدار حالت
-                                ماندگار سیستم عبارت است از:
-                            </p>
-                        </Grid>
-                        <Grid style={{ fontSize: "20px" }} item>
-                            <MathJax>
-                                {stepInputSteadyStateValueForFirstOrderTf}
-                            </MathJax>
-                        </Grid>
-                    </SubCard>
-                </Grid>
-                <Grid sx={{ mt: 1 }} item>
-                    <SubCard>
-                        <Grid className="lecture-text" item>
-                            <h1 style={{ marginTop: "5%", marginBottom: "3%" }}>
-                                &nbsp; پاسخ شیب واحد
-                            </h1>
-                            <p>
-                                &nbsp; &nbsp; &nbsp; &nbsp; حال پاسخ حالت
-                                ماندگار به ورودی شییب واحد را برای سیستم مذکور
-                                را محاسبه می کنیم:
-                            </p>
-                        </Grid>
-                        <Grid style={{ fontSize: "20px" }} item>
-                            <MathJax>{rampFunctionFormula}</MathJax>
-                        </Grid>
-                        <Grid style={{ fontSize: "20px" }} item>
-                            <MathJax>
-                                {rampResponseOfFirstOrderTfInLaplaceDomain}
-                            </MathJax>
-                        </Grid>
-                        <Grid style={{ fontSize: "20px" }} item>
-                            <MathJax>
-                                {rampResponseOfFirstOrderTfInTimeDomain}
-                            </MathJax>
-                        </Grid>
-                        <Grid className="lecture-text" item>
-                            <p>
-                                &nbsp; &nbsp; &nbsp; &nbsp; در نتیجه مقدار حالت
-                                ماندگار سیستم عبارت است از:
-                            </p>
-                        </Grid>
-                        <Grid style={{ fontSize: "20px" }} item>
-                            <MathJax>
-                                {rampInputSteadyStateValueForFirstOrderTf}
-                            </MathJax>
-                        </Grid>
-                    </SubCard>
-                </Grid>
-            </Typography>
-        </SubCard>
+            </Grid>
+        </PinchPanCard>
     );
 };
 

@@ -1,29 +1,24 @@
-import SubCard from "../../../ui-component/cards/SubCard";
 import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
-const transferFunctionFormFormula =
-    "$$H(s) = \\frac{K(s\\tau _a + 1)(s\\tau _b + 1)}{s(s\\tau _1 + 1)(s\\tau _2 + 1)(s\\tau _3 + 1)(s\\tau _4 + 1)}$$";
+import PinchPanCard from "views/ui-component/cards/PinchPanCard";
+import "../../topics.css";
 
 const BodePlotExampleLecture = () => {
     return (
-        <SubCard
-            title="مثالی از رسم نمودار بود"
-            darkBorder={true}
-            sx={{ direction: "rtl" }}
-        >
-            <Typography>
-                <Grid className="lecture-text" item>
-                    <p>
-                        &nbsp; می خواهیم برای توابع تبدیل به فرم زیر نمودار بود
-                        رسم کنیم:
-                    </p>
-                </Grid>
-                <Grid item>
-                    <MathJax style={{fontSize: "18px"}}>{transferFunctionFormFormula}</MathJax>
-                </Grid>
-            </Typography>
-        </SubCard>
+        <PinchPanCard title="مثالی از رسم نمودار بود">
+            <Grid item>
+                <Typography
+                    sx={{ p: 2, width: "100%" }}
+                    style={{ lineHeight: "2.5" }}
+                >
+                    می خواهیم برای توابع تبدیل به فرم زیر نمودار بود رسم کنیم:
+                    <MathJax style={{ fontSize: "18px" }}>
+                        {`$$H(s) = \\frac{K(s\\tau _a + 1)(s\\tau _b + 1)}{s(s\\tau _1 + 1)(s\\tau _2 + 1)(s\\tau _3 + 1)(s\\tau _4 + 1)}$$`}
+                    </MathJax>
+                </Typography>
+            </Grid>
+        </PinchPanCard>
     );
 };
 

@@ -1,10 +1,10 @@
-import SubCard from "../../../ui-component/cards/SubCard";
 import { Typography } from "@mui/material";
 import "views/topics/topics.css";
+import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 
 const Ch02Intro = () => {
     return (
-        <SubCard title="مقدمه" darkBorder={true} sx={{ direction: "rtl", textAlign: 'right' }}>
+        <PinchPanCard title="مقدمه" border={true}>
             <Typography>
                 لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ، و با
                 استفاده از طراحان گرافیک است، چاپگرها و متون بلکه روزنامه و مجله
@@ -184,7 +184,7 @@ const Ch02Intro = () => {
                 .پیوسته اهل دنیای موجود طراحی اساسا مورد استفاده قرار گیرد.
                 <br />
             </Typography>
-        </SubCard>
+        </PinchPanCard>
     );
 };
 

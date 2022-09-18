@@ -4,13 +4,18 @@ import { purple } from "@mui/material/colors";
 import { Grid } from "@mui/material";
 import "./buttons.css";
 import { useState } from "react";
+import { useEffect } from "react";
 
-export default function Switcher({ setSwitch, choices}) {
+export default function Switcher({ setSwitch, choices, defaultChoice}) {
     const [selected, setSelected] = useState(0); // 0 right, 1 left
 
     // const selectedStyle = {variant: "contained", style: { width: '75%', backgroundColor: purple[600], color: 'white'}};
     // const notSelectedStyle = {variant: "outline", style:{width: '25%' }};
 
+    useEffect(() => {
+        if(defaultChoice) 
+            setSelected(defaultChoice);
+    }, [defaultChoice]);
     return (
         <Stack 
             className="switcher-stack"
@@ -29,11 +34,11 @@ export default function Switcher({ setSwitch, choices}) {
                     className="switcher-button"
                     variant={"outlined"}
                     style={{
-                        width: selected ? "75%" : "25%",
+                        width: selected ? "70%" : "25%",
                         background: selected ? purple[600] : "transparent",
                         color: selected ? "white" : purple[700],
                     }}
-                    // style={{width: selected ? '75%' : '25%'}}
+                    // style={{width: selected ? '70%' : '25%'}}
                     // {... (selected ? selectedStyle: notSelectedStyle)}
                 >
                     {choices[1]}
@@ -49,7 +54,7 @@ export default function Switcher({ setSwitch, choices}) {
                     color="primary"
                     variant={"contained"}
                     style={{
-                        width: !selected ? "75%" : "25%",
+                        width: !selected ? "70%" : "25%",
                         background: !selected ? purple[600] : "transparent",
                         color: !selected ? "white" : purple[700],
                     }}

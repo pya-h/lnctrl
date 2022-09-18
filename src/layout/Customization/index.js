@@ -29,23 +29,25 @@ import {
     ReduxSetFontFamily,
     ReduxSetBorderRadius,
     ReduxSetMathPrecision,
+    ReduxSetEnableZoom,
 } from "store/actions";
 import { gridSpacing } from "store/constant";
+import Switcher from "views/ui-component/buttons/Switcher";
 // ==============================|| LIVE CUSTOMIZATION ||============================== //
 const getSelectedFont = (selection) => {
     switch (selection) {
         case "B Nazanin":
-            return 'B Nazanin';
+            return "B Nazanin";
         case "Calibri":
-            return 'Calibri';
+            return "Calibri";
         case "BYekan":
-            return 'BYekan';
+            return "BYekan";
         case "Roboto":
-            return 'Roboto';
+            return "Roboto";
         case "Vazir-Bold":
-            return 'Vazir-Bold';
+            return "Vazir-Bold";
         default:
-            return 'sans-serif';
+            return "sans-serif";
     }
 };
 const Customization = () => {
@@ -125,7 +127,20 @@ const Customization = () => {
                 }}
             >
                 <PerfectScrollbar component="div">
-                    <Grid container spacing={gridSpacing} sx={{ p: 3 }}>
+                    <Grid container spacing={gridSpacing} sx={{ p: 1 }}>
+                        <Grid sx={{ p: 0, m: 0 }} item xs={12}>
+                            <SubCard sx={{ p: 0, m: 0 }} title="زوم">
+                                <Switcher
+                                    choices={["غیرفعال", "فعال"]}
+                                    setSwitch={(selectedValue) =>
+                                        dispatch(
+                                            ReduxSetEnableZoom(selectedValue)
+                                        )
+                                    }
+                                    defaultChoice={customization.enableZoom}
+                                />
+                            </SubCard>
+                        </Grid>
                         <Grid item xs={12}>
                             {/* font family */}
                             <SubCard title="فونت">

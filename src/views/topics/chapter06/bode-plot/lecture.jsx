@@ -1,4 +1,3 @@
-import SubCard from "../../../ui-component/cards/SubCard";
 import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
@@ -8,10 +7,11 @@ import img_zero_poles_type_in_bode from "./img/zero_pole_types_in_bode.JPG";
 import img_standard_second_degree_system from "./img/standard_second_degree_system.jpg";
 import img_m_pw_plot from "./img/m_pw_plot.png";
 import img_bode_plot_manual from "./img/bode_plot_manual.jpg";
+import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 
 const BodePlotLecture = () => {
     return (
-        <SubCard title="نمودار بود" darkBorder={true} sx={{ direction: "rtl" }}>
+        <PinchPanCard title="نمودار بود" border={true}>
             <Grid container>
                 <Grid item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
@@ -205,19 +205,16 @@ const BodePlotLecture = () => {
                         بالا می‌رود و در فاز تغییری ایجاد نمی‌شود.
                         <br />
                         <b>نکته: </b>
-                        اگر سیستمی را
-                        در عدد 
-                        &nbsp;
+                        اگر سیستمی را در عدد &nbsp;
                         <MathJax inline={true} style={{ fontSize: "18px" }}>
                             {`\\( \\frac{-1}{10} \\)`}
                         </MathJax>
-                        &nbsp;
-                         ضرب کنیم، در نمودار اندازه 20dB پایین
-                        می‌رود و در فاز 180درجه جابجا می‌شود.
+                        &nbsp; ضرب کنیم، در نمودار اندازه 20dB پایین می‌رود و در
+                        فاز 180درجه جابجا می‌شود.
                     </Typography>
                 </Grid>
             </Grid>
-        </SubCard>
+        </PinchPanCard>
     );
 };
 

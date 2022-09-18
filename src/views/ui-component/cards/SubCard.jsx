@@ -11,6 +11,7 @@ const SubCard = forwardRef(({ children, content, contentClass, darkBorder, darkT
     const theme = useTheme();
 
     return (
+        
         <Card
             ref={ref}
             sx={{
@@ -27,7 +28,10 @@ const SubCard = forwardRef(({ children, content, contentClass, darkBorder, darkT
         >
             {/* card header and action */}
             {!darkTitle && title && <CardHeader sx={{ p: 2.5, borderBottom: !darkBorder ? null : "1px solid black" }} title={<Typography variant="h5">{title}</Typography>} action={secondary} />}
-            {darkTitle && title && <CardHeader sx={{ p: 2.5, borderBottom: !darkBorder ? null : "1px solid black" }} title={<Typography variant="h4">{title}</Typography>} action={secondary} />}
+            {darkTitle && title && <CardHeader sx={{ p: 2.5, borderBottom: !darkBorder ? null : "1px solid black" }} title={<Typography variant="h4">{title}</Typography>} action={secondary}>
+                cfsdfsdaf
+                </CardHeader>
+                }
 
             {/* content & header divider */}
             {title && (
@@ -38,7 +42,6 @@ const SubCard = forwardRef(({ children, content, contentClass, darkBorder, darkT
                     }}
                 />
             )}
-
             {/* card content */}
             {content && (
                 <CardContent sx={{ p: 2.5, ...contentSX }} 

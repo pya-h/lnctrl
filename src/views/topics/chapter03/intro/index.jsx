@@ -1,13 +1,12 @@
-import SubCard from "../../../ui-component/cards/SubCard";
 import {Typography } from "@mui/material";
 import "views/topics/topics.css";
+import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 
 const Ch03Intro = () => {
     return (
-        <SubCard
+        <PinchPanCard
             title="مقدمه"
-            darkBorder={true}
-            sx={{ direction: "rtl" }}
+            border={true}
         >
             <Typography>
             <Typography>
@@ -190,7 +189,7 @@ const Ch03Intro = () => {
                 <br />
             </Typography>
             </Typography>
-        </SubCard>
+        </PinchPanCard>
     );
 };
 

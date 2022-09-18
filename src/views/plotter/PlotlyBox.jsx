@@ -1,7 +1,19 @@
 import React from "react";
 import Plot from "react-plotly.js";
+import { MapInteractionCSS } from "react-map-interaction";
+import { useSelector } from "react-redux";
 
-const PlotlyBox = ({ traces, title, width, height = 500, logX, hideX, hideY, yRange, hideLegends }) => {
+const PlotlyBox = ({
+    traces,
+    title,
+    width,
+    height = 500,
+    logX,
+    hideX,
+    hideY,
+    yRange,
+    hideLegends,
+}) => {
     /*const temp_layout = {
         xaxis: {
             zeroline: true,
@@ -26,7 +38,8 @@ const PlotlyBox = ({ traces, title, width, height = 500, logX, hideX, hideY, yRa
             tickcolor: "#000",
         },
     };*/
-    return (
+    const customization = useSelector((state) => state.customization);
+    const plot = (
         <Plot
             style={{ textAlign: "center" }}
             //id="PlotlyBox"
@@ -45,23 +58,31 @@ const PlotlyBox = ({ traces, title, width, height = 500, logX, hideX, hideY, yRa
                     rangemode: "tozero",
                     zeroline: true,
                     type: !logX ? "dec" : "log",
-                    visible: !hideX
+                    visible: !hideX,
                 },
                 yaxis: {
                     rangemode: "tozero",
                     zeroline: true,
                     visible: !hideY,
-                    range: yRange
+                    range: yRange,
                 },
 
                 height,
                 title,
                 // hoverlabel: { bgcolor: "#FFF" },
-                hoverlabel: {align:'auto', boxmode: 'overlay', font:{color:'#000000FF'}},
-                legend: {orientation: 'h'}//, y: -0.3},
-                
+                hoverlabel: {
+                    align: "auto",
+                    boxmode: "overlay",
+                    font: { color: "#000000FF" },
+                },
+                legend: { orientation: "h" }, //, y: -0.3},
             }}
         />
+    );
+    return customization.enableZoom ? (
+        <MapInteractionCSS disablePan={true}>{plot}</MapInteractionCSS>
+    ) : (
+        plot
     );
 };
 

@@ -15,23 +15,25 @@ const SecondOrderTransferFunctionExamining = () => {
     return (
         <Grid container>
             <Grid
-                item
                 direction="row"
-                sx={{ pt: 1 }}
-                container
+                sx={{ pt: 1, pr: 5}}
+                item
+                xs={12}
                 spacing={gridSpacing}
             >
                 <Switcher choices={choices} setSwitch={setMode} />
             </Grid>
-            <MainCard style={{ background: "#F5E1FD" }}>
-                <Grid item spacing={gridSpacing}>
-                    {mode === 0 ? (
-                        <SOTFExamineByPoles />
-                    ) : (
-                        <SOTFExamineByParams />
-                    )}
-                </Grid>
-            </MainCard>
+            <Grid item>
+                <MainCard style={{ background: "#F5E1FD" }}>
+                    <Grid item spacing={gridSpacing}>
+                        {mode === 0 ? (
+                            <SOTFExamineByPoles />
+                        ) : (
+                            <SOTFExamineByParams />
+                        )}
+                    </Grid>
+                </MainCard>
+            </Grid>
         </Grid>
     );
 };

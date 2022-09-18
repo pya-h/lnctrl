@@ -1,16 +1,12 @@
-import SubCard from "../../../ui-component/cards/SubCard";
 import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
 import temp_part1 from "./temp/part1.png";
 import temp_part2 from "./temp/part2.png";
+import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 
 const NCircleLecture = () => {
     return (
-        <SubCard
-            title="مکان هندسی فاز ثابت"
-            darkBorder={true}
-            sx={{ direction: "rtl" }}
-        >
+        <PinchPanCard title="مکان هندسی فاز ثابت" border={true}>
             <Typography>
                 <Grid item>
                     <img
@@ -27,7 +23,7 @@ const NCircleLecture = () => {
                     />
                 </Grid>
             </Typography>
-        </SubCard>
+        </PinchPanCard>
     );
 };
 

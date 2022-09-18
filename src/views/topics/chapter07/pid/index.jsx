@@ -58,7 +58,6 @@ const PIDController = () => {
                         `$$C_{PID}(s) = ${controller.toString()}$$`,
                         `$$C(s) = ${clp.$s.toString()}$$`,
                         `$$c(t) = ${clp.$t.toString()}$$`,
-                        
                     ]);
                     // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
                     // so that the traces will be loaded with new conditions
@@ -155,7 +154,10 @@ const PIDController = () => {
                             >
                                 {solution.map((sol) => (
                                     <Grid
-                                        style={{ fontSize: "18px", textAlign: 'center' }}
+                                        style={{
+                                            fontSize: "18px",
+                                            textAlign: "center",
+                                        }}
                                         xs={12}
                                     >
                                         <MathJax>{sol}</MathJax>
@@ -217,7 +219,7 @@ const PIDController = () => {
                             <hr />
                             <Grid xs={12} item>
                                 <SubCard>
-                                    <Grid lg={9} md={9} sm={12} xs={12} item>
+                                    <Grid xs={12} item>
                                         <PlotlyBox
                                             title="پاسخ پله ی سیستم اولیه"
                                             traces={traces.main}

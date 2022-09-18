@@ -3,7 +3,7 @@ import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 import BodePlotParameters from "./parameters";
@@ -194,22 +194,8 @@ const BodePlotExample = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <Typography>
-                    <h2 className="chapter-section-title">
-                        مثالی از نمودار بود
-                    </h2>
-                </Typography>
-            </Grid>
-            <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={gridSpacing}>
-                    <Grid
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            margin: "auto",
-                        }}
-                        item
-                    >
+                    <Grid xs={12} item>
                         <BodePlotExampleLecture />
                     </Grid>
                     <Grid sx={{ margin: "auto", width: "100%" }} item>

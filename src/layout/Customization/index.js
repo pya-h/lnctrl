@@ -128,8 +128,8 @@ const Customization = () => {
             >
                 <PerfectScrollbar component="div">
                     <Grid container spacing={gridSpacing} sx={{ p: 1 }}>
-                        <Grid sx={{ p: 0, m: 0 }} item xs={12}>
-                            <SubCard sx={{ p: 0, m: 0 }} title="Zoom">
+                        <Grid item xs={12}>
+                            <SubCard title="Zoom">
                                 <Switcher
                                     choices={["Disabled", "Enabled"]}
                                     setSwitch={(selectedValue) =>

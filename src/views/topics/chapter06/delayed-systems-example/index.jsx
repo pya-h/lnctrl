@@ -91,7 +91,7 @@ const DelayedSystemsExample = () => {
                         const nx = Array(all.amplitude[i].y.length),
                             ny = Array(all.amplitude[i].y.length);
                         for (let j = 0; j < nx.length; j++) {
-                            const complexForm = TransferFunction.PolarToComplex(
+                            const complexForm = TransferFunction.PolarToCartesian(
                                 all.amplitude[i].y[j],
                                 all.phase[i].y[j]
                             );

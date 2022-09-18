@@ -1,28 +1,24 @@
-import SubCard from "../../../ui-component/cards/SubCard";
 import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
-const transferFunctionFormFormula =
-    "$$H(s) = \\frac{K(s\\tau _a + 1)(s\\tau _b + 1)}{s(s\\tau _1 + 1)(s\\tau _2 + 1)(s\\tau _3 + 1)(s\\tau _4 + 1)}$$";
+import PinchPanCard from "views/ui-component/cards/PinchPanCard";
+import "../../topics.css";
 
 const BodePlotExampleLecture = () => {
     return (
-        <SubCard
-            title="An Example of Drawing a Bode Plot"
-            darkBorder={true}
-            sx={{ direction: "ltr" }}
-        >
-            <Typography>
-                <Grid className="lecture-text" item>
-                    <p>
-                        We want to draw the Bode plot for transfer functions of the following form:
-                    </p>
-                </Grid>
-                <Grid item>
-                    <MathJax style={{fontSize: "18px"}}>{transferFunctionFormFormula}</MathJax>
-                </Grid>
-            </Typography>
-        </SubCard>
+        <PinchPanCard title="An Example of Drawing a Bode Plot">
+            <Grid item>
+                <Typography
+                    sx={{ p: 2, width: "100%" }}
+                    style={{ lineHeight: "2.5" }}
+                >
+                    We want to draw the Bode plot for transfer functions of the following form:
+                    <MathJax style={{ fontSize: "18px" }}>
+                        {`$$H(s) = \\frac{K(s\\tau _a + 1)(s\\tau _b + 1)}{s(s\\tau _1 + 1)(s\\tau _2 + 1)(s\\tau _3 + 1)(s\\tau _4 + 1)}$$`}
+                    </MathJax>
+                </Typography>
+            </Grid>
+        </PinchPanCard>
     );
 };
 

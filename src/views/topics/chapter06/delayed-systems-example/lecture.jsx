@@ -1,8 +1,8 @@
-import SubCard from "../../../ui-component/cards/SubCard";
 import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
 import delay_types_png from "./visual/delay_types.png";
+import PinchPanCard from 'views/ui-component/cards/PinchPanCard';
 
 const simpleDelayedSystemFormula = "$$G(s) = e^{-T_d s}$$";
 const systemPhaseValueFormula =
@@ -10,43 +10,37 @@ const systemPhaseValueFormula =
 
 const DelayedSystemsLecture = () => {
     return (
-        <SubCard
+        <PinchPanCard
             title="Time-delay systems"
-            darkBorder={true}
-            sx={{ direction: "ltr" }}
+            border={true}
         >
-            <Typography>
-                <Grid className="lecture-text" item>
-                    <p>
-                        A delay is the amount of time that must elapse before the output responds to the input.
-                    </p>
+            <Grid container>
+                <Grid item>
+                    <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
+                        A delay is the amount of time that must elapse before the output responds to the input. We have two types of delay:
+                    </Typography>
                 </Grid>
-                <Grid className="lecture-text" item>
-                    <p>We have two types of delay:</p>
-                </Grid>
-                <Grid className="lecture-text" item>
+                <Grid xs={12} sx={{ m: "auto" }} item>
                     <img
                         className="lecture-image"
                         src={delay_types_png}
                         alt="Image loading failed"
                     />
                 </Grid>
-                <Grid className="lecture-text" item>
-                    <p>Consider the following system:</p>
-                </Grid>
                 <Grid item>
-                    <MathJax>{simpleDelayedSystemFormula}</MathJax>
-                </Grid>
-                <Grid className="lecture-text" item>
-                    <p>
+                    <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
+                        Consider the following system:
+                        <MathJax style={{ fontSize: "18px" }}>
+                            {simpleDelayedSystemFormula}
+                        </MathJax>
                         A pure delay does not affect the magnitude; it only changes the phase angle linearly with frequency.
-                    </p>
+                        <MathJax style={{ fontSize: "18px" }}>
+                            {systemPhaseValueFormula}
+                        </MathJax>
+                    </Typography>
                 </Grid>
-                <Grid item>
-                    <MathJax>{systemPhaseValueFormula}</MathJax>
-                </Grid>
-            </Typography>
-        </SubCard>
+            </Grid>
+        </PinchPanCard>
     );
 };
 

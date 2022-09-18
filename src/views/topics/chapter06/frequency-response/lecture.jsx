@@ -1,15 +1,11 @@
-import SubCard from "../../../ui-component/cards/SubCard";
 import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
+import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 
 const FrequencyResponseLecture = () => {
     return (
-        <SubCard
-            title="Frequency response"
-            darkBorder={true}
-            sx={{ direction: "ltr" }}
-        >
+        <PinchPanCard title="Frequency response" border={true}>
             <Grid container>
                 <Grid item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
@@ -29,7 +25,7 @@ const FrequencyResponseLecture = () => {
                     </Typography>
                 </Grid>
             </Grid>
-        </SubCard>
+        </PinchPanCard>
     );
 };
 

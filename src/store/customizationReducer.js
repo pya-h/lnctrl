@@ -6,6 +6,7 @@ import { ActionTypes } from "./actions";
 
 export const initialState = {
     isOpen: [], // for active default menu
+    enableZoom: false,
     fontFamily: config.fontFamily,
     borderRadius: config.borderRadius,
     mathPrecision: calculus.precision.get(),
@@ -22,6 +23,11 @@ const customizationReducer = (state = initialState, action) => {
             return {
                 ...state,
                 isOpen: [id],
+            };
+        case ActionTypes.ENABLE_ZOOM:
+            return {
+                ...state,
+                enableZoom: action.enableZoom,
             };
         case ActionTypes.SET_MENU:
             return {

@@ -1,4 +1,3 @@
-import SubCard from "../../../ui-component/cards/SubCard";
 import { Grid, Typography } from "@mui/material";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
@@ -8,10 +7,11 @@ import img_zero_poles_type_in_bode from "./img/zero_pole_types_in_bode.JPG";
 import img_standard_second_degree_system from "./img/standard_second_degree_system.jpg";
 import img_m_pw_plot from "./img/m_pw_plot.png";
 import img_bode_plot_manual from "./img/bode_plot_manual.jpg";
+import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 
 const BodePlotLecture = () => {
     return (
-        <SubCard title="Bode plot" darkBorder={true} sx={{ direction: "ltr" }}>
+        <PinchPanCard title="Bode plot" border={true}>
             <Grid container>
                 <Grid item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
@@ -199,7 +199,7 @@ const BodePlotLecture = () => {
                     </Typography>
                 </Grid>
             </Grid>
-        </SubCard>
+        </PinchPanCard>
     );
 };
 

@@ -11,6 +11,7 @@ import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
 import { makeProgress } from "toolshed";
 import NyquistPlotParameters from "./parameters";
+import NyquistPlotLecture from "./lecture";
 const symbols = {
     in: "jw",
     out: "H",
@@ -254,7 +255,18 @@ const NyquistPlot = () => {
                 </Typography>
             </Grid>
             <Grid item spacing={gridSpacing}>
-                <Grid container direction="column" spacing={1}>
+                <Grid container direction="column" spacing={gridSpacing}>
+                    <Grid
+                        style={{
+                            width: "100%",
+                            height: "100%",
+                            margin: "auto",
+                            direction: "ltr",
+                        }}
+                        item
+                    >
+                        <NyquistPlotLecture />
+                    </Grid>
                     <Grid sx={{ margin: "auto", width: "100%" }} item>
                         <SubCard sx={{ direction: "ltr" }}>
                             <Grid

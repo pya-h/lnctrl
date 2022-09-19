@@ -7,9 +7,9 @@ import "../../topics.css";
 const BodePlotExampleLecture = () => {
     return (
         <PinchPanCard title="مثالی از رسم نمودار بود">
-            <Grid item>
+            <Grid sx={{m: "auto"}} xs={12} item>
                 <Typography
-                    sx={{ p: 2, width: "100%" }}
+                    sx={{ p: 2 }}
                     style={{ lineHeight: "2.5" }}
                 >
                     می خواهیم برای توابع تبدیل به فرم زیر نمودار بود رسم کنیم:

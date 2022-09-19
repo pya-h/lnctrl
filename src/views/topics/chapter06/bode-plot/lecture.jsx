@@ -13,7 +13,7 @@ const BodePlotLecture = () => {
     return (
         <PinchPanCard title="نمودار بود" border={true}>
             <Grid container>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         <h1>نمودار بود</h1>
                         نمودار اندازه پاسخ فرکانسی برحسب لگاریتم و نمودار فاز آن
@@ -65,7 +65,7 @@ const BodePlotLecture = () => {
                         alt="بارگذاری تصویر با مشکل مواجه شد"
                     />
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         برای تابع تبدیل بالا، دو دسته معادلات برای لگاریتم دامنه
                         و فاز خواهیم داشت:
@@ -79,7 +79,7 @@ const BodePlotLecture = () => {
                         alt="بارگذاری تصویر با مشکل مواجه شد"
                     />
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         <h3>فاز</h3>
                     </Typography>
@@ -92,7 +92,7 @@ const BodePlotLecture = () => {
                      \\sum\\limits_{k=1}^R tan^{-1} \\frac{2\\zeta_k \\omega_{n_k} \\omega}{\\omega^2 _{n_k} - \\omega^2}
                      \\sum\\limits_{l=1}^P tan^{-1} \\frac{2\\zeta_l \\omega_{n_l} \\omega}{\\omega^2 _{n_l} - \\omega^2} $$`}</MathJax>
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         <h3>ترسیم نمودارهای بود</h3>
                         برای رسم کامل نمودار بود ابتدا چهار عبارت زیر را رسم
@@ -107,7 +107,7 @@ const BodePlotLecture = () => {
                         alt="بارگذاری تصویر با مشکل مواجه شد"
                     />
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         <h3>فرکانس شکست</h3>
                         به فرکانس &nbsp;
@@ -134,7 +134,7 @@ const BodePlotLecture = () => {
                         &nbsp; دهه از فرکانس شکست است.
                     </Typography>
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         <h3>فرکانس تشدید</h3>
                         اگر ξ بین 0 و1 باشد ما دو قطب مختلط داریم. با تغییر
@@ -150,7 +150,7 @@ const BodePlotLecture = () => {
                         alt="بارگذاری تصویر با مشکل مواجه شد"
                     />
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <MathJax
                         style={{ fontSize: "18px" }}
                     >{`$$ \\omega_r = \\omega_n \\sqrt{1 - 2\\zeta^2} \\\\
@@ -160,7 +160,7 @@ const BodePlotLecture = () => {
                         \\end{cases}
                 $$`}</MathJax>
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         هر چه پهنای باند &nbsp;
                         <MathJax inline={true} style={{ fontSize: "18px" }}>
@@ -185,7 +185,7 @@ const BodePlotLecture = () => {
                         alt="بارگذاری تصویر با مشکل مواجه شد"
                     />
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         <h2>مراحل ترسیم نمودار بود</h2>
                     </Typography>
@@ -198,7 +198,7 @@ const BodePlotLecture = () => {
                         alt="بارگذاری تصویر با مشکل مواجه شد"
                     />
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         <b>نکته: </b>
                         اگر سیستمی را در عدد 10 ضرب کنیم، در نمودار اندازه 20dB

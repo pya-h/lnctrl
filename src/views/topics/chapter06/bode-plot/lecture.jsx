@@ -13,7 +13,7 @@ const BodePlotLecture = () => {
     return (
         <PinchPanCard title="Bode plot" border={true}>
             <Grid container>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         <h1>Bode plot</h1>
                         The plot of the frequency-response magnitude on a logarithmic scale together with its phase plot is called the Bode plot.
@@ -61,7 +61,7 @@ const BodePlotLecture = () => {
                         alt="Image loading failed"
                     />
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         For the above transfer function, we will have two sets of equations for the logarithmic magnitude and phase:
                         <h3>Magnitude logarithm</h3>
@@ -74,7 +74,7 @@ const BodePlotLecture = () => {
                         alt="Image loading failed"
                     />
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         <h3>Phase</h3>
                     </Typography>
@@ -87,7 +87,7 @@ const BodePlotLecture = () => {
                      \\sum\\limits_{k=1}^R tan^{-1} \\frac{2\\zeta_k \\omega_{n_k} \\omega}{\\omega^2 _{n_k} - \\omega^2}
                      \\sum\\limits_{l=1}^P tan^{-1} \\frac{2\\zeta_l \\omega_{n_l} \\omega}{\\omega^2 _{n_l} - \\omega^2} $$`}</MathJax>
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         <h3>Drawing Bode plots</h3>
                         To draw the complete Bode plot, we first plot the following four terms:
@@ -101,7 +101,7 @@ const BodePlotLecture = () => {
                         alt="Image loading failed"
                     />
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         <h3>Corner (break) frequency</h3>
                         at frequency
@@ -125,7 +125,7 @@ const BodePlotLecture = () => {
                         decade from the corner frequency.
                     </Typography>
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         <h3>Resonant frequency</h3>
                         If ξ is between 0 and 1, we have two complex poles. As its value changes, the Bode plot also changes as shown alongside. In fact, the peak that appears occurs at a specific frequency called the resonant frequency.
@@ -138,7 +138,7 @@ const BodePlotLecture = () => {
                         alt="Image loading failed"
                     />
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <MathJax
                         style={{ fontSize: "18px" }}
                     >{`$$ \\omega_r = \\omega_n \\sqrt{1 - 2\\zeta^2} \\\\
@@ -148,7 +148,7 @@ const BodePlotLecture = () => {
                         \\end{cases}
                 $$`}</MathJax>
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         The larger the bandwidth 
                         <MathJax inline={true} style={{ fontSize: "18px" }}>
@@ -172,7 +172,7 @@ const BodePlotLecture = () => {
                         alt="Image loading failed"
                     />
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         <h2>Steps for Drawing a Bode Plot</h2>
                     </Typography>
@@ -185,7 +185,7 @@ const BodePlotLecture = () => {
                         alt="Image loading failed"
                     />
                 </Grid>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         <b>Note: </b>
                         If we multiply a system by 10, the magnitude plot rises by 20dB and no change occurs in the phase.

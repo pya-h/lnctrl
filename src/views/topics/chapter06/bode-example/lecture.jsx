@@ -7,9 +7,9 @@ import "../../topics.css";
 const BodePlotExampleLecture = () => {
     return (
         <PinchPanCard title="An Example of Drawing a Bode Plot">
-            <Grid item>
+            <Grid sx={{m: "auto"}} xs={12} item>
                 <Typography
-                    sx={{ p: 2, width: "100%" }}
+                    sx={{ p: 2 }}
                     style={{ lineHeight: "2.5" }}
                 >
                     We want to draw the Bode plot for transfer functions of the following form:

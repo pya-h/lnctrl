@@ -7,7 +7,7 @@ import "../../topics.css";
 const BodePlotExampleLecture = () => {
     return (
         <PinchPanCard title="مثالی از رسم نمودار بود">
-            <Grid sx={{m: "auto"}} xs={12} item>
+            <Grid sx={{m: "auto", textAlign: "center"}} xs={12} item>
                 <Typography
                     sx={{ p: 2 }}
                     style={{ lineHeight: "2.5" }}

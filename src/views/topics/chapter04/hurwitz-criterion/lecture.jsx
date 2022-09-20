@@ -10,7 +10,7 @@ const HurwitzCriterionLecture = () => {
     return (
         <PinchPanCard title="معیار پایداری هرویتز" border={true}>
             <Grid container>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         تمامی ریشه های معادله ی مشخصه در سمت چپ محور موهومی قرار
                         می گیرند اگر و فقط اگر:

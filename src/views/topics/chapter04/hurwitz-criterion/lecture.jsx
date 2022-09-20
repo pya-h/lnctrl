@@ -10,7 +10,7 @@ const HurwitzCriterionLecture = () => {
     return (
         <PinchPanCard title="Hurwitz stability criterion" border={true}>
             <Grid container>
-                <Grid item>
+                <Grid xs={12} item>
                     <Typography sx={{ px: 2 }} style={{ lineHeight: "2.5" }}>
                         All roots of the characteristic equation lie to the left of the imaginary axis if and only if:
                         <MathJax style={{ fontSize: "18px" }}>

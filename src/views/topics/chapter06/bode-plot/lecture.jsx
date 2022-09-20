@@ -116,6 +116,7 @@ const BodePlotLecture = () => {
                         <MathJax inline={true} style={{ fontSize: "18px" }}>
                             {`\\( \\omega = \\frac{1}{T} \\)`}
                         </MathJax>
+                        <br />
                         It is also called the corner frequency because the asymptotic magnitude plot at this frequency is at the corner of two straight lines.
                         <br />
                         <b>Note:</b> The important range of the frequency response (in the logarithmic magnitude and phase angle plots) is usually

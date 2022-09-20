@@ -68,7 +68,6 @@ const Fi_ij = (delta, k1, k2, p1, p2 = p1) => {
         fi_t = new Exp(k1, p1 instanceof Algebra ? p1.negation() : -p1).add(
             new Exp(k2, p2 instanceof Algebra ? p2.negation() : -p2)
         );
-        console.log(fi_t.toString(), fi_t);
     } else {
         fi_s = new TransferFunction(k1, [1, p1]).add(
             new TransferFunction(k2, [1, 2 * p1, p1 ** 2])

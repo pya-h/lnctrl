@@ -15,7 +15,9 @@ const Ch06Intro = () => {
                         <br />
                         1. Root locus     2. Frequency response
                         <br />
-                        As we saw in the previous chapter, control system design using the root locus method is carried out by examining the behavior of the closed-loop roots in the s-plane in response to a change in a system parameter (the open-loop system gain). In frequency response analysis, unlike the root locus, the system gain and its other parameters are assumed constant, and the changes in the magnitude and phase of the transfer function G(s) in response to changes in the poles of the transfer function are considered.
+                        As we saw in the previous chapter, control system design using the root locus method is carried out by examining the behavior of the closed-loop roots in the s-plane in response to a change in a system parameter (the open-loop system gain). In frequency response analysis, unlike the root locus,
+                        <br />
+                        The system gain and its other parameters are assumed constant, and the changes in the magnitude and phase of the transfer function G(s) in response to changes in the poles of the transfer function are considered.
                         <br />
                         The Fourier transform is the bridge between the frequency response and the differential equations of the system:
                         <p style={{ textAlign: "center" }}>
@@ -104,7 +106,9 @@ const Ch06Intro = () => {
                             {`$$ y_{ss}(t) = A |G(jω)| \\frac{e^{j(\\omega t + \\theta)} - e^{-j(\\omega t + \\theta)}}{2j} \\\\ 
                         \\Rightarrow y_{ss}(t) = A|G(j\\omega)|sin(\\omega t + \\theta) = Bsin(\\omega t + \\theta) $$`}
                         </MathJax>
-                        Consequently, a stable linear time-invariant (LTI) system with a sinusoidal input also has, in steady-state, a sinusoidal output at the same frequency; only the magnitude and phase of the output signal differ from those of the input signal in steady-state. The ratio of the output magnitude to the input magnitude equals the magnitude of the transfer function |G(jω)|, and the phase difference between the input and output signals equals θ=∠G(jω). The transfer function G(jω) is also called the sinusoidal transfer function, in which the ratio of the output magnitude to the input magnitude is:
+                        Consequently, a stable linear time-invariant (LTI) system with a sinusoidal input also has, in steady-state, a sinusoidal output at the same frequency; only the magnitude and phase of the output signal differ from those of the input signal in steady-state.
+                        <br />
+                        The ratio of the output magnitude to the input magnitude equals the magnitude of the transfer function |G(jω)|, and the phase difference between the input and output signals equals θ=∠G(jω). The transfer function G(jω) is also called the sinusoidal transfer function, in which the ratio of the output magnitude to the input magnitude is:
                         <MathJax style={{ fontSize: "18px" }}>
                             {`$$ |G(jω)| = \\frac{B}{A} $$`}
                         </MathJax>

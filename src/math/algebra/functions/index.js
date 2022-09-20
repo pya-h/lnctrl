@@ -59,13 +59,14 @@ export class Poly extends Algebra {
         symbol = "t",
         halfTermsVisible = 2,
         coef = "a",
-        inline = false
+        inline = false,
+        firstCoefAsOne = false
     ) => {
         let res = inline ? "" : "$$";
-        if (degree === "n") {
-            res += `${coef}_n ${symbol}^n + `;
+        if (isNaN(degree)) {
+            res += (!firstCoefAsOne ? `${coef}_${degree}` : ``) + `${symbol}^${degree} + `;
             for (let i = 1; i < halfTermsVisible; i++)
-                res += `${coef}_{n - ${i}}${symbol}^{n - ${i}} + `;
+                res += `${coef}_{${degree} - ${i}}${symbol}^{${degree} - ${i}} + `;
             res += " ... ";
             for (let i = halfTermsVisible - 1; i > 0; i--)
                 res += ` + ${coef}_{${i}}${symbol}^{${i}}`;

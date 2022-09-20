@@ -247,7 +247,8 @@ class Algebra {
                     } else if (term.plus) {
                         const redundant = term;
                         term = term.plus.copy();
-                        term.plus.previous = term;
+                        if(term.plus)
+                            term.plus.previous = term;
                         delete redundant.clear();
                     }
                 }
@@ -466,11 +467,12 @@ class Algebra {
                 x = x.plus; // go to next term in the chain
             }
 
-            if (operand) {
+            if (operand instanceof Algebra) {
                 // if the above algorythm leaves operand with non-null value
                 /// it means there was terms in the operand's algebratic chain that are'nt unifiable with x terms
                 // so we must connect the leftovers to last terms of the result
                 if (Algebra.polynomial(result.a, result.symbol) !== "0") {
+                    try{
                     if (
                         Algebra.polynomial(operand.getA(), operand.symbol) !==
                         "0"
@@ -478,6 +480,10 @@ class Algebra {
                         let endTerm = result.end();
                         endTerm.plus = operand;
                         endTerm.plus.previous = result;
+                    }}
+                    catch(ex){
+                        // BUG HERE! Exp OBJECTS ARE CREATED WITH NO MAIN ALGEBRA FUNCTIONS VIA Matrix.js
+                        console.log(operand, ex);
                     }
                 } else result = operand.copy(); // connect to next term
             }

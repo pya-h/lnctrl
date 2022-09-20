@@ -225,7 +225,7 @@ const PIDController = () => {
                                             traces={traces.main}
                                         />
                                     </Grid>
-                                    <Grid lg={9} md={9} sm={12} xs={12} item>
+                                    <Grid xs={12} item>
                                         <PlotlyBox
                                             title="Step Response of the Controlled System"
                                             traces={traces.controlled}

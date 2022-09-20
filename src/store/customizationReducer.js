@@ -14,7 +14,6 @@ export const initialState = {
 };
 
 // ==============================|| CUSTOMIZATION REDUCER ||============================== //
-
 const customizationReducer = (state = initialState, action) => {
     let id;
     switch (action.type) {

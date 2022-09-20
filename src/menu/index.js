@@ -177,7 +177,7 @@ const load = (pathname) => {
             children: [
                 {
                     id: `${routes.chapter}05`,
-                    title: "Introduction",
+                    title: "Introduction to the root locus",
                     type: "item",
                     url: `${routes.chapter}05`,
                     icon: icons.IconBike,
@@ -188,14 +188,6 @@ const load = (pathname) => {
                     title: "Drawing the root locus",
                     type: "item",
                     url: `${routes.chapter}05/${routes.sketching_root_locus}`,
-                    icon: icons.IconBike,
-                    breadcrumbs: false,
-                },
-                {
-                    id: routes.root_locus,
-                    title: "Root locus",
-                    type: "item",
-                    url: `${routes.chapter}05/${routes.root_locus}`,
                     icon: icons.IconBike,
                     breadcrumbs: false,
                 },

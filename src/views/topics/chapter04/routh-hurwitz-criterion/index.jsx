@@ -5,17 +5,20 @@ import RouthHurwitzCriterionSolveBox from "./solve";
 import { MathJax } from "better-react-mathjax";
 import { gridSpacing } from "store/constant";
 import { stringToArray } from "math/calculus";
+import { getCache, cacheParameters } from 'toolshed';
 
 const RouthHurwitzCriterion = () => {
-    const [rawInput, $rawInput] = useState("");
+    const [rawInput, $rawInput] = useState(getCache("ch04-rhw", "rawInput", ""));
     const [a_i, $a_i] = useState([]);
     const [epsilon, $epsilon] = useState(0.000001);
     const [showEpsilonBar, setShowEpsilonBar] = useState(false);
-
+    
     useEffect(() => {
         const ai = stringToArray(rawInput);
         $a_i(ai);
         setShowEpsilonBar(false);
+        cacheParameters("ch04-rhw", {rawInput});
+
     }, [rawInput]);
 
     return (

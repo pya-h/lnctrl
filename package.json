@@ -2,7 +2,7 @@
     "name": "lnctrl",
     "version": "0.3.0",
     "private": true,
-    "homepage": "http://pya-py.github.io/lnctrl",
+    "homepage": "https://pya-h.github.io/lnctrl",
     "dependencies": {
         "@emotion/cache": "^11.4.0",
         "@emotion/react": "^11.4.0",
@@ -72,7 +72,7 @@
         "prettier": "^2.2.1"
     },
     "scripts": {
-        "start": "react-scripts start",
+        "start": "react-scripts start --max-old-space-size=8192",
         "build": "react-scripts build",
         "test": "react-scripts test",
         "eject": "react-scripts eject",

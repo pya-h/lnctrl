@@ -12,6 +12,8 @@ import FirstOrderTfParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/fraction";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
+import { getCache, cacheParameters } from 'toolshed';
+
 
 const realCoeficientValue = (coef) => {
     if (coef === -1) return "-";
@@ -103,11 +105,12 @@ const symbols = {
 };
 
 const FirstOrderTransferFunctionExamining = () => {
-    const [a, $a] = useState(1.0);
-    const [k, $k] = useState(1.0);
-    const [t_i, $t_i] = useState(0);
-    const [t_f, $t_f] = useState(5);
-    const [inputSignal, $inputSignal] = useState(0); // 0 as step | 1 as ramp === assume this state's value as the gradiant value of th input signal function
+
+    const [a, $a] = useState(getCache("ch3-1tf", "a", 1.0));
+    const [k, $k] = useState(getCache("ch3-1tf", "k", 1.0));
+    const [t_i, $t_i] = useState(getCache("ch3-1tf", "t_i", 0));
+    const [t_f, $t_f] = useState(getCache("ch3-1tf", "t_f", 5));
+    const [inputSignal, $inputSignal] = useState(getCache("ch3-1tf", "inputSignal", 0)); // 0 as step | 1 as ramp === assume this state's value as the gradiant value of th input signal function
     // gradiant of u(t) is 0 and unit ramp is one
     const [systems, $systems] = useState([]);
     const [traces, $traces] = useState([]);
@@ -204,6 +207,7 @@ const FirstOrderTransferFunctionExamining = () => {
             });
 
         $traces(all);
+        cacheParameters("ch3-1tf", {a, k, t_i, t_f, inputSignal});
     }, [a, k, t_i, t_f, inputSignal, is3DPlotEnabled, thickness, systems, N]);
 
     useEffect(() => {

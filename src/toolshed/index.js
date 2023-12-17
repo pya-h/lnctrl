@@ -77,3 +77,11 @@ export const randomColor = () => {
         B: randomize(200),
     };
 };
+
+export const getCache = (key, parameter, defaultValue=0) => {
+    let cache = localStorage.getItem(key);
+    if(!cache) return defaultValue;
+    cache = JSON.parse(cache);
+    return cache[parameter] !== undefined ? cache[parameter] : defaultValue;
+};
+export const cacheParameters = (key, params) => localStorage.setItem(key, JSON.stringify(params));

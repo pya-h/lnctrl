@@ -14,6 +14,7 @@ import Algebra from "math/algebra/index";
 import TransferFunction from "math/algebra/functions/fraction";
 import { gridSpacing } from "store/constant";
 import Describer from "math/describer";
+import { getCache, cacheParameters} from 'toolshed';
 
 const stepResponse = (tf, c_t = tf.step(), index = undefined) =>
     "$$\\begin{cases} " +
@@ -143,6 +144,8 @@ const SOTFExamineByPoles = () => {
 
             $traces(all);
         }
+        cacheParameters("ch04-hw", {alpha, beta, k, t_i, t_f});
+
     }, [alpha, beta, k, t_i, t_f, is3DPlotEnabled, thickness, systems, N]);
 
     useEffect(() => {

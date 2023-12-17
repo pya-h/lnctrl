@@ -5,13 +5,16 @@ import HurwitzCriterionSolveBox from './solve';
 import { MathJax } from "better-react-mathjax";
 import { gridSpacing } from 'store/constant';
 import { stringToArray } from "math/calculus";
+import { getCache, cacheParameters} from 'toolshed';
 
 const HurwitzCriterion = () => {
-    const [rawInput, $rawInput] = useState("");
+    const [rawInput, $rawInput] = useState(getCache("ch4-hw", "rawInput", ""));
     const [a_i, $a_i] = useState([]);
     useEffect(() => {
         $a_i(stringToArray(rawInput));
-    }, [rawInput])
+        cacheParameters("ch04-hw", {rawInput});
+    }, [rawInput]);
+
     return (
         <Grid container direction="column" spacing={gridSpacing}>
             <Grid

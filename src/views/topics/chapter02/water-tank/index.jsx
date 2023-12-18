@@ -77,7 +77,7 @@ const WaterTankLevelExample = () => {
         setDiffEquation(hydraulicSystemEquation(R, C, Qin));
         const all = systems.map((e, index) => {
             const hi_t = calculus.ODE.cc1ode(e.R * e.C, 1, e.R * e.Qin, e.hi);
-            const [xi, yi] = calculus.pointify(hi_t, ti, tf, +N); 
+            const [xi, yi] = calculus.pointify(hi_t, ti, tf, +N);
             return {
                 x: xi,
                 y: yi,

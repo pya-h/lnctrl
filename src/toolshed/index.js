@@ -19,7 +19,7 @@ export const path = {
         return [...decomposedPath];
     },
 };
-export const makeProgress = async (progressBar, progress, step = 5) => {
+export const makeProgress = async(progressBar, progress, step = 5) => {
     const progressValue = progress | 0;
     if (progressValue % step === 0) {
         progressBar.style.width = `${progressValue}%`;
@@ -41,23 +41,11 @@ export const joinSorted = (lst1, lst2, groupTags, duplicates = true) => {
     const result = Array(lst1.length + lst2.length).fill(0);
     let i, j;
     for (
-        i = 0, j = 0;
-        i < lst1.length && j < lst2.length;
-        result[i + j] =
-            lst1[i] <= lst2[j]
-                ? { value: lst1[i++], group: groupTags[0] }
-                : { value: lst2[j++], group: groupTags[1] }
+        i = 0, j = 0; i < lst1.length && j < lst2.length; result[i + j] =
+        lst1[i] <= lst2[j] ? { value: lst1[i++], group: groupTags[0] } : { value: lst2[j++], group: groupTags[1] }
     );
-    for (
-        ;
-        i < lst1.length;
-        result[i + j] = { value: lst1[i++], group: groupTags[0] }
-    );
-    for (
-        ;
-        j < lst2.length;
-        result[i + j] = { value: lst2[j++], group: groupTags[1] }
-    );
+    for (; i < lst1.length; result[i + j] = { value: lst1[i++], group: groupTags[0] });
+    for (; j < lst2.length; result[i + j] = { value: lst2[j++], group: groupTags[1] });
     if (!duplicates)
         for (i = 0; i < result.length - 1; i++)
             if (
@@ -78,10 +66,11 @@ export const randomColor = () => {
     };
 };
 
-export const getCache = (key, parameter, defaultValue=0) => {
+export const getCache = (key, parameter = null, defaultValue = 0) => {
     let cache = localStorage.getItem(key);
-    if(!cache) return defaultValue;
+    if (!parameter) return cache ? JSON.parse(cache) : null;
+    if (!cache) return defaultValue;
     cache = JSON.parse(cache);
     return cache[parameter] !== undefined ? cache[parameter] : defaultValue;
 };
-export const cacheParameters = (key, params) => localStorage.setItem(key, JSON.stringify(params));
+export const cacheParameters = (key, params) => { localStorage.setItem(key, JSON.stringify(params)) };

@@ -1,4 +1,4 @@
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import "views/topics/topics.css";
 import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 import img_temp1 from "./img/temp1.JPG";

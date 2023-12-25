@@ -24,7 +24,7 @@ const GraphMenu = ({
 
     useEffect(() => {
         update({ thickness: thicknessSliderPercentage / 20.0 + 0.1 });
-    }, [thicknessSliderPercentage, update]);
+    }, [thicknessSliderPercentage,]);
 
     return (
         <Grid sx={{ direction: "rtl" }} container direction="row">

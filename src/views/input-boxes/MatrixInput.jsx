@@ -1,12 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import "./input-boxes.css";
 import { Grid } from "@mui/material";
 
 const MatrixInput = ({ rows, columns, initial, setter }) => {
-    const [matrix, setMatrix] = useState([...initial]);
+    const [matrix, setMatrix] = useState(initial);
     const columnSize = 12 / columns;
+
+    useEffect(() => {
+        setMatrix(initial);
+    }, [initial]);
 
     const updateElement = (i, j, event) => {
         if (event && event.target) {

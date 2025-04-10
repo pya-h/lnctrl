@@ -190,21 +190,10 @@ const nCircle = (N, x_i, x_f, iterations) => {
 };
 export const strictPrecisionFormat = (num) => {
     if (num) {
-        // num != 0
-        const strNum = num.toFixed(precision.get());
-        let reduntantZereos = 0,
-            i = 0;
-        for (
-            i = strNum.length - 1;
-            i >= 0 && strNum[i] === "0";
-            i--, reduntantZereos++
-        );
-        if (strNum[i] === ".") reduntantZereos++;
-        return (
-            (reduntantZereos > 0
-                ? strNum.slice(0, -reduntantZereos)
-                : strNum) || "0"
-        );
+        return (+num).toLocaleString('en-US', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: precision.get(),
+          })
     }
     return "0";
 };

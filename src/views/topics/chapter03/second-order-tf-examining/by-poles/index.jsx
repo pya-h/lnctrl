@@ -14,6 +14,7 @@ import TransferFunction from "math/algebra/functions/fraction";
 import { gridSpacing } from "store/constant";
 import Describer from "math/describer";
 import TopicBaseComponent from "views/topics/TopicBaseComponent";
+import { cacheParameters } from "toolshed";
 
 const stepResponse = (tf, c_t = tf.step(), index = undefined) =>
     "$$\\begin{cases} " +
@@ -48,7 +49,29 @@ class SOTFExamineByPoles extends TopicBaseComponent {
         response: null,
     };
 
-    persistKeys = ["k", "t_i", "t_f", "thickness", "N"];
+    // alpha/beta are Complex instances, so they can't be JSON-cached directly;
+    // saveState serializes them to {re, im} and reviveState rebuilds them.
+    saveState() {
+        const { topicKey, k, t_i, t_f, thickness, N, alpha, beta } = this.state;
+        cacheParameters(topicKey, {
+            k,
+            t_i,
+            t_f,
+            thickness,
+            N,
+            alpha: { re: alpha.real(), im: alpha.imaginary() },
+            beta: { re: beta.real(), im: beta.imaginary() },
+        });
+    }
+
+    reviveState(cache) {
+        const revived = { ...cache };
+        if (cache.alpha)
+            revived.alpha = new Complex(cache.alpha.re, cache.alpha.im);
+        if (cache.beta)
+            revived.beta = new Complex(cache.beta.re, cache.beta.im);
+        return revived;
+    }
 
     $alpha = (value) => this.setState({ alpha: value });
     $beta = (value) => this.setState({ beta: value });

@@ -285,7 +285,7 @@ export default class TransferFunction extends Fraction {
             if (params.overshoot && params.t_rise) {
                 params.overshoot = Number(params.overshoot);
                 params.t_rise = Number(params.t_rise);
-                const logMp = Math.log10(params.overshoot);
+                const logMp = Math.log(params.overshoot / 100);
                 params.zeta =
                     -logMp / (Math.PI * Math.PI + logMp * logMp) ** 0.5;
                 params.w_d = Math.PI / params.t_rise;
@@ -428,7 +428,7 @@ export default class TransferFunction extends Fraction {
 
     characteristicEquation = (k = 1) =>
         this.denominator().add(
-            k !== 1 ? this.numerator() : this.numerator().multiply(k)
+            k !== 1 ? this.numerator().multiply(k) : this.numerator()
         );
 
     updateRoots = () => {
@@ -461,7 +461,7 @@ export default class TransferFunction extends Fraction {
     };
     getPoles = () => this.poles;
     setPoles = (poles) => {
-        this.poles = TransferFunction.map((pi) =>
+        this.poles = poles.map((pi) =>
             pi instanceof Complex ? pi.copy() : new Complex(pi, 0)
         );
         return this;

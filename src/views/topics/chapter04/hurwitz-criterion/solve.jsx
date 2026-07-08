@@ -60,7 +60,6 @@ const determine = (Deltas, a_i) => {
 const HurwitzCriterionSolveBox = ({ a_i }) => {
     const [currentStep, $currentStep] = useState(0);
     const [steps, $steps] = useState("");
-    const [propertySectionIndex, $propertySectionIndex] = useState(0);
 
     useEffect(() => {
         const n = a_i.length;
@@ -79,7 +78,6 @@ const HurwitzCriterionSolveBox = ({ a_i }) => {
                 const strMatrix = matrixDeltaK.toString();
                 st.push(`$$\\Delta_{${k}} = det${strMatrix} = ${deltaK}$$`);
             } // calculating deltas
-            $propertySectionIndex(st.length);
             determine(allDeltas, a_i).forEach((property) => st.push(property));
             $steps(st);
         }
@@ -94,12 +92,7 @@ const HurwitzCriterionSolveBox = ({ a_i }) => {
                         step && (
                             <Grid xs={12} item>
                                 <SubCard
-                                    sx={{
-                                        direction:
-                                            index < propertySectionIndex
-                                                ? "ltr"
-                                                : "rtl",
-                                    }}
+                                    sx={{ direction: "ltr" }}
                                 >
                                     <Grid sx={{ margin: "auto" }} container>
                                         <Grid>

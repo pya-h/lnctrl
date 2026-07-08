@@ -20,9 +20,14 @@ class TopicBaseComponent extends Component {
         }
     }
 
+    reviveState(cache) {
+        // Must be overrided for certain states (e.g. Complex/TransferFunction instances) loaded from the cache.
+        return cache;
+    }
+
     componentDidMount() {
         const cache = getCache(this.state.topicKey);
-        if (cache) this.setState(cache);
+        if (cache) this.setState(this.reviveState(cache));
         window.onbeforeunload = () => this.saveState();
     }
 

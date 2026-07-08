@@ -50,7 +50,11 @@ const axisOffsets = (psize, grids = 5) =>
         : -(psize / 10) / (1 + 3.5 * grids) + (psize * 0.2) / 7;
 
 const CURSOR_Y_OFFSET = 38,
-    DEFAULT_GRIDS = 6;
+    DEFAULT_GRIDS = 6,
+    // how often (ms) a dragged point re-reports its value to the parent sandbox.
+    // the point itself still follows the cursor via onMouseMove; this only throttles
+    // the (potentially heavy) recompute the parent runs on each new value.
+    DRAG_REGISTER_INTERVAL = 33;
 
 const CoordinateSystemContent = ({
     elementDimensions, // react-cursor-position
@@ -119,9 +123,12 @@ const CoordinateSystemContent = ({
     };
 
     const [isMouseDown, setMouseDown] = useState(false);
-    useInterval(registerPoint, isMouseDown ? 10 : null);
+    useInterval(registerPoint, isMouseDown ? DRAG_REGISTER_INTERVAL : null);
     const [isMouseDownForXpoint, setMouseDownForXpoint] = useState(false);
-    useInterval(() => registerPoint(true), isMouseDownForXpoint ? 10 : null);
+    useInterval(
+        () => registerPoint(true),
+        isMouseDownForXpoint ? DRAG_REGISTER_INTERVAL : null
+    );
 
     useEffect(() => {
         // view updater useEffect

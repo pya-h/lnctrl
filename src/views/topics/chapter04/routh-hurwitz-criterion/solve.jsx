@@ -117,7 +117,6 @@ const determine = ({ zeroRows, signChanges }) => {
 const RouthHurwitzCriterionSolveBox = ({ a_i, epsilon, showEpsilonBar }) => {
     const [currentStep, $currentStep] = useState(0);
     const [steps, $steps] = useState("");
-    const [propertySectionIndex, $propertySectionIndex] = useState(0);
 
     useEffect(() => {
         $currentStep(0);
@@ -134,7 +133,6 @@ const RouthHurwitzCriterionSolveBox = ({ a_i, epsilon, showEpsilonBar }) => {
             rows.forEach((row, i) =>
                 st.push(writeRow(row, `s^{${n - i - 1}}\\quad|`))
             );
-            $propertySectionIndex(st.length);
             const systemProps = determine(properties);
             if (systemProps.length) st.push(...systemProps);
             else
@@ -162,12 +160,7 @@ const RouthHurwitzCriterionSolveBox = ({ a_i, epsilon, showEpsilonBar }) => {
                                             ? "light"
                                             : "lightcoral"
                                     }
-                                    sx={{
-                                        direction:
-                                            index < propertySectionIndex
-                                                ? "ltr"
-                                                : "rtl",
-                                    }}
+                                    sx={{ direction: "ltr" }}
                                 >
                                     <Grid sx={{ width: "100%" }} container>
                                         <Grid>

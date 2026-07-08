@@ -9,7 +9,7 @@ const LTI = {
             if (den !== 0)
                 return (t) => u(t) * (num / den) * (1 - Math.exp(-den * t));
             // if a = 0
-            return (t) => u(t) * t;
+            return (t) => u(t) * num * t;
         }
     },
 
@@ -23,7 +23,7 @@ const LTI = {
                     ((num / den) * t +
                         (num / (den * den)) * (Math.exp(-den * t) - 1));
             // if a = 0
-            return (t) => u(t) * t * t;
+            return (t) => u(t) * num * t * t / 2;
         }
     },
 };

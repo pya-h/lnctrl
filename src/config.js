@@ -37,12 +37,21 @@ const error_codes = {
     dimension_mismatch: 432,
 };
 
+const fonts = {
+    Roboto: "Roboto, Helvetica, Arial, sans-serif",
+    Poppins: "Poppins, Helvetica, Arial, sans-serif",
+    Merriweather: "Merriweather, Georgia, 'Times New Roman', serif",
+    "Playfair Display": "'Playfair Display', Georgia, serif",
+    "Roboto Mono": "'Roboto Mono', Menlo, Consolas, monospace",
+};
+
 module.exports = {
     // basename: only at build time to set, and Don't add '/' at end off BASENAME for breadcrumbs, also Don't put only '/' use blank('') instead,
     // like '/berry-material-react/react/default'
     basename: "/",
     defaultPath: "/",
     fontFamily: "Roboto",
+    fonts,
     borderRadius: 12,
     routes,
     error_codes,

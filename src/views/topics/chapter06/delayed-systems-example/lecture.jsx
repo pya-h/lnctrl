@@ -17,7 +17,7 @@ const DelayedSystemsLecture = () => {
                     <img
                         className="lecture-image"
                         src={delay_types_png}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid xs={12} item>

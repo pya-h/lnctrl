@@ -5,7 +5,7 @@ import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 import FirstOrderTfParameters from "./parameters";
@@ -24,7 +24,7 @@ const realCoeficientValue = (coef) => {
 const realAdditionTermsValue = (term) =>
     term > 0
         ? " + " + calculus.strictPrecisionFormat(term)
-        : " - " + calculus.strictPrecisionFormat(term) * -1;
+        : " - " + calculus.strictPrecisionFormat(-term);
 
 const realAdditionalCoefficientValue = (coef) => {
     let result = "";
@@ -221,11 +221,9 @@ const FirstOrderTransferFunctionExamining = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <Typography>
-                    <h2 className="chapter-section-title">
+                <h2 className="chapter-section-title">
                         First-order transfer functions
                     </h2>
-                </Typography>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={1}>

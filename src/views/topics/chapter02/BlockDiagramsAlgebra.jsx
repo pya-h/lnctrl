@@ -1,5 +1,5 @@
 import "views/topics/topics.css";
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 // project imports
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
@@ -9,11 +9,9 @@ const BlockDiagramsAlgebra = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <Typography>
-                    <h2 className="chapter-section-title">
+                <h2 className="chapter-section-title">
                         Block Diagram Algebra
                     </h2>
-                </Typography>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <BlockDiagramsAlgebraExample />

@@ -20,7 +20,7 @@ const RCFilterFrequencyResponseLecture = () => {
                     <img
                         className="lecture-image"
                         src={rc_filter_circuit}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid xs={12} item>

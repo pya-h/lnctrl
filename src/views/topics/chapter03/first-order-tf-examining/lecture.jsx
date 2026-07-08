@@ -50,7 +50,7 @@ const FOTFLecture = () => {
                     <img
                         className="lecture-image"
                         src={simple_LTI_system}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid xs={12} sx={{m: "auto"}} item>

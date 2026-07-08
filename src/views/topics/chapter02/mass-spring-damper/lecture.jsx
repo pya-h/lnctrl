@@ -21,7 +21,7 @@ const MassSpringDamperLecture = () => {
                     <img
                         className="lecture-image"
                         src={mass_spring_damper_image}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid item>
@@ -40,7 +40,7 @@ const MassSpringDamperLecture = () => {
                     <img
                         className="lecture-image"
                         src={mechanic_system_elements}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid item>

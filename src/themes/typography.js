@@ -2,10 +2,12 @@
  * Typography used in theme
  * @param {JsonObject} theme theme customization object
  */
+import { fonts } from 'config';
 
 export default function themeTypography(theme) {
+    const fontFamily = fonts[theme?.customization?.fontFamily] || fonts.Roboto;
     return {
-        fontFamily: `${theme?.customization?.fontFamily || 'Roboto'}, Helvetica, Arial, sans-serif`,
+        fontFamily,
         h6: {
             fontWeight: 500,
             color: theme.heading,

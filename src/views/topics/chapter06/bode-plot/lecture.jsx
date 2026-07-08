@@ -58,7 +58,7 @@ const BodePlotLecture = () => {
                     <img
                         className="lecture-image"
                         src={img_formula_22}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid xs={12} item>
@@ -71,7 +71,7 @@ const BodePlotLecture = () => {
                     <img
                         className="lecture-image"
                         src={img_formula_23}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid xs={12} item>
@@ -98,7 +98,7 @@ const BodePlotLecture = () => {
                         className="lecture-image"
                         src={img_zero_poles_type_in_bode}
                         style={{ width: "100%", maxWidth: "30rem", height: "auto" }}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid xs={12} item>
@@ -136,7 +136,7 @@ const BodePlotLecture = () => {
                     <img
                         className="lecture-image"
                         src={img_standard_second_degree_system}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid xs={12} item>
@@ -170,7 +170,7 @@ const BodePlotLecture = () => {
                     <img
                         className="lecture-image"
                         src={img_m_pw_plot}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid xs={12} item>
@@ -183,7 +183,7 @@ const BodePlotLecture = () => {
                         className="lecture-image"
                         src={img_bode_plot_manual}
                         style={{ width: "100%", maxWidth: "30rem", height: "auto" }}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid xs={12} item>

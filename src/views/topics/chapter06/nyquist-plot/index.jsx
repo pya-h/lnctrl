@@ -3,7 +3,7 @@ import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 import TransferFunction from "math/algebra/functions/fraction";
@@ -43,32 +43,32 @@ const observeSystem = (numerator, denominator) => {
     return { sensitiveSystem, systemIsPainInTheA };
 };
 
-const revisePlot = (numerator, denominator, x, y) => {
-    let systemIsPainInTheA = true;
-    if (denominator.length === 3 && denominator[0] && denominator[1]) {
-        // just have a simple zero pole with degree 1
-        let max = 0;
-        const nearInfinityPole = -Math.abs(denominator[1]) / denominator[0];
+// const revisePlot = (numerator, denominator, x, y) => {
+//     let systemIsPainInTheA = true;
+//     if (denominator.length === 3 && denominator[0] && denominator[1]) {
+//         // just have a simple zero pole with degree 1
+//         let max = 0;
+//         const nearInfinityPole = -Math.abs(denominator[1]) / denominator[0];
 
-        const absP = Math.abs(nearInfinityPole);
-        for (let i = 0; i < x.length; i++) {
-            if (Math.abs(x[i]) + 0.001 >= absP || x[i] === 0) {
-                delete x[i];
-                delete y[i];
-            } else {
-                const absy = Math.abs(y[i]);
-                if (absy > max) max = absy;
-            }
-        }
-        x.push(nearInfinityPole - 0.001);
-        y.push(max * 10);
-        x.push(nearInfinityPole - 0.001);
-        y.push(-max * 10);
+//         const absP = Math.abs(nearInfinityPole);
+//         for (let i = 0; i < x.length; i++) {
+//             if (Math.abs(x[i]) + 0.001 >= absP || x[i] === 0) {
+//                 delete x[i];
+//                 delete y[i];
+//             } else {
+//                 const absy = Math.abs(y[i]);
+//                 if (absy > max) max = absy;
+//             }
+//         }
+//         x.push(nearInfinityPole - 0.001);
+//         y.push(max * 10);
+//         x.push(nearInfinityPole - 0.001);
+//         y.push(-max * 10);
 
-        systemIsPainInTheA = false;
-    }
-    return { x, y, systemIsPainInTheA };
-};
+//         systemIsPainInTheA = false;
+//     }
+//     return { x, y, systemIsPainInTheA };
+// };
 let currentRawNum = "",
     currentRawDen = "";
 const _1PlusJ = calculus.arrayToTrace([-1], [0], 1, "-1+0j", false, "markers");
@@ -250,9 +250,7 @@ const NyquistPlot = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <Typography>
-                    <h2 className="chapter-section-title">Nyquist plot</h2>
-                </Typography>
+                <h2 className="chapter-section-title">Nyquist plot</h2>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={gridSpacing}>

@@ -25,7 +25,7 @@ const RootLocusLecture = () => {
                     <img
                         className="lecture-image"
                         src={img_control_system_block_diagram}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid xs={12} item>

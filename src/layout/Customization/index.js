@@ -33,23 +33,8 @@ import {
 } from "store/actions";
 import { gridSpacing } from "store/constant";
 import Switcher from "views/ui-component/buttons/Switcher";
+import { fonts } from "config";
 // ==============================|| LIVE CUSTOMIZATION ||============================== //
-const getSelectedFont = (selection) => {
-    switch (selection) {
-        case "Georgia":
-            return "Georgia";
-        case "Calibri":
-            return "Calibri";
-        case "Verdana":
-            return "Verdana";
-        case "Roboto":
-            return "Roboto";
-        case "Arial":
-            return "Arial";
-        default:
-            return "sans-serif";
-    }
-};
 const Customization = () => {
     const theme = useTheme();
     const dispatch = useDispatch();
@@ -77,13 +62,10 @@ const Customization = () => {
         dispatch(ReduxSetBorderRadius(borderRadius));
     }, [dispatch, borderRadius]);
 
-    const initialFont = getSelectedFont(customization.fontFamily);
-
     // state - font family
-    const [fontFamily, setFontFamily] = useState(initialFont);
+    const [fontFamily, setFontFamily] = useState(customization.fontFamily);
     useEffect(() => {
-        const newFont = getSelectedFont(fontFamily);
-        dispatch(ReduxSetFontFamily(newFont));
+        dispatch(ReduxSetFontFamily(fontFamily));
     }, [dispatch, fontFamily]);
 
     return (
@@ -154,81 +136,26 @@ const Customization = () => {
                                         }
                                         name="row-radio-buttons-group"
                                     >
-                                        <FormControlLabel
-                                            value="Arial"
-                                            control={<Radio />}
-                                            label="Arial"
-                                            sx={{
-                                                "& .MuiSvgIcon-root": {
-                                                    fontSize: 28,
-                                                },
-                                                "& .MuiFormControlLabel-label":
-                                                    {
-                                                        color: theme.palette
-                                                            .grey[900],
+                                        {Object.keys(fonts).map((key) => (
+                                            <FormControlLabel
+                                                key={key}
+                                                value={key}
+                                                control={<Radio />}
+                                                label={key}
+                                                sx={{
+                                                    "& .MuiSvgIcon-root": {
+                                                        fontSize: 28,
                                                     },
-                                            }}
-                                        />
-                                        <FormControlLabel
-                                            value="Calibri"
-                                            control={<Radio />}
-                                            label="Calibri"
-                                            sx={{
-                                                "& .MuiSvgIcon-root": {
-                                                    fontSize: 28,
-                                                },
-                                                "& .MuiFormControlLabel-label":
-                                                    {
-                                                        color: theme.palette
-                                                            .grey[900],
-                                                    },
-                                            }}
-                                        />
-                                        <FormControlLabel
-                                            value="Georgia"
-                                            control={<Radio />}
-                                            label="Georgia"
-                                            sx={{
-                                                "& .MuiSvgIcon-root": {
-                                                    fontSize: 28,
-                                                },
-                                                "& .MuiFormControlLabel-label":
-                                                    {
-                                                        color: theme.palette
-                                                            .grey[900],
-                                                    },
-                                            }}
-                                        />
-                                        <FormControlLabel
-                                            value="Verdana"
-                                            control={<Radio />}
-                                            label="Verdana"
-                                            sx={{
-                                                "& .MuiSvgIcon-root": {
-                                                    fontSize: 28,
-                                                },
-                                                "& .MuiFormControlLabel-label":
-                                                    {
-                                                        color: theme.palette
-                                                            .grey[900],
-                                                    },
-                                            }}
-                                        />
-                                        <FormControlLabel
-                                            value="Roboto"
-                                            control={<Radio />}
-                                            label="Roboto"
-                                            sx={{
-                                                "& .MuiSvgIcon-root": {
-                                                    fontSize: 28,
-                                                },
-                                                "& .MuiFormControlLabel-label":
-                                                    {
-                                                        color: theme.palette
-                                                            .grey[900],
-                                                    },
-                                            }}
-                                        />
+                                                    "& .MuiFormControlLabel-label":
+                                                        {
+                                                            color: theme.palette
+                                                                .grey[900],
+                                                            fontFamily:
+                                                                fonts[key],
+                                                        },
+                                                }}
+                                            />
+                                        ))}
                                     </RadioGroup>
                                 </FormControl>
                             </SubCard>

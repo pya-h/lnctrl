@@ -245,11 +245,9 @@ const SketchingRootLocus = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <Typography>
-                    <h2 className="chapter-section-title">
+                <h2 className="chapter-section-title">
                         Root Locus of the System Poles
                     </h2>
-                </Typography>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={gridSpacing}>

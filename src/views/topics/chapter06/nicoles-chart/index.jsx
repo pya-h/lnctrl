@@ -3,7 +3,7 @@ import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 import NicolesChartParameters from "./parameters";
@@ -216,9 +216,7 @@ const NicolesChart = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <Typography>
-                    <h2 className="chapter-section-title">Nichols chart</h2>
-                </Typography>
+                <h2 className="chapter-section-title">Nichols chart</h2>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={gridSpacing}>

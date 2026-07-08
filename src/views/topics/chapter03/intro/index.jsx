@@ -23,7 +23,7 @@ const Ch03Intro = () => {
                         className="lecture-image"
                         style={{ width: "100%", maxWidth: "30rem", height: "auto" }}
                         src={img_closed_loop_system_standard_model}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid xs={12} item>
@@ -36,7 +36,7 @@ const Ch03Intro = () => {
                         className="lecture-image"
                         style={{ width: "100%", maxWidth: "30rem", height: "auto" }}
                         src={img_tf_in_out}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
             </Grid>

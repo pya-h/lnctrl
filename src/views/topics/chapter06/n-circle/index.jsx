@@ -3,7 +3,7 @@ import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus";
 import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
-import { Grid, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import PlotlyBox from "views/plotter/PlotlyBox";
 import NCircleParameters from "./parameters";
 import MainCard from "views/ui-component/cards/MainCard";
@@ -107,11 +107,9 @@ const NCircle = () => {
     return (
         <MainCard>
             <Grid item spacing={gridSpacing}>
-                <Typography>
-                    <h2 className="chapter-section-title">
+                <h2 className="chapter-section-title">
                         Constant-phase locus (N-circle)
                     </h2>
-                </Typography>
             </Grid>
             <Grid item spacing={gridSpacing}>
                 <Grid container direction="column" spacing={gridSpacing}>

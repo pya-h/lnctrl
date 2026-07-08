@@ -48,7 +48,6 @@ const NavBar = () => {
             {chapterList.map((chapter) => (
                 <NavLink
                     key={chapter.link}
-                    // "/" would match every route, so only mark Topics active on an exact match
                     end={chapter.link === "/"}
                     className={({ isActive }) =>
                         isActive ? "nav-bar-item active" : "nav-bar-item"

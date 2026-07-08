@@ -29,7 +29,7 @@ const RouthHurwitzCriterionLecture = () => {
                     <img
                         className="lecture-image"
                         src={routh_hurwitz_symbolic_table}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid item>

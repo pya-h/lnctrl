@@ -42,7 +42,7 @@ const Ch06Intro = () => {
                         className="lecture-image"
                         style={{ textAlign: "center" }}
                         src={img_in_out_signals}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid item>

@@ -13,7 +13,6 @@
     transform: translateY(-2px);
 }
 
-/* focus + the .active class react-router applies to the current route */
 .nav-bar-item:focus-visible,
 .nav-bar-item.active {
     color: #18BC9C;

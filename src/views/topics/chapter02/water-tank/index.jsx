@@ -116,10 +116,7 @@ export default class WaterTankLevelExample extends TopicBaseComponent {
     setTf = (tf) => this.updateState("tf", tf);
     setHi = (hi) => this.updateState("hi", hi);
     setSystems = (systems) => this.updateState("systems", systems);
-    clearSystems = () => this.setState(state => {
-        state.length = 0;
-        return state;
-    });
+    clearSystems = () => this.setState({ systems: [] });
     
     setTraces = (traces) => this.updateState("traces", traces);
     setDiffEquation = (diffEquation) =>
@@ -130,14 +127,11 @@ export default class WaterTankLevelExample extends TopicBaseComponent {
     set3DPlotEnabled = (isIt) => this.updateState("is3DPlotEnabled", isIt);
 
     componentDidUpdate(prevProps, prevState) {
-        console.log(this.state, prevState)
-
         const basicParamsChanged =
         this.state.R !== prevState.R ||
         this.state.C !== prevState.C ||
         this.state.hi !== prevState.hi ||
         this.state.Qin !== prevState.Qin;
-        console.log('basicParamsChanged', basicParamsChanged)
         if (
             basicParamsChanged ||
             this.state.ti !== prevState.ti ||
@@ -149,8 +143,6 @@ export default class WaterTankLevelExample extends TopicBaseComponent {
         ) {
             const h_t = calculus.ODE.cc1ode(+this.state.R * +this.state.C, 1, +this.state.R * +this.state.Qin, +this.state.hi);
             const [x, y] = calculus.pointify(h_t, +this.state.ti, +this.state.tf, +this.state.N);
-            console.log('DidUpdate state')
-
             this.setDeltaX(x[1] - x[0]);
             this.selectY(y); // currentY = y
             this.setDiffEquation(hydraulicSystemEquation(this.state.R, this.state.C, this.state.Qin));

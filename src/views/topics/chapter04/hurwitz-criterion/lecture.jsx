@@ -25,7 +25,7 @@ const HurwitzCriterionLecture = () => {
                     <img
                         className="lecture-image"
                         src={hurwitz_symbolic_deltas}
-                        alt="Image loading failed"
+                        alt="Failed loading!"
                     />
                 </Grid>
                 <Grid item>

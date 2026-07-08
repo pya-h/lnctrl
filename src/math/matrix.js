@@ -48,20 +48,21 @@ class Matrix {
 
         if (this.M[0] instanceof Array) {
             const m = this.M[0].length;
-            if (m > 1) trans = Array(m).fill(Array(n).fill(0));
-            else if (m === 1) trans = Array(n).fill(0);
-
-            for (let i = 0; i < n; i++) {
-                if (m > 1) {
+            if (m > 1) {
+                trans = Array.from({ length: m }, () => Array(n).fill(0));
+                for (let i = 0; i < n; i++) {
                     for (let j = 0; j < m; j++) {
-                        trans[i][j] = this.M[j][i];
+                        trans[j][i] = this.M[i][j];
                     }
-                } else if (m === 1) {
+                }
+            } else if (m === 1) {
+                trans = Array(n).fill(0);
+                for (let i = 0; i < n; i++) {
                     trans[i] = this.M[i][0];
                 }
             }
         } else {
-            trans = Array(n).fill(Array(1).fill(0));
+            trans = Array.from({ length: n }, () => [0]);
             for (let i = 0; i < n; i++) {
                 trans[i][0] = this.M[i];
             }

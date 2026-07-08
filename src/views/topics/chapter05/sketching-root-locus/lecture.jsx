@@ -15,7 +15,7 @@ const SketchingRootLocusLecture = () => {
             <Grid xs={12} sx={{ m: "auto", textAlign: "center" }}>
                 <img
                     src={img_tf_k_gain}
-                    alt="Image loading failed"
+                    alt="Failed loading!"
                 />
             </Grid>
             <Grid xs={12} item>

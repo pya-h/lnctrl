@@ -33,11 +33,11 @@ const MatrixInput = ({ rows, columns, initial, setter }) => {
             {Array(rows)
                 .fill(0)
                 .map((_, i) => (
-                    <Grid container direction="row">
+                    <Grid container direction="row" key={i}>
                         {Array(columns)
                             .fill(0)
                             .map((_, j) => (
-                                <Grid xs={columnSize} item>
+                                <Grid xs={columnSize} item key={j}>
                                     <TextField
                                         sx={{
                                             input: {

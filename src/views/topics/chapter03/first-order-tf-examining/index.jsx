@@ -3,7 +3,6 @@ import FirstOrderTfLecture from "./lecture";
 // project imports
 import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus";
-import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
 import { Grid } from "@mui/material";
 import PlotlyBox from "views/plotter/PlotlyBox";
@@ -12,7 +11,7 @@ import FirstOrderTfParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/fraction";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
-import { getCache, cacheParameters } from 'toolshed';
+import TopicBaseComponent from "views/topics/TopicBaseComponent";
 
 
 const realCoeficientValue = (coef) => {
@@ -104,25 +103,40 @@ const symbols = {
     out: "c",
 };
 
-const FirstOrderTransferFunctionExamining = () => {
+class FirstOrderTransferFunctionExamining extends TopicBaseComponent {
+    state = {
+        topicKey: "ch3-1tf",
+        a: 1.0,
+        k: 1.0,
+        t_i: 0,
+        t_f: 5,
+        inputSignal: 0, // 0 as step | 1 as ramp === assume this state's value as the gradiant value of th input signal function
+        // gradiant of u(t) is 0 and unit ramp is one
+        systems: [],
+        traces: [],
+        response: null,
+        thickness: 1.0, // graph line thickness
+        isGraphCatured: false,
+        is3DPlotEnabled: false,
+        N: 1000,
+    };
 
-    const [a, $a] = useState(getCache("ch3-1tf", "a", 1.0));
-    const [k, $k] = useState(getCache("ch3-1tf", "k", 1.0));
-    const [t_i, $t_i] = useState(getCache("ch3-1tf", "t_i", 0));
-    const [t_f, $t_f] = useState(getCache("ch3-1tf", "t_f", 5));
-    const [inputSignal, $inputSignal] = useState(getCache("ch3-1tf", "inputSignal", 0)); // 0 as step | 1 as ramp === assume this state's value as the gradiant value of th input signal function
-    // gradiant of u(t) is 0 and unit ramp is one
-    const [systems, $systems] = useState([]);
-    const [traces, $traces] = useState([]);
-    const [response, $response] = useState(null);
-    const [thickness, $thickness] = useState(1.0); // graph line thickness
-    const [isGraphCatured, $graphCaptured] = useState(false);
-    const [is3DPlotEnabled, $3DPlotEnabled] = useState(false);
-    const [N, $N] = useState(1000);
+    persistKeys = ["a", "k", "t_i", "t_f", "inputSignal", "thickness", "N"];
 
-    const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
+    $a = (value) => this.setState({ a: value });
+    $k = (value) => this.setState({ k: value });
+    $t_i = (value) => this.setState({ t_i: value });
+    $t_f = (value) => this.setState({ t_f: value });
+    $inputSignal = (value) => this.setState({ inputSignal: value });
+    $systems = (value) => this.setState({ systems: value });
+    $thickness = (value) => this.setState({ thickness: value });
+    $N = (value) => this.setState({ N: value });
 
-    const capture = () => {
+    toggle3DPlot = () =>
+        this.setState((state) => ({ is3DPlotEnabled: !state.is3DPlotEnabled }));
+
+    capture = () => {
+        const { systems, a, k, inputSignal, thickness } = this.state;
         const capturedSystems = [...systems];
         const index = capturedSystems.findIndex(
             (sys) =>
@@ -142,20 +156,31 @@ const FirstOrderTransferFunctionExamining = () => {
                     (systems.length + 1).toString() +
                     "}$$",
             });
-            $systems(capturedSystems);
-            $graphCaptured(true);
+            this.setState({ systems: capturedSystems, isGraphCatured: true });
         }
     };
 
-    useEffect(() => {
+    refreshTraces = () => {
+        const {
+            a,
+            k,
+            t_i,
+            t_f,
+            inputSignal,
+            is3DPlotEnabled,
+            thickness,
+            systems,
+            N,
+        } = this.state;
         let g_t = null;
+        let response = null;
         if (!inputSignal) {
             // step
             g_t = calculus.LTI.step(1, +k, +a);
-            $response(stepResponse(+k, +a));
+            response = stepResponse(+k, +a);
         } else {
             g_t = calculus.LTI.ramp(1, +k, +a);
-            $response(rampResponse(+k, +a));
+            response = rampResponse(+k, +a);
         }
         const [x, y] = calculus.pointify(g_t, +t_i, +t_f, +N);
         // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
@@ -206,143 +231,192 @@ const FirstOrderTransferFunctionExamining = () => {
                 name: `${symbols.out}(${symbols.in})`,
             });
 
-        $traces(all);
-        cacheParameters("ch3-1tf", {a, k, t_i, t_f, inputSignal});
-    }, [a, k, t_i, t_f, inputSignal, is3DPlotEnabled, thickness, systems, N]);
+        this.setState({ traces: all, response });
+    };
 
-    useEffect(() => {
-        $graphCaptured(false);
-    }, [a, k, inputSignal]);
+    componentDidMount() {
+        super.componentDidMount();
+        this.refreshTraces();
+    }
 
-    const update = (changes) => {
-        if (changes) $thickness(changes.thickness);
+    componentDidUpdate(prevProps, prevState) {
+        const {
+            a,
+            k,
+            t_i,
+            t_f,
+            inputSignal,
+            is3DPlotEnabled,
+            thickness,
+            systems,
+            N,
+        } = this.state;
+        if (
+            a !== prevState.a ||
+            k !== prevState.k ||
+            t_i !== prevState.t_i ||
+            t_f !== prevState.t_f ||
+            inputSignal !== prevState.inputSignal ||
+            is3DPlotEnabled !== prevState.is3DPlotEnabled ||
+            thickness !== prevState.thickness ||
+            systems !== prevState.systems ||
+            N !== prevState.N
+        )
+            this.refreshTraces();
+
+        if (
+            a !== prevState.a ||
+            k !== prevState.k ||
+            inputSignal !== prevState.inputSignal
+        )
+            this.setState({ isGraphCatured: false });
+    }
+
+    update = (changes) => {
+        if (changes) this.$thickness(changes.thickness);
         //and so...
     };
-    return (
-        <MainCard>
-            <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">
+
+    render() {
+        const {
+            a,
+            k,
+            t_i,
+            t_f,
+            inputSignal,
+            systems,
+            traces,
+            response,
+            isGraphCatured,
+            N,
+        } = this.state;
+
+        return (
+            <MainCard>
+                <Grid item spacing={gridSpacing}>
+                    <h2 className="chapter-section-title">
                         First-order transfer functions
                     </h2>
-            </Grid>
-            <Grid item spacing={gridSpacing}>
-                <Grid container direction="column" spacing={1}>
-                    <Grid
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            margin: "auto",
-                            direction: "ltr",
-                        }}
-                        item
-                    >
-                        <FirstOrderTfLecture />
-                    </Grid>
+                </Grid>
+                <Grid item spacing={gridSpacing}>
+                    <Grid container direction="column" spacing={1}>
+                        <Grid
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                margin: "auto",
+                                direction: "ltr",
+                            }}
+                            item
+                        >
+                            <FirstOrderTfLecture />
+                        </Grid>
 
-                    <Grid sx={{ margin: "auto", width: "100%" }} item>
-                        <SubCard sx={{ direction: "ltr" }}>
-                            <Grid
-                                id="formulaBox"
-                                sx={{ margin: "auto" }}
-                                container
-                                direction="row"
-                            >
-                                {systems.map((sys, index) => {
-                                    let formula = null;
-                                    if (!sys.inputSignal)
-                                        formula = indexedStepResponse(
-                                            sys.k,
-                                            sys.a,
-                                            index + 1
-                                        );
-                                    else
-                                        formula = indexedRampResponse(
-                                            sys.k,
-                                            sys.a,
-                                            index + 1
-                                        );
+                        <Grid sx={{ margin: "auto", width: "100%" }} item>
+                            <SubCard sx={{ direction: "ltr" }}>
+                                <Grid
+                                    id="formulaBox"
+                                    sx={{ margin: "auto" }}
+                                    container
+                                    direction="row"
+                                >
+                                    {systems.map((sys, index) => {
+                                        let formula = null;
+                                        if (!sys.inputSignal)
+                                            formula = indexedStepResponse(
+                                                sys.k,
+                                                sys.a,
+                                                index + 1
+                                            );
+                                        else
+                                            formula = indexedRampResponse(
+                                                sys.k,
+                                                sys.a,
+                                                index + 1
+                                            );
 
-                                    return (
+                                        return (
+                                            <Grid
+                                                style={{ fontSize: "18px" }}
+                                                md={6}
+                                                sm={12}
+                                                item
+                                            >
+                                                <MathJax>{formula}</MathJax>
+                                            </Grid>
+                                        );
+                                    })}
+                                    {!isGraphCatured && (
                                         <Grid
                                             style={{ fontSize: "18px" }}
                                             md={6}
                                             sm={12}
-                                            item
                                         >
-                                            <MathJax>{formula}</MathJax>
+                                            <MathJax>{response}</MathJax>
                                         </Grid>
-                                    );
-                                })}
-                                {!isGraphCatured && (
-                                    <Grid
-                                        style={{ fontSize: "18px" }}
-                                        md={6}
-                                        sm={12}
-                                    >
-                                        <MathJax>{response}</MathJax>
-                                    </Grid>
-                                )}
-                            </Grid>
-                        </SubCard>
-                    </Grid>
-                    <Grid
-                        spacing={2}
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            margin: "auto",
-                            direction: "ltr",
-                        }}
-                        container
-                    >
+                                    )}
+                                </Grid>
+                            </SubCard>
+                        </Grid>
                         <Grid
-                            md={3}
-                            sm={12}
-                            xs={12}
-                            sx={{ marginTop: "1%", width: "100%" }}
+                            spacing={2}
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                margin: "auto",
+                                direction: "ltr",
+                            }}
                             container
                         >
-                            <Grid xs={12}>
-                                <FirstOrderTfParameters
-                                    a={a}
-                                    k={k}
-                                    t_i={t_i}
-                                    t_f={t_f}
-                                    $a={$a}
-                                    $k={$k}
-                                    $t_i={$t_i}
-                                    $t_f={$t_f}
-                                    inputSignal={inputSignal}
-                                    $inputSignal={$inputSignal}
-                                    N={N}
-                                    $N={$N}
-                                />
+                            <Grid
+                                md={3}
+                                sm={12}
+                                xs={12}
+                                sx={{ marginTop: "1%", width: "100%" }}
+                                container
+                            >
+                                <Grid xs={12}>
+                                    <FirstOrderTfParameters
+                                        a={a}
+                                        k={k}
+                                        t_i={t_i}
+                                        t_f={t_f}
+                                        $a={this.$a}
+                                        $k={this.$k}
+                                        $t_i={this.$t_i}
+                                        $t_f={this.$t_f}
+                                        inputSignal={inputSignal}
+                                        $inputSignal={this.$inputSignal}
+                                        N={N}
+                                        $N={this.$N}
+                                    />
+                                </Grid>
                             </Grid>
-                        </Grid>
-                        <Grid md={9} sm={12} xs={12} item>
-                            <SubCard>
-                                <GraphMenu
-                                    capture={capture}
-                                    reset={() => $systems([])}
-                                    update={(changes) => update(changes)}
-                                    toggle3DPlot={toggle3DPlot}
-                                />
-                            </SubCard>
-                            <hr />
-                            <Grid xs={12} item>
+                            <Grid md={9} sm={12} xs={12} item>
                                 <SubCard>
-                                    <PlotlyBox
-                                        title="Step/ramp response"
-                                        traces={traces}
+                                    <GraphMenu
+                                        capture={this.capture}
+                                        reset={() => this.$systems([])}
+                                        update={(changes) => this.update(changes)}
+                                        toggle3DPlot={this.toggle3DPlot}
                                     />
                                 </SubCard>
+                                <hr />
+                                <Grid xs={12} item>
+                                    <SubCard>
+                                        <PlotlyBox
+                                            title="Step/ramp response"
+                                            traces={traces}
+                                        />
+                                    </SubCard>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
-        </MainCard>
-    );
-};
+            </MainCard>
+        );
+    }
+}
 
 export default FirstOrderTransferFunctionExamining;

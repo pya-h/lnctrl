@@ -1,7 +1,6 @@
 // project imports
 import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus";
-import { useState, useEffect } from "react";
 import GraphMenu from "views/plotter/GraphMenu";
 import { Grid } from "@mui/material";
 import PlotlyBox from "views/plotter/PlotlyBox";
@@ -9,24 +8,36 @@ import MCircleParameters from "./parameters";
 import MainCard from "views/ui-component/cards/MainCard";
 import { gridSpacing } from "store/constant";
 import MCircleLecture from "./lecture";
+import TopicBaseComponent from "views/topics/TopicBaseComponent";
 
-const MCircle = () => {
-    const [M, $M] = useState(1.0);
-    const [x_i, $x_i] = useState(-1);
-    const [x_f, $x_f] = useState(1);
-    // gradiant of u(t) is 0 and unit ramp is one
+class MCircle extends TopicBaseComponent {
+    state = {
+        topicKey: "ch6-mcircle",
+        M: 1.0,
+        x_i: -1,
+        x_f: 1,
+        // gradiant of u(t) is 0 and unit ramp is one
+        systems: [],
+        traces: [],
+        thickness: 1.0, // graph line thickness
+        is3DPlotEnabled: false,
+        iterations: 10000,
+    };
 
-    const [systems, $systems] = useState([]);
+    persistKeys = ["M", "x_i", "x_f", "thickness", "iterations"];
 
-    const [traces, $traces] = useState([]);
+    $M = (value) => this.setState({ M: value });
+    $x_i = (value) => this.setState({ x_i: value });
+    $x_f = (value) => this.setState({ x_f: value });
+    $systems = (value) => this.setState({ systems: value });
+    $thickness = (value) => this.setState({ thickness: value });
+    $iterations = (value) => this.setState({ iterations: value });
 
-    const [thickness, $thickness] = useState(1.0); // graph line thickness
-    const [is3DPlotEnabled, $3DPlotEnabled] = useState(false);
-    const [iterations, $iterations] = useState(10000);
+    toggle3DPlot = () =>
+        this.setState((state) => ({ is3DPlotEnabled: !state.is3DPlotEnabled }));
 
-    const toggle3DPlot = () => $3DPlotEnabled(!is3DPlotEnabled);
-
-    const capture = () => {
+    capture = () => {
+        const { systems, M, thickness } = this.state;
         const capturedSystems = [...systems];
         const index = capturedSystems.findIndex((sys) => sys.M === +M);
         if (index === -1) {
@@ -35,11 +46,13 @@ const MCircle = () => {
                 M: +M,
                 thickness,
             });
-            $systems(capturedSystems);
+            this.$systems(capturedSystems);
         }
     };
 
-    useEffect(() => {
+    refreshTraces = () => {
+        const { M, x_i, x_f, is3DPlotEnabled, thickness, systems, iterations } =
+            this.state;
         try {
             // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
             // so that the traces will be loaded with new conditions
@@ -78,93 +91,117 @@ const MCircle = () => {
                 );
             }
 
-            $traces(all);
+            this.setState({ traces: all });
         } catch (ex) {
             console.log(ex);
         }
-    }, [M, x_i, x_f, is3DPlotEnabled, thickness, systems, iterations]);
+    };
 
-    const update = (changes) => {
-        if (changes) $thickness(changes.thickness);
+    componentDidMount() {
+        super.componentDidMount();
+        this.refreshTraces();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        const { M, x_i, x_f, is3DPlotEnabled, thickness, systems, iterations } =
+            this.state;
+        if (
+            M !== prevState.M ||
+            x_i !== prevState.x_i ||
+            x_f !== prevState.x_f ||
+            is3DPlotEnabled !== prevState.is3DPlotEnabled ||
+            thickness !== prevState.thickness ||
+            systems !== prevState.systems ||
+            iterations !== prevState.iterations
+        )
+            this.refreshTraces();
+    }
+
+    update = (changes) => {
+        if (changes) this.$thickness(changes.thickness);
         //and so...
     };
-    return (
-        <MainCard>
-            <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">
+
+    render() {
+        const { M, x_i, x_f, iterations, traces } = this.state;
+        return (
+            <MainCard>
+                <Grid item spacing={gridSpacing}>
+                    <h2 className="chapter-section-title">
                         Constant-Magnitude Locus (M-circle)
                     </h2>
-            </Grid>
-            <Grid item spacing={gridSpacing}>
-                <Grid container direction="column" spacing={gridSpacing}>
-                    <Grid
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            margin: "auto",
-                            direction: "ltr",
-                        }}
-                        item
-                    >
-                        <MCircleLecture />
-                    </Grid>
-
-                    <Grid
-                        spacing={2}
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            margin: "auto",
-                            direction: "ltr",
-                        }}
-                        container
-                    >
+                </Grid>
+                <Grid item spacing={gridSpacing}>
+                    <Grid container direction="column" spacing={gridSpacing}>
                         <Grid
-                            md={3}
-                            sm={12}
-                            xs={12}
-                            sx={{ marginTop: "1%", width: "100%" }}
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                margin: "auto",
+                                direction: "ltr",
+                            }}
+                            item
+                        >
+                            <MCircleLecture />
+                        </Grid>
+
+                        <Grid
+                            spacing={2}
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                margin: "auto",
+                                direction: "ltr",
+                            }}
                             container
                         >
-                            <Grid xs={12}>
-                                <MCircleParameters
-                                    M={M}
-                                    $M={(value) => +value >= 0 && $M(value)}
-                                    x_i={x_i}
-                                    x_f={x_f}
-                                    $x_i={$x_i}
-                                    $x_f={$x_f}
-                                    iterations={iterations}
-                                    $iterations={$iterations}
-                                />
+                            <Grid
+                                md={3}
+                                sm={12}
+                                xs={12}
+                                sx={{ marginTop: "1%", width: "100%" }}
+                                container
+                            >
+                                <Grid xs={12}>
+                                    <MCircleParameters
+                                        M={M}
+                                        $M={(value) => +value >= 0 && this.$M(value)}
+                                        x_i={x_i}
+                                        x_f={x_f}
+                                        $x_i={this.$x_i}
+                                        $x_f={this.$x_f}
+                                        iterations={iterations}
+                                        $iterations={this.$iterations}
+                                    />
+                                </Grid>
                             </Grid>
-                        </Grid>
-                        <Grid md={9} sm={12} xs={12} item>
-                            <SubCard>
-                                <GraphMenu
-                                    capture={capture}
-                                    reset={() => $systems([])}
-                                    update={(changes) => update(changes)}
-                                    toggle3DPlot={toggle3DPlot}
-                                />
-                            </SubCard>
-                            <hr />
-                            <Grid xs={12} item>
+                            <Grid md={9} sm={12} xs={12} item>
                                 <SubCard>
-                                    <Grid xs={12} item>
-                                        <PlotlyBox
-                                            title="M-Circle"
-                                            traces={traces}
-                                        />
-                                    </Grid>
+                                    <GraphMenu
+                                        capture={this.capture}
+                                        reset={() => this.$systems([])}
+                                        update={(changes) => this.update(changes)}
+                                        toggle3DPlot={this.toggle3DPlot}
+                                    />
                                 </SubCard>
+                                <hr />
+                                <Grid xs={12} item>
+                                    <SubCard>
+                                        <Grid xs={12} item>
+                                            <PlotlyBox
+                                                title="M-Circle"
+                                                traces={traces}
+                                            />
+                                        </Grid>
+                                    </SubCard>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
-        </MainCard>
-    );
-};
+            </MainCard>
+        );
+    }
+}
 
 export default MCircle;

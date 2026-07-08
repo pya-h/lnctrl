@@ -3,13 +3,13 @@ import MassSpringDamperLecture from "./lecture";
 // project imports
 import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "../../../../math/calculus";
-import { useState, useEffect } from "react";
 import MassSpringDamperParameters from "./parameters";
 
 import GraphMenu from "views/plotter/GraphMenu";
 import { Grid } from "@mui/material";
 import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
+import TopicBaseComponent from "views/topics/TopicBaseComponent";
 
 const mechanicSystemEquation = (m, c, k, F_t) =>
     "$$" +
@@ -43,27 +43,60 @@ const symbols = {
     },
 };
 
-const MassSpringDamperExample = () => {
-    const [m, $m] = useState(100);
-    const [c, $c] = useState(1.0);
-    const [k, $k] = useState(1.0);
-    const [F_t, $F_t] = useState(0.0);
-    const [t_i, $t_i] = useState(0);
-    const [t_f, $t_f] = useState(5);
-    const [x_i, $x_i] = useState(0.0);
-    const [v_i, $v_i] = useState(1.0);
-    const [systems, setSystems] = useState([]);
-    const [traces, setTraces] = useState([]);
-    const [diffEquation, setDiffEquation] = useState(null);
-    const [thickness, setThickness] = useState(1.0); // graph line thickness
-    const [isGraphCatured, setGraphCaptured] = useState(false);
-    const [output, $output] = useState(null); // y or null as x(t) | dy as v(t) | d2y as a(t)
-    const [is3DPlotEnabled, set3DPlotEnabled] = useState(false);
-    const [N, $N] = useState(1000);
+class MassSpringDamperExample extends TopicBaseComponent {
+    state = {
+        topicKey: "ch2-msd",
+        m: 100,
+        c: 1.0,
+        k: 1.0,
+        F_t: 0.0,
+        t_i: 0,
+        t_f: 5,
+        x_i: 0.0,
+        v_i: 1.0,
+        systems: [],
+        traces: [],
+        diffEquation: null,
+        thickness: 1.0, // graph line thickness
+        isGraphCatured: false,
+        output: null, // y or null as x(t) | dy as v(t) | d2y as a(t)
+        is3DPlotEnabled: false,
+        N: 1000,
+    };
 
-    const toggle3DPlot = () => set3DPlotEnabled(!is3DPlotEnabled);
+    persistKeys = [
+        "m",
+        "c",
+        "k",
+        "F_t",
+        "t_i",
+        "t_f",
+        "x_i",
+        "v_i",
+        "output",
+        "thickness",
+        "N",
+    ];
 
-    const capture = () => {
+    $m = (value) => this.setState({ m: value });
+    $c = (value) => this.setState({ c: value });
+    $k = (value) => this.setState({ k: value });
+    $F_t = (value) => this.setState({ F_t: value });
+    $t_i = (value) => this.setState({ t_i: value });
+    $t_f = (value) => this.setState({ t_f: value });
+    $x_i = (value) => this.setState({ x_i: value });
+    $v_i = (value) => this.setState({ v_i: value });
+    $output = (value) => this.setState({ output: value });
+    $N = (value) => this.setState({ N: value });
+    setSystems = (value) => this.setState({ systems: value });
+    setThickness = (value) => this.setState({ thickness: value });
+
+    toggle3DPlot = () =>
+        this.setState((state) => ({ is3DPlotEnabled: !state.is3DPlotEnabled }));
+
+    capture = () => {
+        const { systems, v_i, x_i, m, c, k, F_t, output, thickness } =
+            this.state;
         const capturedSystems = [...systems];
         const index = capturedSystems.findIndex(
             (sys) =>
@@ -93,12 +126,26 @@ const MassSpringDamperExample = () => {
                     (systems.length + 1).toString() +
                     "}$$",
             });
-            setSystems(capturedSystems);
-            setGraphCaptured(true);
+            this.setState({ systems: capturedSystems, isGraphCatured: true });
         }
     };
 
-    useEffect(() => {
+    refreshTraces = () => {
+        const {
+            m,
+            c,
+            k,
+            F_t,
+            t_i,
+            t_f,
+            x_i,
+            v_i,
+            output,
+            is3DPlotEnabled,
+            thickness,
+            systems,
+            N,
+        } = this.state;
         const fyt = (t, x, v) => Number((F_t - +c * v - +k * x) / +m);
         const [x, y, dy] = calculus.ODE.euiler(
             2,
@@ -120,7 +167,7 @@ const MassSpringDamperExample = () => {
                 i++ // which one is faster? for loop or xi.map(...)  ? ==> i think for is faster and better
             )
                 y[i] = fyt(x[i], y[i], dy[i]); // a(t) is actually the fyt defined above; first calculate x(t) [y] and v(t) [dy_dt] and then use it to calculate a
-        setDiffEquation(mechanicSystemEquation(m, c, k, F_t));
+        const diffEquation = mechanicSystemEquation(m, c, k, F_t);
 
         // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
         // so that the traces will be loaded with new conditions
@@ -184,152 +231,203 @@ const MassSpringDamperExample = () => {
                 name: `${symbols.out(output)}(${symbols.in})`,
             });
 
-        setTraces(all);
-    }, [
-        m,
-        c,
-        k,
-        F_t,
-        t_i,
-        t_f,
-        x_i,
-        v_i,
-        output,
-        is3DPlotEnabled,
-        thickness,
-        systems,
-        N,
-    ]);
+        this.setState({ traces: all, diffEquation });
+    };
 
-    useEffect(() => {
-        setGraphCaptured(false);
-    }, [m, c, k, F_t, x_i, v_i, output]);
+    componentDidMount() {
+        super.componentDidMount();
+        this.refreshTraces();
+    }
 
-    const update = (changes) => {
-        if (changes) setThickness(changes.thickness);
+    componentDidUpdate(prevProps, prevState) {
+        const {
+            m,
+            c,
+            k,
+            F_t,
+            t_i,
+            t_f,
+            x_i,
+            v_i,
+            output,
+            is3DPlotEnabled,
+            thickness,
+            systems,
+            N,
+        } = this.state;
+        if (
+            m !== prevState.m ||
+            c !== prevState.c ||
+            k !== prevState.k ||
+            F_t !== prevState.F_t ||
+            t_i !== prevState.t_i ||
+            t_f !== prevState.t_f ||
+            x_i !== prevState.x_i ||
+            v_i !== prevState.v_i ||
+            output !== prevState.output ||
+            is3DPlotEnabled !== prevState.is3DPlotEnabled ||
+            thickness !== prevState.thickness ||
+            systems !== prevState.systems ||
+            N !== prevState.N
+        )
+            this.refreshTraces();
+
+        if (
+            m !== prevState.m ||
+            c !== prevState.c ||
+            k !== prevState.k ||
+            F_t !== prevState.F_t ||
+            x_i !== prevState.x_i ||
+            v_i !== prevState.v_i ||
+            output !== prevState.output
+        )
+            this.setState({ isGraphCatured: false });
+    }
+
+    update = (changes) => {
+        if (changes) this.setThickness(changes.thickness);
         //and so...
     };
-    return (
-        <Grid container direction="column" spacing={1}>
-            <Grid
-                style={{
-                    width: "100%",
-                    height: "100%",
-                    margin: "auto",
-                    direction: "ltr",
-                }}
-                item
-            >
-                <MassSpringDamperLecture />
-            </Grid>
 
-            <Grid sx={{ margin: "auto", width: "100%" }} item>
-                <SubCard sx={{ direction: "ltr" }}>
-                    <Grid
-                        id="formulaBox"
-                        sx={{ margin: "auto" }}
-                        container
-                        direction="row"
-                    >
-                        {systems.map((sys, index) => {
-                            if (!index) {
-                                sys.index = index + 1;
-                            } else if (
-                                sys.m === systems[index - 1].m &&
-                                sys.c === systems[index - 1].c &&
-                                sys.k === systems[index - 1].k &&
-                                sys.F_t === systems[index - 1].F_t
-                            ) {
-                                sys.index = systems[index - 1].index;
-                            } else {
-                                sys.index = systems[index - 1].index + 1;
-                            }
-
-                            const formula = indexedMechanicSystemEquation(
-                                sys.m,
-                                sys.c,
-                                sys.k,
-                                sys.F_t,
-                                sys.index
-                            );
-                            return (
-                                <Grid md={6} sm={12} item>
-                                    <MathJax>{formula}</MathJax>
-                                </Grid>
-                            );
-                        })}
-                        {!isGraphCatured && (
-                            <Grid md={6} sm={12}>
-                                <MathJax>{diffEquation}</MathJax>
-                            </Grid>
-                        )}
-                    </Grid>
-                </SubCard>
-            </Grid>
-            <Grid
-                spacing={2}
-                style={{
-                    width: "100%",
-                    height: "100%",
-                    margin: "auto",
-                    direction: "ltr",
-                }}
-                container
-            >
+    render() {
+        const {
+            m,
+            c,
+            k,
+            F_t,
+            t_i,
+            t_f,
+            x_i,
+            v_i,
+            systems,
+            traces,
+            diffEquation,
+            isGraphCatured,
+            output,
+            N,
+        } = this.state;
+        return (
+            <Grid container direction="column" spacing={1}>
                 <Grid
-                    md={3}
-                    sm={12}
-                    xs={12}
-                    sx={{ marginTop: "1%", width: "100%" }}
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                        margin: "auto",
+                        direction: "ltr",
+                    }}
+                    item
+                >
+                    <MassSpringDamperLecture />
+                </Grid>
+
+                <Grid sx={{ margin: "auto", width: "100%" }} item>
+                    <SubCard sx={{ direction: "ltr" }}>
+                        <Grid
+                            id="formulaBox"
+                            sx={{ margin: "auto" }}
+                            container
+                            direction="row"
+                        >
+                            {systems.map((sys, index) => {
+                                if (!index) {
+                                    sys.index = index + 1;
+                                } else if (
+                                    sys.m === systems[index - 1].m &&
+                                    sys.c === systems[index - 1].c &&
+                                    sys.k === systems[index - 1].k &&
+                                    sys.F_t === systems[index - 1].F_t
+                                ) {
+                                    sys.index = systems[index - 1].index;
+                                } else {
+                                    sys.index = systems[index - 1].index + 1;
+                                }
+
+                                const formula = indexedMechanicSystemEquation(
+                                    sys.m,
+                                    sys.c,
+                                    sys.k,
+                                    sys.F_t,
+                                    sys.index
+                                );
+                                return (
+                                    <Grid md={6} sm={12} item>
+                                        <MathJax>{formula}</MathJax>
+                                    </Grid>
+                                );
+                            })}
+                            {!isGraphCatured && (
+                                <Grid md={6} sm={12}>
+                                    <MathJax>{diffEquation}</MathJax>
+                                </Grid>
+                            )}
+                        </Grid>
+                    </SubCard>
+                </Grid>
+                <Grid
+                    spacing={2}
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                        margin: "auto",
+                        direction: "ltr",
+                    }}
                     container
                 >
-                    <Grid xs={12}>
-                        <MassSpringDamperParameters
-                            m={m}
-                            c={c}
-                            k={k}
-                            F_t={F_t}
-                            x_i={x_i}
-                            v_i={v_i}
-                            t_i={t_i}
-                            t_f={t_f}
-                            output={output}
-                            $m={$m}
-                            $c={$c}
-                            $k={$k}
-                            $F_t={$F_t}
-                            $x_i={$x_i}
-                            $v_i={$v_i}
-                            $t_i={$t_i}
-                            $t_f={$t_f}
-                            $output={$output}
-                            N={N}
-                            $N={$N}
-                        />
+                    <Grid
+                        md={3}
+                        sm={12}
+                        xs={12}
+                        sx={{ marginTop: "1%", width: "100%" }}
+                        container
+                    >
+                        <Grid xs={12}>
+                            <MassSpringDamperParameters
+                                m={m}
+                                c={c}
+                                k={k}
+                                F_t={F_t}
+                                x_i={x_i}
+                                v_i={v_i}
+                                t_i={t_i}
+                                t_f={t_f}
+                                output={output}
+                                $m={this.$m}
+                                $c={this.$c}
+                                $k={this.$k}
+                                $F_t={this.$F_t}
+                                $x_i={this.$x_i}
+                                $v_i={this.$v_i}
+                                $t_i={this.$t_i}
+                                $t_f={this.$t_f}
+                                $output={this.$output}
+                                N={N}
+                                $N={this.$N}
+                            />
+                        </Grid>
                     </Grid>
-                </Grid>
-                <Grid md={9} sm={12} xs={12} item>
-                    <SubCard>
-                        <GraphMenu
-                            capture={capture}
-                            reset={() => setSystems([])}
-                            update={(changes) => update(changes)}
-                            toggle3DPlot={toggle3DPlot}
-                        />
-                    </SubCard>
-                    <hr />
-                    <Grid xs={12} item>
+                    <Grid md={9} sm={12} xs={12} item>
                         <SubCard>
-                            <PlotlyBox
-                                title="Cart characteristic curves"
-                                traces={traces}
+                            <GraphMenu
+                                capture={this.capture}
+                                reset={() => this.setSystems([])}
+                                update={(changes) => this.update(changes)}
+                                toggle3DPlot={this.toggle3DPlot}
                             />
                         </SubCard>
+                        <hr />
+                        <Grid xs={12} item>
+                            <SubCard>
+                                <PlotlyBox
+                                    title="Cart characteristic curves"
+                                    traces={traces}
+                                />
+                            </SubCard>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Grid>
-        </Grid>
-    );
-};
+        );
+    }
+}
 
 export default MassSpringDamperExample;

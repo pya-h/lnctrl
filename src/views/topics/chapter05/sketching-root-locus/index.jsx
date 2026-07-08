@@ -3,7 +3,6 @@ import SketchingRootLocusLecture from "./lecture";
 // project imports
 import SubCard from "views/ui-component/cards/SubCard";
 import calculus from "math/calculus";
-import { useState, useEffect } from "react";
 import { Grid, Typography } from "@mui/material";
 import SketchingRootLocusParameters from "./parameters";
 import TransferFunction from "math/algebra/functions/fraction";
@@ -16,6 +15,7 @@ import PlotlyBox from "views/plotter/PlotlyBox";
 import { MathJax } from "better-react-mathjax";
 import Equation from "../../../../math/solvers/equation";
 import { PolyLine } from "math/algebra/functions";
+import TopicBaseComponent from "views/topics/TopicBaseComponent";
 
 const tfFormula = (tf, index = undefined) =>
     "$$ " + tf.label("G", index) + " $$";
@@ -73,35 +73,50 @@ const listRoots = (roots, _type = "Pole") =>
           "$$"
         : `The system does not have a ${_type}`;
 
-const SketchingRootLocus = () => {
-    const [rawNumerator, $rawNumerator] = useState("1");
-    const [rawDenominator, $rawDenominator] = useState("1 5 6");
+class SketchingRootLocus extends TopicBaseComponent {
+    state = {
+        topicKey: "ch5-sketchrl",
+        rawNumerator: "1",
+        rawDenominator: "1 5 6",
+        stepByStepTraces: [],
+        G_s: null,
+        // GInfo: "",
+        formula: null,
+        N: 100,
+        thickness: 5.0,
+        step: 0,
+        yRange: null,
+        guides: [],
+        description: [],
+    };
 
-    const [stepByStepTraces, $stepByStepTraces] = useState([]);
+    persistKeys = ["rawNumerator", "rawDenominator", "N", "thickness"];
 
-    const [G_s, $G_s] = useState(null);
-    // const [GInfo, $GInfo] = useState("");
-    const [formula, $formula] = useState(null);
-    const [N, $N] = useState(100);
-    const [thickness, setThickness] = useState(5.0);
-    const [step, setStep] = useState(0);
-    const [yRange, setYRange] = useState(null);
-    const [guides, setGuides] = useState([]);
-    const [description, setDescription] = useState([]);
+    $rawNumerator = (value) => this.setState({ rawNumerator: value });
+    $rawDenominator = (value) => this.setState({ rawDenominator: value });
+    $stepByStepTraces = (value) => this.setState({ stepByStepTraces: value });
+    $G_s = (value) => this.setState({ G_s: value });
+    $formula = (value) => this.setState({ formula: value });
+    $N = (value) => this.setState({ N: value });
+    setThickness = (value) => this.setState({ thickness: value });
+    setStep = (value) => this.setState({ step: value });
+    setYRange = (value) => this.setState({ yRange: value });
+    setGuides = (value) => this.setState({ guides: value });
+    setDescription = (value) => this.setState({ description: value });
 
     //update
-    useEffect(() => {
+    updateFormula = () => {
+        const { rawNumerator, rawDenominator } = this.state;
         // k * num / den
         const g_s = new TransferFunction(
             calculus.stringToArray(rawNumerator),
             calculus.stringToArray(rawDenominator)
         );
-        $G_s(g_s);
-        $formula(tfFormula(g_s));
-        setStep(0);
-    }, [rawNumerator, rawDenominator]);
+        this.setState({ G_s: g_s, formula: tfFormula(g_s), step: 0 });
+    };
 
-    useEffect(() => {
+    refreshTraces = () => {
+        const { G_s, N, thickness } = this.state;
         try {
             let maxY = 0;
             const guides = [],
@@ -231,136 +246,175 @@ const SketchingRootLocus = () => {
                         breakpoints.map((bp) => bp.toString()).join(", ") +
                         " $$",
                 });
-                setYRange(!isNaN(maxY) ? [-maxY - 1, maxY + 1] : null);
-                $stepByStepTraces(traces);
-                setGuides(guides);
-                setDescription(description);
+                this.setState({
+                    yRange: !isNaN(maxY) ? [-maxY - 1, maxY + 1] : null,
+                    stepByStepTraces: traces,
+                    guides: guides,
+                    description: description,
+                });
                 // $GInfo(new Describer(G_s));
             }
         } catch (ex) {
             console.log(ex);
         }
-    }, [G_s, N, thickness]);
+    };
 
-    return (
-        <MainCard>
-            <Grid item spacing={gridSpacing}>
-                <h2 className="chapter-section-title">
+    componentDidMount() {
+        super.componentDidMount();
+        this.updateFormula();
+        this.refreshTraces();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        const { rawNumerator, rawDenominator, G_s, N, thickness } = this.state;
+        if (
+            rawNumerator !== prevState.rawNumerator ||
+            rawDenominator !== prevState.rawDenominator
+        )
+            this.updateFormula();
+
+        if (
+            G_s !== prevState.G_s ||
+            N !== prevState.N ||
+            thickness !== prevState.thickness
+        )
+            this.refreshTraces();
+    }
+
+    render() {
+        const {
+            rawNumerator,
+            rawDenominator,
+            stepByStepTraces,
+            formula,
+            N,
+            thickness,
+            step,
+            yRange,
+            guides,
+            description,
+        } = this.state;
+
+        return (
+            <MainCard>
+                <Grid item spacing={gridSpacing}>
+                    <h2 className="chapter-section-title">
                         Root Locus of the System Poles
                     </h2>
-            </Grid>
-            <Grid item spacing={gridSpacing}>
-                <Grid container direction="column" spacing={gridSpacing}>
-                    <Grid
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            margin: "auto",
-                            direction: "ltr",
-                        }}
-                        item
-                    >
-                        <SketchingRootLocusLecture />
-                    </Grid>
-
-                    <Grid
-                        spacing={2}
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            margin: "auto",
-                            direction: "ltr",
-                        }}
-                        container
-                    >
+                </Grid>
+                <Grid item spacing={gridSpacing}>
+                    <Grid container direction="column" spacing={gridSpacing}>
                         <Grid
-                            md={4}
-                            sm={12}
-                            xs={12}
-                            sx={{ marginTop: "1%", width: "100%" }}
-                            container
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                margin: "auto",
+                                direction: "ltr",
+                            }}
+                            item
                         >
-                            <Grid xs={12}>
-                                <SketchingRootLocusParameters
-                                    rawNumerator={rawNumerator}
-                                    rawDenominator={rawDenominator}
-                                    $rawNumerator={$rawNumerator}
-                                    $rawDenominator={$rawDenominator}
-                                    N={N}
-                                    $N={$N}
-                                    formula={formula}
-                                    thickness={thickness}
-                                    setThickness={setThickness}
-                                    step={step}
-                                    setStep={setStep}
-                                    finalStep={stepByStepTraces.length}
-                                    guides={guides}
-                                />
-                            </Grid>
+                            <SketchingRootLocusLecture />
                         </Grid>
-                        <Grid
-                            sx={{ py: 2, pl: 2 }}
-                            md={8}
-                            sm={12}
-                            xs={12}
-                            container
-                            spacing={gridSpacing}
-                        >
-                            <Grid xs={12} item>
-                                <SubCard>
-                                    <PlotlyBox
-                                        title="Root locus"
-                                        traces={stepByStepTraces.slice(
-                                            0,
-                                            step + 1
-                                        )}
-                                        yRange={yRange}
-                                        hideLegends
-                                    />
-                                </SubCard>
-                            </Grid>
 
-                            <Grid sx={{ margin: "auto", width: "100%" }} item>
-                                <SubCard>
-                                    <Grid
-                                        id="description"
-                                        container
-                                        direction="row"
-                                    >
-                                        {Boolean(step < description.length) && (
-                                            <Typography
-                                                sx={{
-                                                    m: "auto",
-                                                    textAlign: "center",
-                                                    py: 1,
-                                                }}
-                                            >
-                                                <MathJax
-                                                    style={{ margin: "auto" }}
-                                                >
-                                                    {description[step].formula}
-                                                </MathJax>
-                                                <hr />
+                        <Grid
+                            spacing={2}
+                            style={{
+                                width: "100%",
+                                height: "100%",
+                                margin: "auto",
+                                direction: "ltr",
+                            }}
+                            container
+                        >
+                            <Grid
+                                md={4}
+                                sm={12}
+                                xs={12}
+                                sx={{ marginTop: "1%", width: "100%" }}
+                                container
+                            >
+                                <Grid xs={12}>
+                                    <SketchingRootLocusParameters
+                                        rawNumerator={rawNumerator}
+                                        rawDenominator={rawDenominator}
+                                        $rawNumerator={this.$rawNumerator}
+                                        $rawDenominator={this.$rawDenominator}
+                                        N={N}
+                                        $N={this.$N}
+                                        formula={formula}
+                                        thickness={thickness}
+                                        setThickness={this.setThickness}
+                                        step={step}
+                                        setStep={this.setStep}
+                                        finalStep={stepByStepTraces.length}
+                                        guides={guides}
+                                    />
+                                </Grid>
+                            </Grid>
+                            <Grid
+                                sx={{ py: 2, pl: 2 }}
+                                md={8}
+                                sm={12}
+                                xs={12}
+                                container
+                                spacing={gridSpacing}
+                            >
+                                <Grid xs={12} item>
+                                    <SubCard>
+                                        <PlotlyBox
+                                            title="Root locus"
+                                            traces={stepByStepTraces.slice(
+                                                0,
+                                                step + 1
+                                            )}
+                                            yRange={yRange}
+                                            hideLegends
+                                        />
+                                    </SubCard>
+                                </Grid>
+
+                                <Grid sx={{ margin: "auto", width: "100%" }} item>
+                                    <SubCard>
+                                        <Grid
+                                            id="description"
+                                            container
+                                            direction="row"
+                                        >
+                                            {Boolean(step < description.length) && (
                                                 <Typography
                                                     sx={{
                                                         m: "auto",
                                                         textAlign: "center",
-                                                        fontSize: "18px",
+                                                        py: 1,
                                                     }}
                                                 >
-                                                    {description[step].caption}
+                                                    <MathJax
+                                                        style={{ margin: "auto" }}
+                                                    >
+                                                        {description[step].formula}
+                                                    </MathJax>
+                                                    <hr />
+                                                    <Typography
+                                                        sx={{
+                                                            m: "auto",
+                                                            textAlign: "center",
+                                                            fontSize: "18px",
+                                                        }}
+                                                    >
+                                                        {description[step].caption}
+                                                    </Typography>
                                                 </Typography>
-                                            </Typography>
-                                        )}
-                                    </Grid>
-                                </SubCard>
+                                            )}
+                                        </Grid>
+                                    </SubCard>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
-        </MainCard>
-    );
-};
+            </MainCard>
+        );
+    }
+}
 
 export default SketchingRootLocus;

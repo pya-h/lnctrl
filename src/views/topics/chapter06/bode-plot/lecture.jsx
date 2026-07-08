@@ -97,7 +97,7 @@ const BodePlotLecture = () => {
                     <img
                         className="lecture-image"
                         src={img_zero_poles_type_in_bode}
-                        style={{ maxWidth: "30rem", height: "auto" }}
+                        style={{ width: "100%", maxWidth: "30rem", height: "auto" }}
                         alt="Image loading failed"
                     />
                 </Grid>
@@ -182,7 +182,7 @@ const BodePlotLecture = () => {
                     <img
                         className="lecture-image"
                         src={img_bode_plot_manual}
-                        style={{ maxWidth: "30rem", height: "auto" }}
+                        style={{ width: "100%", maxWidth: "30rem", height: "auto" }}
                         alt="Image loading failed"
                     />
                 </Grid>

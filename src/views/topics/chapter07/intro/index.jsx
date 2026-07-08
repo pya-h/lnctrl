@@ -10,21 +10,21 @@ const Ch07Intro = () => {
         <PinchPanCard title="Introduction" border={true}>
             <Grid xs={12} sx={{ m: "auto", textAlign: "center" }}>
                 <img
-                    style={{ maxWidth: "60rem", height: "auto" }}
+                    style={{ width: "100%", maxWidth: "60rem", height: "auto" }}
                     src={img_temp1}
                     alt="Image loading failed"
                 />
             </Grid>
             <Grid xs={12} sx={{ m: "auto", textAlign: "center" }}>
                 <img
-                    style={{ maxWidth: "62rem", height: "auto" }}
+                    style={{ width: "100%", maxWidth: "62rem", height: "auto" }}
                     src={img_temp2}
                     alt="Image loading failed"
                 />
             </Grid>
             <Grid xs={12} sx={{ m: "auto", textAlign: "center" }}>
                 <img
-                    style={{ maxWidth: "62rem", height: "auto" }}
+                    style={{ width: "100%", maxWidth: "62rem", height: "auto" }}
                     src={img_temp3}
                     alt="Image loading failed"
                 />

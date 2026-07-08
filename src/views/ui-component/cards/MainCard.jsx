@@ -40,6 +40,7 @@ const MainCard = forwardRef(
                     overflowY: 'auto',
                     border: border ? '1px solid' : 'none',
                     borderColor: theme.palette.primary[200] + 75,
+                    transition: 'box-shadow 0.25s ease-in-out',
                     ':hover': {
                         boxShadow: boxShadow ? shadow || '0 2px 14px 0 rgb(32 40 45 / 8%)' : 'inherit'
                     },

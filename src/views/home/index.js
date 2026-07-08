@@ -50,7 +50,7 @@ const HomePage = () => {
             <Grid item xs={12}>
                 <Grid container spacing={gridSpacing}>
                     {sections.map((section) => (
-                        <Grid item lg={6} md={6} sm={12} xs={12}>
+                        <Grid item lg={6} md={6} sm={12} xs={12} key={section.link}>
                             <ChapterSelectDarkCard
                                 title={section.title}
                                 subtitle={section.subtitle}

@@ -1,26 +1,24 @@
 .nav-bar-item {
     text-decoration: none;
-    padding: 15px;
+    padding: 12px 15px;
     color: blueviolet;
-    -moz-transition: all 0.15s ease-in-out;
-        transition: all 0.15s ease-in-out;
+    border: 2px solid transparent;
+    border-radius: 0.5rem;
+    transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out,
+        background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 
 .nav-bar-item:hover {
-    
-    padding-top: 0.4rem;
-    
+    color: #18BC9C;
+    transform: translateY(-2px);
 }
 
-.nav-bar-item:focus, .nav-bar-item:active {
+/* focus + the .active class react-router applies to the current route */
+.nav-bar-item:focus-visible,
+.nav-bar-item.active {
     color: #18BC9C;
-    border: 2px solid #18BC9C; 
-    border-radius: 0.5rem; 
-    padding-top: 0.4rem;
+    border-color: #18BC9C;
     background-color: transparent;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
     box-shadow: none;
-  }
-
-  
+    outline: none;
+}

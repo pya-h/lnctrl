@@ -19,6 +19,7 @@ const SubCard = forwardRef(({ children, content, contentClass, darkBorder, darkT
                 border: '1px solid',
                 background,
                 borderColor: !darkBorder ? theme.palette.primary.light : null,
+                transition: 'box-shadow 0.25s ease-in-out',
                 ':hover': {
                     boxShadow: '0 2px 14px 0 rgb(32 40 45 / 50%)',
                 },
@@ -28,10 +29,7 @@ const SubCard = forwardRef(({ children, content, contentClass, darkBorder, darkT
         >
             {/* card header and action */}
             {!darkTitle && title && <CardHeader sx={{ p: 2.5, borderBottom: !darkBorder ? null : "1px solid black" }} title={<Typography variant="h5">{title}</Typography>} action={secondary} />}
-            {darkTitle && title && <CardHeader sx={{ p: 2.5, borderBottom: !darkBorder ? null : "1px solid black" }} title={<Typography variant="h4">{title}</Typography>} action={secondary}>
-                cfsdfsdaf
-                </CardHeader>
-                }
+            {darkTitle && title && <CardHeader sx={{ p: 2.5, borderBottom: !darkBorder ? null : "1px solid black" }} title={<Typography variant="h4">{title}</Typography>} action={secondary} />}
 
             {/* content & header divider */}
             {title && (

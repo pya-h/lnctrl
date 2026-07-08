@@ -1,26 +1,30 @@
 .chapter-select-dark-card {
-
-    /* cursor: pointer; */
     display: inline-block;
     padding: 5px 15px;
     text-align: center;
-    width:100%;
+    width: 100%;
     cursor: pointer;
-  }
-  @keyframes glowing {
-    0% {
-      background-color: #1c87c9;
-      box-shadow: 0 0 5px #1c87c9;
+    border-radius: inherit;
+    /* gentle entrance when the home grid mounts */
+    animation: cardFadeInUp 0.45s ease both;
+    transition: transform 0.25s ease-in-out, box-shadow 0.25s ease-in-out,
+        background-color 0.25s ease-in-out;
+}
+
+@keyframes cardFadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
     }
-    50% {
-      background-color: #2ba0ff;
-      box-shadow: 0 0 20px #2ba0ff;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
-    100% {
-      background-color: #2b87ff;
-      box-shadow: 0 0 5px #2b87ff;
-    }
-  }
-  .chapter-select-dark-card:hover {
-    animation: glowing 1800ms infinite;
-  }
+}
+
+/* smooth single-step lift + glow instead of an infinite pulsing loop */
+.chapter-select-dark-card:hover {
+    transform: translateY(-4px);
+    background-color: #2ba0ff;
+    box-shadow: 0 6px 20px rgba(43, 160, 255, 0.45);
+}

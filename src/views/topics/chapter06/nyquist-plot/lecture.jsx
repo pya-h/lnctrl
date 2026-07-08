@@ -40,7 +40,7 @@ const NyquistPlotLecture = () => (
             <Grid xs={12} sx={{ m: "auto" }} item>
                 <img
                     className="lecture-image"
-                    style={{ maxWidth: "30rem", height: "auto" }}
+                    style={{ width: "100%", maxWidth: "30rem", height: "auto" }}
                     src={img_nyquist_plot}
                     alt="Image loading failed"
                 />
@@ -57,7 +57,7 @@ const NyquistPlotLecture = () => (
             <Grid xs={12} sx={{ m: "auto" }} item>
                 <img
                     className="lecture-image"
-                    style={{ maxWidth: "30rem", height: "auto" }}
+                    style={{ width: "100%", maxWidth: "30rem", height: "auto" }}
                     src={img_nyquist_important_points}
                     alt="Image loading failed"
                 />

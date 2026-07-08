@@ -4,6 +4,14 @@ import calculus from "math/calculus";
 // action - state management
 import { ActionTypes } from "./actions";
 
+const getInitialNavType = () => {
+    try {
+        return localStorage.getItem("navType") || "light";
+    } catch (e) {
+        return "light";
+    }
+};
+
 export const initialState = {
     isOpen: [], // for active default menu
     enableZoom: false,
@@ -11,6 +19,7 @@ export const initialState = {
     borderRadius: config.borderRadius,
     mathPrecision: calculus.precision.get(),
     opened: true,
+    navType: getInitialNavType(),
 };
 
 // ==============================|| CUSTOMIZATION REDUCER ||============================== //
@@ -47,6 +56,11 @@ const customizationReducer = (state = initialState, action) => {
             return {
                 ...state,
                 mathPrecision: action.mathPrecision,
+            };
+        case ActionTypes.SET_THEME_MODE:
+            return {
+                ...state,
+                navType: action.navType,
             };
         default:
             return state;

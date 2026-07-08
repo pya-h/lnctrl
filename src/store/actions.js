@@ -6,7 +6,8 @@ const SET_MENU = "@customization/SET_MENU",
     SET_FONT_FAMILY = "@customization/SET_FONT_FAMILY",
     SET_BORDER_RADIUS = "@customization/SET_BORDER_RADIUS",
     SET_MATH_PRECISION = "@calculus/SET_MATH_PRECISION",
-    ENABLE_ZOOM = "@customization/ENABLE_ZOOM";
+    ENABLE_ZOOM = "@customization/ENABLE_ZOOM",
+    SET_THEME_MODE = "@customization/SET_THEME_MODE";
 
 export const ActionTypes = {
     SET_MENU,
@@ -15,6 +16,7 @@ export const ActionTypes = {
     SET_BORDER_RADIUS,
     SET_MATH_PRECISION,
     ENABLE_ZOOM,
+    SET_THEME_MODE,
 };
 
 export const ReduxSetMenu = (opened) => {
@@ -57,3 +59,12 @@ export const ReduxSetMathPrecision = (mathPrecision) => {
 
 export const ReduxSetEnableZoom = (enableZoom) => async (dispatch, getState) =>
     await dispatch({ type: ENABLE_ZOOM, enableZoom });
+
+export const ReduxSetThemeMode = (navType) => async (dispatch, getState) => {
+    try {
+        localStorage.setItem("navType", navType);
+    } catch (e) {
+        /* ignore storage errors */
+    }
+    return await dispatch({ type: SET_THEME_MODE, navType });
+};

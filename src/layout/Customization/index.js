@@ -30,6 +30,7 @@ import {
     ReduxSetBorderRadius,
     ReduxSetMathPrecision,
     ReduxSetEnableZoom,
+    ReduxSetThemeMode,
 } from "store/actions";
 import { gridSpacing } from "store/constant";
 import Switcher from "views/ui-component/buttons/Switcher";
@@ -111,6 +112,25 @@ const Customization = () => {
             >
                 <PerfectScrollbar component="div">
                     <Grid container spacing={gridSpacing} sx={{ p: 1 }}>
+                        <Grid item xs={12}>
+                            <SubCard title="Theme">
+                                <Switcher
+                                    choices={["Dark", "Light"]}
+                                    setSwitch={(selectedValue) =>
+                                        dispatch(
+                                            ReduxSetThemeMode(
+                                                ["Dark", "Light"][selectedValue]?.toLowerCase() || "dark"
+                                            )
+                                        )
+                                    }
+                                    defaultChoice={
+                                        customization.navType === "dark"
+                                            ? "Dark"
+                                            : "Light"
+                                    }
+                                />
+                            </SubCard>
+                        </Grid>
                         <Grid item xs={12}>
                             <SubCard title="Zoom">
                                 <Switcher

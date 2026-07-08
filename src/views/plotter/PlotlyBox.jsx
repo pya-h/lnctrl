@@ -2,6 +2,7 @@ import React from "react";
 import Plot from "react-plotly.js";
 import { MapInteractionCSS } from "react-map-interaction";
 import { useSelector } from "react-redux";
+import { useTheme } from "@mui/material/styles";
 
 const PlotlyBox = ({
     traces,
@@ -39,6 +40,10 @@ const PlotlyBox = ({
         },
     };*/
     const customization = useSelector((state) => state.customization);
+    const theme = useTheme();
+    const isDark = theme.palette.mode === "dark";
+    const plotBg = theme.palette.background.paper;
+    const textColor = isDark ? theme.palette.text.primary : "#000000FF";
     const plot = (
         <Plot
             style={{ textAlign: "center" }}
@@ -48,6 +53,8 @@ const PlotlyBox = ({
                 // width: 1000,
                 // autosize: true,
                 showlegend: !hideLegends,
+                paper_bgcolor: plotBg,
+                plot_bgcolor: plotBg,
                 margin: {
                     t: 30, //top margin
                     l: 30, //left margin
@@ -59,23 +66,31 @@ const PlotlyBox = ({
                     zeroline: true,
                     type: !logX ? "dec" : "log",
                     visible: !hideX,
+                    color: textColor,
+                    gridcolor: isDark ? theme.palette.divider : undefined,
+                    zerolinecolor: isDark ? theme.palette.divider : undefined,
                 },
                 yaxis: {
                     rangemode: "tozero",
                     zeroline: true,
                     visible: !hideY,
                     range: yRange,
+                    color: textColor,
+                    gridcolor: isDark ? theme.palette.divider : undefined,
+                    zerolinecolor: isDark ? theme.palette.divider : undefined,
                 },
 
                 height,
                 title,
+                font: { color: textColor },
                 // hoverlabel: { bgcolor: "#FFF" },
                 hoverlabel: {
                     align: "auto",
                     boxmode: "overlay",
                     font: { color: "#000000FF" },
+                    bgcolor: plotBg,
                 },
-                legend: { orientation: "h" }, //, y: -0.3},
+                legend: { orientation: "h", font: { color: textColor } }, //, y: -0.3},
             }}
         />
     );

@@ -1,7 +1,7 @@
 import { fonts } from 'config';
 
 export default function componentStyleOverrides(theme) {
-    const bgColor = theme.colors?.grey50;
+    const bgColor = theme.bgColor;
     const fontFamily = fonts[theme?.customization?.fontFamily] || fonts.Roboto;
     return {
         MuiCssBaseline: {

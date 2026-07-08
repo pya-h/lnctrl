@@ -15,7 +15,7 @@ const SubCard = forwardRef(({ children, content, contentClass, darkBorder, darkT
         <Card
             ref={ref}
             sx={{
-                color: 'black',
+                color: theme.palette.text.primary,
                 border: '1px solid',
                 background,
                 borderColor: !darkBorder ? theme.palette.primary.light : null,

@@ -12,6 +12,13 @@ import { store } from './store';
 // style + assets
 import 'assets/scss/style.scss';
 
+try {
+    document.body.dataset.theme =
+        localStorage.getItem('navType') === 'dark' ? 'dark' : 'light';
+} catch (e) {
+    document.body.dataset.theme = 'light';
+}
+
 // ==============================|| REACT DOM RENDER  ||============================== //
 
 ReactDOM.render(

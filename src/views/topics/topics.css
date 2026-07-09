@@ -47,8 +47,6 @@
     padding-top: 1rem;
 }
 
-/* ==== dark theme overrides ==== */
-/* the dark slate title text is nearly invisible on a dark background */
 body[data-theme="dark"] .chapter-section-title {
     color: #ffcc80;
     background: rgba(255, 167, 38, 0.14);

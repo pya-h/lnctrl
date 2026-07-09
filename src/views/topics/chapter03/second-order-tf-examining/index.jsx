@@ -23,8 +23,8 @@ const SecondOrderTransferFunctionExamining = () => {
             >
                 <Switcher choices={choices} setSwitch={setMode} />
             </Grid>
-            <Grid item>
-                <MainCard style={{ background: "#F5E1FD" }}>
+            <Grid item xs={12}>
+                <MainCard>
                     <Grid item spacing={gridSpacing}>
                         {mode === 0 ? (
                             <SOTFExamineByPoles />

@@ -1,4 +1,5 @@
 import { Button, Grid, Typography } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
 import { gridSpacing } from "store/constant";
@@ -28,6 +29,7 @@ const NyquistPlotParameters = ({
     method,
     changeMethod,
 }) => {
+    const theme = useTheme();
     return (
         <SubCard
             darkBorder
@@ -86,7 +88,7 @@ const NyquistPlotParameters = ({
                 <hr style={{width: '100%'}} />
                 <Grid xs={12} sx={{ mt: 1 }} item>
                     <ProgressBar
-                        background="lightcoral"
+                        background={theme.palette.mode === "dark" ? undefined : "lightcoral"}
                         id="precvious_plots_progressbar"
                     />
                 </Grid>

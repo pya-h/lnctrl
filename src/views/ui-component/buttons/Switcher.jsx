@@ -2,11 +2,14 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { purple } from "@mui/material/colors";
 import { Grid } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import "./buttons.css";
 import { useState } from "react";
 import { useEffect } from "react";
 
 export default function Switcher({ setSwitch, choices, defaultChoice}) {
+    const theme = useTheme();
+    const idleColor = theme.palette.mode === "dark" ? purple[200] : purple[700];
     const [selected, setSelected] = useState(0); // 0 right, 1 left
 
     // const selectedStyle = {variant: "contained", style: { width: '75%', backgroundColor: purple[600], color: 'white'}};
@@ -36,7 +39,7 @@ export default function Switcher({ setSwitch, choices, defaultChoice}) {
                     style={{
                         width: selected ? "70%" : "25%",
                         background: selected ? purple[600] : "transparent",
-                        color: selected ? "white" : purple[700],
+                        color: selected ? "white" : idleColor,
                     }}
                     // style={{width: selected ? '70%' : '25%'}}
                     // {... (selected ? selectedStyle: notSelectedStyle)}
@@ -56,7 +59,7 @@ export default function Switcher({ setSwitch, choices, defaultChoice}) {
                     style={{
                         width: !selected ? "70%" : "25%",
                         background: !selected ? purple[600] : "transparent",
-                        color: !selected ? "white" : purple[700],
+                        color: !selected ? "white" : idleColor,
                     }}
                 >
                     {choices[0]}

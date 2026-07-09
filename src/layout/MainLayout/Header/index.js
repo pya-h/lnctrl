@@ -30,8 +30,8 @@ const Header = ({ handleRightDrawerToggle }) => {
                             ...theme.typography.commonAvatar,
                             ...theme.typography.mediumAvatar,
                             transition: 'all .2s ease-in-out',
-                            background: theme.palette.secondary.light,
-                            color: theme.palette.secondary.dark,
+                            background: theme.palette.mode === 'dark' ? theme.palette.dark.main : theme.palette.secondary.light,
+                            color: theme.palette.mode === 'dark' ? theme.palette.secondary.light : theme.palette.secondary.dark,
                             '&:hover': {
                                 background: theme.palette.secondary.dark,
                                 color: theme.palette.secondary.light

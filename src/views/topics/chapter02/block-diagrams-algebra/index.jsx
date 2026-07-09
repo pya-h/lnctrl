@@ -7,9 +7,11 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import {useState } from "react";
+import { useTheme } from "@mui/material/styles";
 import { MathJax } from "better-react-mathjax";
 
 const BlockDiagramsAlgebraExample = () => {
+    const theme = useTheme();
     const [step, $step] = useState(0);
 
     const next = () => {
@@ -21,7 +23,7 @@ const BlockDiagramsAlgebraExample = () => {
     return (
         <Grid direction="column" container>
             <Grid item>
-                <SubCard background="#EAFAEFAA">
+                <SubCard background={theme.palette.mode === "dark" ? undefined : "#EAFAEFAA"}>
                     <Grid
                         sx={{ textAlign: "center" }}
                         container

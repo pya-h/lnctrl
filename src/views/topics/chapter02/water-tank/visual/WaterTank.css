@@ -7,19 +7,25 @@
 }
 
 .wt-stage {
+    --tank-w: 7.5rem;
+    --tank-h: 16rem;
+    --tank-left: 2rem;
+    --tank-top: 5rem;
+    --tank-cx: calc(var(--tank-left) + var(--tank-w) / 2);
+    --tank-right: calc(var(--tank-left) + var(--tank-w));
     position: relative;
-    width: 12rem;
-    height: 21rem;
+    width: 13rem;
+    height: 23.5rem;
     max-width: 100%;
 }
 
 /* ---------- Tank (glass) ---------- */
 .wt-tank {
     position: absolute;
-    top: 3rem;
-    left: 2rem;
-    width: 8rem;
-    height: 17rem;
+    top: var(--tank-top);
+    left: var(--tank-left);
+    width: var(--tank-w);
+    height: var(--tank-h);
     border: 3px solid #adbccf;
     border-top: none;
     border-radius: 0 0 20px 20px;
@@ -39,7 +45,7 @@
     position: absolute;
     top: 0;
     left: 12%;
-    width: 14%;
+    width: 13%;
     height: 100%;
     background: linear-gradient(
         180deg,
@@ -62,30 +68,83 @@
     z-index: 1;
 }
 
-/* animated shimmering surface */
-.wt-surface {
+/* animated wavy surface (two layers for depth) */
+.wt-surface,
+.wt-surface::before {
+    content: "";
     position: absolute;
-    top: -4px;
     left: 0;
     width: 100%;
-    height: 8px;
-    border-radius: 50%;
-    background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0),
-        rgba(255, 255, 255, 0.7),
-        rgba(255, 255, 255, 0)
-    );
-    background-size: 55% 100%;
-    background-repeat: no-repeat;
-    animation: wt-shimmer 2.4s linear infinite;
+    height: 14px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='14' viewBox='0 0 60 14'%3E%3Cpath d='M0 8 Q15 1 30 8 T60 8 V14 H0 Z' fill='%23ffffff' fill-opacity='0.55'/%3E%3C/svg%3E")
+        repeat-x;
+    background-size: 60px 14px;
 }
-@keyframes wt-shimmer {
-    from {
-        background-position: -60% 0;
-    }
+.wt-surface {
+    top: -9px;
+    z-index: 2;
+    animation: wt-wave 2.6s linear infinite;
+}
+.wt-surface::before {
+    top: -4px;
+    background-size: 42px 12px;
+    opacity: 0.6;
+    animation: wt-wave-2 3.7s linear infinite;
+}
+@keyframes wt-wave {
     to {
-        background-position: 160% 0;
+        background-position-x: 60px;
+    }
+}
+@keyframes wt-wave-2 {
+    to {
+        background-position-x: -42px;
+    }
+}
+/* while filling, the surface bobs irregularly as the shower hits it */
+.wt-water.is-running .wt-surface {
+    animation: wt-wave 2.6s linear infinite, wt-bob 1.5s ease-in-out infinite;
+}
+@keyframes wt-bob {
+    0% {
+        transform: translateY(0);
+    }
+    30% {
+        transform: translateY(-2.5px);
+    }
+    55% {
+        transform: translateY(1px);
+    }
+    80% {
+        transform: translateY(-1.5px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* ripples where the shower lands */
+.wt-ripple {
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    width: 12px;
+    height: 7px;
+    margin-left: -6px;
+    border: 2px solid rgba(255, 255, 255, 0.65);
+    border-radius: 50%;
+    opacity: 0;
+    z-index: 2;
+    animation: wt-ripple 1.4s ease-out infinite;
+}
+@keyframes wt-ripple {
+    0% {
+        transform: scale(0.4);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(2.6);
+        opacity: 0;
     }
 }
 
@@ -123,136 +182,184 @@
     border-radius: 10px;
 }
 
-/* ---------- Inlet faucet ---------- */
-.wt-inlet {
+/* ---------- Shower head (raised above the tank) ---------- */
+.wt-showerhead {
     position: absolute;
-    top: 0;
-    left: 50%;
+    top: 0.4rem;
+    left: var(--tank-cx);
     transform: translateX(-50%);
+    width: 3.6rem;
+    height: 0.85rem;
     z-index: 5;
+    background: linear-gradient(180deg, #ccd6e1, #93a0b1);
+    border-radius: 7px 7px 9px 9px;
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6),
+        0 3px 5px rgba(40, 70, 110, 0.2);
 }
-.wt-inlet-pipe {
-    position: relative;
-    width: 2rem;
-    height: 2.4rem;
-    background: linear-gradient(90deg, #b9c4d1, #eef2f6 45%, #b9c4d1);
-    border-radius: 5px 5px 0 0;
-    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
-}
-.wt-inlet-pipe::after {
-    /* faucet mouth */
+.wt-showerhead::before {
+    /* stem pipe up to the top */
     content: "";
     position: absolute;
-    bottom: -0.35rem;
+    top: -0.85rem;
     left: 50%;
     transform: translateX(-50%);
-    width: 2.6rem;
-    height: 0.5rem;
-    background: linear-gradient(180deg, #aab5c3, #8b98a8);
-    border-radius: 4px;
+    width: 0.7rem;
+    height: 1rem;
+    background: linear-gradient(90deg, #aab5c3, #e4e9ef 50%, #aab5c3);
+    border-radius: 3px 3px 0 0;
+}
+.wt-showerhead::after {
+    /* nozzle plate */
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    left: 8%;
+    width: 84%;
+    height: 5px;
+    background: radial-gradient(circle, #6d7a8c 0 1.4px, transparent 1.7px) 0 0 /
+        7px 5px repeat-x;
 }
 
-/* ---------- Falling drops (inflow) ---------- */
-.wt-drops {
+/* ---------- Shower streamlets (inflow) ---------- */
+.wt-shower {
     position: absolute;
-    top: 2.7rem;
-    left: 50%;
+    top: 1.5rem;
+    left: var(--tank-cx);
     transform: translateX(-50%);
-    width: 10px;
-    height: 12rem;
+    width: 2.5rem;
+    height: 14rem;
     z-index: 2;
     pointer-events: none;
 }
-.wt-drop {
+.wt-shower-drop {
     position: absolute;
     top: 0;
     left: 50%;
-    width: 8px;
-    height: 12px;
-    margin-left: -4px;
-    background: radial-gradient(circle at 50% 32%, #cfe8ff, #3b93e6);
+    width: 5px;
+    height: 13px;
+    margin-left: -2.5px;
+    background: radial-gradient(circle at 50% 30%, #d3e9ff, #4aa0ea);
     border-radius: 50% 50% 50% 50% / 62% 62% 40% 40%;
     opacity: 0;
-    animation-name: wt-fall;
+    animation-name: wt-shower-fall;
     animation-timing-function: cubic-bezier(0.45, 0, 0.85, 1);
     animation-iteration-count: infinite;
 }
-@keyframes wt-fall {
+@keyframes wt-shower-fall {
     0% {
-        transform: translateY(0) scaleY(0.8);
+        transform: translateX(var(--dx)) translateY(0) scaleY(0.8);
         opacity: 0;
     }
-    10% {
+    12% {
         opacity: 1;
     }
-    82% {
-        opacity: 1;
+    85% {
+        opacity: 0.9;
     }
     100% {
-        transform: translateY(8.5rem) scaleY(1.2);
+        transform: translateX(var(--dx)) translateY(10.5rem) scaleY(1.25);
         opacity: 0;
     }
 }
 
-/* ---------- Outlet valve ---------- */
+/* ---------- Outlet tap valve ---------- */
 .wt-outlet {
     position: absolute;
-    left: 9.9rem;
-    bottom: 4.4rem;
+    left: var(--tank-right);
+    top: calc(var(--tank-top) + var(--tank-h) - 4.4rem);
     display: flex;
     align-items: center;
     z-index: 5;
 }
 .wt-outlet-pipe {
-    width: 1.3rem;
-    height: 0.85rem;
+    width: 1rem;
+    height: 0.62rem;
     background: linear-gradient(180deg, #c2ccd8, #eef2f6 45%, #97a3b2);
     border-radius: 0 3px 3px 0;
     box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.25);
 }
-.wt-valve {
+.wt-tap {
+    position: relative;
+    width: 0.8rem;
+    height: 1rem;
+    background: linear-gradient(180deg, #b9c4d1, #8794a5);
+    border-radius: 3px;
+    box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+.wt-tap-handle {
+    position: absolute;
+    top: -0.62rem;
+    left: 50%;
+    transform: translateX(-50%);
     width: 0.95rem;
-    height: 0.95rem;
-    margin-left: -2px;
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 32%, #ffab91, #e64a19);
-    box-shadow: 0 0 0 3px rgba(230, 74, 25, 0.22);
+    height: 0.55rem;
+    background: radial-gradient(circle at 35% 30%, #ffab91, #e64a19);
+    border-radius: 5px 5px 2px 2px;
+    box-shadow: 0 0 0 2px rgba(230, 74, 25, 0.2);
+}
+.wt-tap-nozzle {
+    position: absolute;
+    bottom: -0.28rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0.4rem;
+    height: 0.4rem;
+    background: #8794a5;
+    border-radius: 0 0 3px 3px;
 }
 
-/* ---------- Draining stream (outflow) ---------- */
-.wt-stream {
+/* ---------- Parabolic outlet jet (outflow) ---------- */
+.wt-jet {
     position: absolute;
-    left: 10.75rem;
-    bottom: 0.6rem;
-    width: 6px;
-    height: 4rem;
+    left: calc(var(--tank-right) + 1.7rem);
+    top: calc(var(--tank-top) + var(--tank-h) - 3.55rem);
+    width: 4px;
+    height: 4px;
     z-index: 4;
-    border-radius: 3px;
-    background-color: #2f8ae0;
-    background-image: repeating-linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.6) 0 3px,
-        rgba(255, 255, 255, 0) 3px 11px
-    );
-    background-size: 100% 11px;
-    opacity: 0;
-    transform: scaleY(0);
-    transform-origin: top center;
-    transition: transform 0.25s ease, opacity 0.25s ease;
+    pointer-events: none;
 }
-.wt-stream.is-active {
-    opacity: 0.95;
-    transform: scaleY(1);
-    animation-name: wt-flow;
+.wt-jet-drop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 6px;
+    height: 8px;
+    margin-left: -3px;
+    background: radial-gradient(circle at 50% 30%, #cfe8ff, #2f8ae0);
+    border-radius: 50% 50% 50% 50% / 60% 60% 42% 42%;
+    opacity: 0;
+    animation-name: wt-jet;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
 }
-@keyframes wt-flow {
-    from {
-        background-position: 0 0;
+/* x grows roughly linearly, y accelerates => parabolic arc */
+@keyframes wt-jet {
+    0% {
+        transform: translate(0, 0) scale(0.7);
+        opacity: 0;
     }
-    to {
-        background-position: 0 11px;
+    10% {
+        opacity: 1;
+    }
+    40% {
+        transform: translate(
+                calc(var(--reach) * 0.46),
+                calc(var(--drop) * 0.12)
+            )
+            scale(1);
+    }
+    70% {
+        transform: translate(
+            calc(var(--reach) * 0.78),
+            calc(var(--drop) * 0.46)
+        );
+    }
+    92% {
+        opacity: 0.85;
+    }
+    100% {
+        transform: translate(var(--reach), var(--drop)) scale(1.1);
+        opacity: 0;
     }
 }
 
@@ -277,10 +384,13 @@ body[data-theme="dark"] .wt-readout {
 body[data-theme="dark"] .wt-scale li {
     background: rgba(150, 175, 210, 0.4);
 }
-body[data-theme="dark"] .wt-inlet-pipe,
-body[data-theme="dark"] .wt-outlet-pipe {
-    background: linear-gradient(90deg, #4a5570, #8792a8 45%, #4a5570);
+body[data-theme="dark"] .wt-showerhead {
+    background: linear-gradient(180deg, #7a879b, #4a5570);
 }
-body[data-theme="dark"] .wt-outlet-pipe {
-    background: linear-gradient(180deg, #6b768c, #9aa6ba 45%, #465065);
+body[data-theme="dark"] .wt-showerhead::before {
+    background: linear-gradient(90deg, #4a5570, #8792a8 50%, #4a5570);
+}
+body[data-theme="dark"] .wt-outlet-pipe,
+body[data-theme="dark"] .wt-tap {
+    background: linear-gradient(180deg, #6b768c, #465065);
 }

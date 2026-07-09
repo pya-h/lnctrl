@@ -16,7 +16,7 @@ const SecondOrderTransferFunctionExamining = () => {
         <Grid container>
             <Grid
                 direction="row"
-                sx={{ pt: 1, pr: 5}}
+                sx={{ pt: 1 }}
                 item
                 xs={12}
                 spacing={gridSpacing}

@@ -1,7 +1,9 @@
 import { Grid, Typography } from "@mui/material";
+import ThemedImage from "views/ui-component/ThemedImage";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
 import rc_filter_circuit from "./visual/rc_filter_circuit.png";
+import rc_filter_circuit_dark from "./visual/rc_filter_circuit-dark.png";
 import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 
 const RCFilterFrequencyResponseLecture = () => {
@@ -17,9 +19,9 @@ const RCFilterFrequencyResponseLecture = () => {
                     </Typography>
                 </Grid>
                 <Grid xs={12} sx={{ m: "auto" }} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
-                        src={rc_filter_circuit}
+                        light={rc_filter_circuit} dark={rc_filter_circuit_dark}
                         alt="Failed loading!"
                     />
                 </Grid>

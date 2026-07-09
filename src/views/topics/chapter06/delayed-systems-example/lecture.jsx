@@ -1,7 +1,9 @@
 import { Grid, Typography } from "@mui/material";
+import ThemedImage from "views/ui-component/ThemedImage";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
 import delay_types_png from "./visual/delay_types.png";
+import delay_types_png_dark from "./visual/delay_types-dark.png";
 import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 
 const DelayedSystemsLecture = () => {
@@ -14,9 +16,9 @@ const DelayedSystemsLecture = () => {
                     </Typography>
                 </Grid>
                 <Grid xs={12} sx={{ m: "auto" }} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
-                        src={delay_types_png}
+                        light={delay_types_png} dark={delay_types_png_dark}
                         alt="Failed loading!"
                     />
                 </Grid>

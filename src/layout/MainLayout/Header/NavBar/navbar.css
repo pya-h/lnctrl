@@ -21,3 +21,15 @@
     box-shadow: none;
     outline: none;
 }
+
+/* dark theme: blueviolet is too dark on the dark navbar, use a light lavender */
+body[data-theme="dark"] .nav-bar-item {
+    color: #b39ddb;
+}
+
+body[data-theme="dark"] .nav-bar-item:hover,
+body[data-theme="dark"] .nav-bar-item:focus-visible,
+body[data-theme="dark"] .nav-bar-item.active {
+    color: #1abc9c;
+    border-color: #1abc9c;
+}

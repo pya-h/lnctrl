@@ -1,31 +1,35 @@
 import { Grid } from "@mui/material";
+import ThemedImage from "views/ui-component/ThemedImage";
 import "views/topics/topics.css";
 import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 import img_temp1 from "./img/temp1.JPG";
+import img_temp1_dark from "./img/temp1-dark.JPG";
 import img_temp2 from "./img/temp2.JPG";
+import img_temp2_dark from "./img/temp2-dark.JPG";
 import img_temp3 from "./img/temp3.JPG";
 
+import img_temp3_dark from "./img/temp3-dark.JPG";
 const Ch07Intro = () => {
     return (
         <PinchPanCard title="Introduction" border={true}>
             <Grid xs={12} sx={{ m: "auto", textAlign: "center" }}>
-                <img
+                <ThemedImage
                     style={{ width: "100%", maxWidth: "60rem", height: "auto" }}
-                    src={img_temp1}
+                    light={img_temp1} dark={img_temp1_dark}
                     alt="Failed loading!"
                 />
             </Grid>
             <Grid xs={12} sx={{ m: "auto", textAlign: "center" }}>
-                <img
+                <ThemedImage
                     style={{ width: "100%", maxWidth: "62rem", height: "auto" }}
-                    src={img_temp2}
+                    light={img_temp2} dark={img_temp2_dark}
                     alt="Failed loading!"
                 />
             </Grid>
             <Grid xs={12} sx={{ m: "auto", textAlign: "center" }}>
-                <img
+                <ThemedImage
                     style={{ width: "100%", maxWidth: "62rem", height: "auto" }}
-                    src={img_temp3}
+                    light={img_temp3} dark={img_temp3_dark}
                     alt="Failed loading!"
                 />
             </Grid>

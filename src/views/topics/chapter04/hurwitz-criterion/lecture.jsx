@@ -1,9 +1,11 @@
 import { Grid, Typography } from "@mui/material";
+import ThemedImage from "views/ui-component/ThemedImage";
 import "views/topics/topics.css";
 
 import { MathJax } from "better-react-mathjax";
 import { Poly } from "math/algebra/functions";
 import hurwitz_symbolic_deltas from "./images/hurwitz_deltas.jpg";
+import hurwitz_symbolic_deltas_dark from "./images/hurwitz_deltas-dark.jpg";
 import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 
 const HurwitzCriterionLecture = () => {
@@ -22,9 +24,9 @@ const HurwitzCriterionLecture = () => {
                     </Typography>
                 </Grid>
                 <Grid xs={12} sx={{ m: "auto" }} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
-                        src={hurwitz_symbolic_deltas}
+                        light={hurwitz_symbolic_deltas} dark={hurwitz_symbolic_deltas_dark}
                         alt="Failed loading!"
                     />
                 </Grid>

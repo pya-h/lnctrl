@@ -1,7 +1,10 @@
 import { Grid, Typography } from "@mui/material";
+import ThemedImage from "views/ui-component/ThemedImage";
 import mass_spring_damper_image from "./images/mass-spring-damper.jpg.webp";
+import mass_spring_damper_image_dark from "./images/mass-spring-damper.jpg-dark.webp";
 import mechanic_system_elements from "./images/mechanic-system-elements.jpg";
 
+import mechanic_system_elements_dark from "./images/mechanic-system-elements-dark.jpg";
 import "views/topics/topics.css";
 
 import { MathJax } from "better-react-mathjax";
@@ -18,9 +21,9 @@ const MassSpringDamperLecture = () => {
                 </Grid>
 
                 <Grid xs={12} sx={{ m: "auto" }} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
-                        src={mass_spring_damper_image}
+                        light={mass_spring_damper_image} dark={mass_spring_damper_image_dark}
                         alt="Failed loading!"
                     />
                 </Grid>
@@ -37,9 +40,9 @@ const MassSpringDamperLecture = () => {
                     </Typography>
                 </Grid>
                 <Grid xs={12} sx={{ m: "auto" }} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
-                        src={mechanic_system_elements}
+                        light={mechanic_system_elements} dark={mechanic_system_elements_dark}
                         alt="Failed loading!"
                     />
                 </Grid>

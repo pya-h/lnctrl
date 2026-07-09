@@ -1,10 +1,13 @@
 import {Grid, Typography } from "@mui/material";
+import ThemedImage from "views/ui-component/ThemedImage";
 import "views/topics/topics.css";
 import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 import img_closed_loop_system_standard_model from './img/closed_loop_system_standard_model.jpg';
+import img_closed_loop_system_standard_model_dark from "./img/closed_loop_system_standard_model-dark.jpg";
 import img_tf_in_out from './img/tf_in_out.jpg';
 
 
+import img_tf_in_out_dark from "./img/tf_in_out-dark.jpg";
 const Ch03Intro = () => {
     return (
         <PinchPanCard
@@ -19,10 +22,10 @@ const Ch03Intro = () => {
                     </Typography>
                 </Grid>
                 <Grid sx={{ m: "auto", textAlign: "center" }} xs={12} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
                         style={{ width: "100%", maxWidth: "30rem", height: "auto" }}
-                        src={img_closed_loop_system_standard_model}
+                        light={img_closed_loop_system_standard_model} dark={img_closed_loop_system_standard_model_dark}
                         alt="Failed loading!"
                     />
                 </Grid>
@@ -32,10 +35,10 @@ const Ch03Intro = () => {
                     </Typography>
                 </Grid>
                 <Grid sx={{ m: "auto", textAlign: "center" }} xs={12} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
                         style={{ width: "100%", maxWidth: "30rem", height: "auto" }}
-                        src={img_tf_in_out}
+                        light={img_tf_in_out} dark={img_tf_in_out_dark}
                         alt="Failed loading!"
                     />
                 </Grid>

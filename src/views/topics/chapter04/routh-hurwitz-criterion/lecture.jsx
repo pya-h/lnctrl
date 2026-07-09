@@ -1,6 +1,8 @@
 import { Grid, Typography } from "@mui/material";
+import ThemedImage from "views/ui-component/ThemedImage";
 import "views/topics/topics.css";
 import routh_hurwitz_symbolic_table from "./images/routh_hurwitz_table.png";
+import routh_hurwitz_symbolic_table_dark from "./images/routh_hurwitz_table-dark.png";
 import { MathJax } from "better-react-mathjax";
 import { Poly } from "math/algebra/functions";
 import PinchPanCard from "views/ui-component/cards/PinchPanCard";
@@ -26,9 +28,9 @@ const RouthHurwitzCriterionLecture = () => {
                     </Typography>
                 </Grid>
                 <Grid xs={12} sx={{ m: "auto" }} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
-                        src={routh_hurwitz_symbolic_table}
+                        light={routh_hurwitz_symbolic_table} dark={routh_hurwitz_symbolic_table_dark}
                         alt="Failed loading!"
                     />
                 </Grid>

@@ -1,5 +1,7 @@
 import { Grid, Typography } from "@mui/material";
+import ThemedImage from "views/ui-component/ThemedImage";
 import simple_LTI_system from "./visual/simple_lti_system.png";
+import simple_LTI_system_dark from "./visual/simple_lti_system-dark.png";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
 import PinchPanCard from "views/ui-component/cards/PinchPanCard";
@@ -47,9 +49,9 @@ const FOTFLecture = () => {
                     </Typography>
                 </Grid>
                 <Grid xs={12} sx={{ m: "auto" }} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
-                        src={simple_LTI_system}
+                        light={simple_LTI_system} dark={simple_LTI_system_dark}
                         alt="Failed loading!"
                     />
                 </Grid>

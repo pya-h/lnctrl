@@ -1,5 +1,7 @@
 import { Grid, Typography } from "@mui/material";
+import ThemedImage from "views/ui-component/ThemedImage";
 import hydralic_system_equivalent_circuit_image from "./images/eq-circuit.png";
+import hydralic_system_equivalent_circuit_image_dark from "./images/eq-circuit-dark.png";
 import "../../topics.css";
 import { MathJax } from "better-react-mathjax";
 import PinchPanCard from "views/ui-component/cards/PinchPanCard";
@@ -15,9 +17,9 @@ const WaterTankLevelLecture = () => (
                 </Typography>
             </Grid>
             <Grid xs={12} sx={{ m: "auto" }} item>
-                <img
+                <ThemedImage
                     className="lecture-image"
-                    src={hydralic_system_equivalent_circuit_image}
+                    light={hydralic_system_equivalent_circuit_image} dark={hydralic_system_equivalent_circuit_image_dark}
                     alt="Loading Failed"
                 />
             </Grid>

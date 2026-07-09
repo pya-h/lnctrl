@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useSelector } from "react-redux";
 
 import { ThemeProvider } from "@mui/material/styles";
@@ -15,7 +16,13 @@ import { MathJaxContext } from "better-react-mathjax";
 
 const App = () => {
     const customization = useSelector((state) => state.customization);
-    
+
+    // expose the active theme to plain CSS (navbar, lecture titles, …)
+    useEffect(() => {
+        document.body.dataset.theme =
+            customization.navType === "dark" ? "dark" : "light";
+    }, [customization.navType]);
+
     return (
         <StyledEngineProvider injectFirst>
             <ThemeProvider theme={themes(customization)}>

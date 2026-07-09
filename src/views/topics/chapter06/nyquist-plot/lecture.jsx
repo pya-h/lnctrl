@@ -1,10 +1,13 @@
 import { Grid, Typography } from "@mui/material";
+import ThemedImage from "views/ui-component/ThemedImage";
 import { MathJax } from "better-react-mathjax";
 import "views/topics/topics.css";
 import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 import img_nyquist_plot from "./img/nyquist_plot.JPG";
+import img_nyquist_plot_dark from "./img/nyquist_plot-dark.JPG";
 import img_nyquist_important_points from "./img/nyquist_important_points.jpg";
 
+import img_nyquist_important_points_dark from "./img/nyquist_important_points-dark.jpg";
 const NyquistPlotLecture = () => (
     <PinchPanCard title="Nichols Magnitude and Phase Chart">
         <Grid container>
@@ -38,10 +41,10 @@ const NyquistPlotLecture = () => (
                 </Typography>
             </Grid>
             <Grid xs={12} sx={{ m: "auto" }} item>
-                <img
+                <ThemedImage
                     className="lecture-image"
                     style={{ width: "100%", maxWidth: "30rem", height: "auto" }}
-                    src={img_nyquist_plot}
+                    light={img_nyquist_plot} dark={img_nyquist_plot_dark}
                     alt="Failed loading!"
                 />
             </Grid>
@@ -55,10 +58,10 @@ const NyquistPlotLecture = () => (
                 </Typography>
             </Grid>
             <Grid xs={12} sx={{ m: "auto" }} item>
-                <img
+                <ThemedImage
                     className="lecture-image"
                     style={{ width: "100%", maxWidth: "30rem", height: "auto" }}
-                    src={img_nyquist_important_points}
+                    light={img_nyquist_important_points} dark={img_nyquist_important_points_dark}
                     alt="Failed loading!"
                 />
             </Grid>

@@ -1,9 +1,11 @@
 import { Grid, Typography } from "@mui/material";
+import ThemedImage from "views/ui-component/ThemedImage";
 import "views/topics/topics.css";
 import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 import { MathJax } from "better-react-mathjax";
 import img_tf_k_gain from "./img/tf_with_k_gain.jpg";
 
+import img_tf_k_gain_dark from "./img/tf_with_k_gain-dark.jpg";
 const SketchingRootLocusLecture = () => {
     return (
         <PinchPanCard title="Drawing the root locus" border={true}>
@@ -13,8 +15,8 @@ const SketchingRootLocusLecture = () => {
                 </Typography>
             </Grid>
             <Grid xs={12} sx={{ m: "auto", textAlign: "center" }}>
-                <img
-                    src={img_tf_k_gain}
+                <ThemedImage
+                    light={img_tf_k_gain} dark={img_tf_k_gain_dark}
                     alt="Failed loading!"
                 />
             </Grid>

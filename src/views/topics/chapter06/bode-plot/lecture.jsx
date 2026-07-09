@@ -1,12 +1,19 @@
 import { Grid, Typography } from "@mui/material";
+import ThemedImage from "views/ui-component/ThemedImage";
 import "views/topics/topics.css";
 import { MathJax } from "better-react-mathjax";
 import img_formula_22 from "./img/formula_22.jpg";
+import img_formula_22_dark from "./img/formula_22-dark.jpg";
 import img_formula_23 from "./img/formula_23.jpg";
+import img_formula_23_dark from "./img/formula_23-dark.jpg";
 import img_zero_poles_type_in_bode from "./img/zero_pole_types_in_bode.JPG";
+import img_zero_poles_type_in_bode_dark from "./img/zero_pole_types_in_bode-dark.JPG";
 import img_standard_second_degree_system from "./img/standard_second_degree_system.jpg";
+import img_standard_second_degree_system_dark from "./img/standard_second_degree_system-dark.jpg";
 import img_m_pw_plot from "./img/m_pw_plot.png";
+import img_m_pw_plot_dark from "./img/m_pw_plot-dark.png";
 import img_bode_plot_manual from "./img/bode_plot_manual.jpg";
+import img_bode_plot_manual_dark from "./img/bode_plot_manual-dark.jpg";
 import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 
 const BodePlotLecture = () => {
@@ -55,9 +62,9 @@ const BodePlotLecture = () => {
                     </Typography>
                 </Grid>
                 <Grid xs={12} sx={{ m: "auto" }} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
-                        src={img_formula_22}
+                        light={img_formula_22} dark={img_formula_22_dark}
                         alt="Failed loading!"
                     />
                 </Grid>
@@ -68,9 +75,9 @@ const BodePlotLecture = () => {
                     </Typography>
                 </Grid>
                 <Grid xs={12} sx={{ m: "auto" }} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
-                        src={img_formula_23}
+                        light={img_formula_23} dark={img_formula_23_dark}
                         alt="Failed loading!"
                     />
                 </Grid>
@@ -94,9 +101,9 @@ const BodePlotLecture = () => {
                     </Typography>
                 </Grid>
                 <Grid xs={12} sx={{ m: "auto" }} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
-                        src={img_zero_poles_type_in_bode}
+                        light={img_zero_poles_type_in_bode} dark={img_zero_poles_type_in_bode_dark}
                         style={{ width: "100%", maxWidth: "30rem", height: "auto" }}
                         alt="Failed loading!"
                     />
@@ -133,9 +140,9 @@ const BodePlotLecture = () => {
                     </Typography>
                 </Grid>
                 <Grid xs={12} sx={{ m: "auto" }} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
-                        src={img_standard_second_degree_system}
+                        light={img_standard_second_degree_system} dark={img_standard_second_degree_system_dark}
                         alt="Failed loading!"
                     />
                 </Grid>
@@ -167,9 +174,9 @@ const BodePlotLecture = () => {
                     </Typography>
                 </Grid>
                 <Grid xs={12} sx={{ m: "auto" }} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
-                        src={img_m_pw_plot}
+                        light={img_m_pw_plot} dark={img_m_pw_plot_dark}
                         alt="Failed loading!"
                     />
                 </Grid>
@@ -179,9 +186,9 @@ const BodePlotLecture = () => {
                     </Typography>
                 </Grid>
                 <Grid xs={12} sx={{ m: "auto" }} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
-                        src={img_bode_plot_manual}
+                        light={img_bode_plot_manual} dark={img_bode_plot_manual_dark}
                         style={{ width: "100%", maxWidth: "30rem", height: "auto" }}
                         alt="Failed loading!"
                     />

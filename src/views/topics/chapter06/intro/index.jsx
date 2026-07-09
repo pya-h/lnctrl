@@ -1,6 +1,8 @@
 import { Grid, Typography } from "@mui/material";
+import ThemedImage from "views/ui-component/ThemedImage";
 import "views/topics/topics.css";
 import img_in_out_signals from "./img/in_out_signals.jpg";
+import img_in_out_signals_dark from "./img/in_out_signals-dark.jpg";
 import { MathJax } from "better-react-mathjax";
 import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 
@@ -38,10 +40,10 @@ const Ch06Intro = () => {
                     </Typography>
                 </Grid>
                 <Grid style={{ margin: "auto" }} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
                         style={{ textAlign: "center" }}
-                        src={img_in_out_signals}
+                        light={img_in_out_signals} dark={img_in_out_signals_dark}
                         alt="Failed loading!"
                     />
                 </Grid>

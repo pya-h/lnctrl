@@ -124,9 +124,7 @@ const Customization = () => {
                                         )
                                     }
                                     defaultChoice={
-                                        customization.navType === "dark"
-                                            ? "Dark"
-                                            : "Light"
+                                        customization.navType === "dark" ? 0 : 1
                                     }
                                 />
                             </SubCard>

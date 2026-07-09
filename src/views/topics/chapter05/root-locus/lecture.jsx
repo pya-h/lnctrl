@@ -1,8 +1,10 @@
 import { Grid, Typography } from "@mui/material";
+import ThemedImage from "views/ui-component/ThemedImage";
 import "views/topics/topics.css";
 import PinchPanCard from "views/ui-component/cards/PinchPanCard";
 import { MathJax } from "better-react-mathjax";
 import img_control_system_block_diagram from "./img/control_system_block_diagram.jpg";
+import img_control_system_block_diagram_dark from "./img/control_system_block_diagram-dark.jpg";
 import { Poly } from "math/algebra/functions";
 
 const RootLocusLecture = () => {
@@ -22,9 +24,9 @@ const RootLocusLecture = () => {
                     </Typography>
                 </Grid>
                 <Grid sx={{ m: "auto", textAlign: "center" }} xs={12} item>
-                    <img
+                    <ThemedImage
                         className="lecture-image"
-                        src={img_control_system_block_diagram}
+                        light={img_control_system_block_diagram} dark={img_control_system_block_diagram_dark}
                         alt="Failed loading!"
                     />
                 </Grid>

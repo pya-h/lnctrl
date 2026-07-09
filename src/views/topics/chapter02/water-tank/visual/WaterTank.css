@@ -1,22 +1,286 @@
-
-.tank {
+/* ============ Water-tank simulator ============ */
+.wt-scene {
     display: flex;
-    width:  95%;
-    height: 25rem; /* 600px */
-    border-bottom: 0.125rem /* 2px */ solid black;
-    border-right: 0.125rem /* 2px */ solid black;
-    border-left: 0.125rem /* 2px */ solid black;
-    background:whitesmoke;
-    position: relative;
-    display: inline-block;
-    margin: 2%; /* 40px */
-    border-radius: 5px;
+    justify-content: center;
+    width: 100%;
+    padding-top: 0.5rem;
 }
 
-.tank .water {
+.wt-stage {
+    position: relative;
+    width: 12rem;
+    height: 21rem;
+    max-width: 100%;
+}
+
+/* ---------- Tank (glass) ---------- */
+.wt-tank {
     position: absolute;
-    background: #9ed2ff;
-    width: 100%;
+    top: 3rem;
+    left: 2rem;
+    width: 8rem;
+    height: 17rem;
+    border: 3px solid #adbccf;
+    border-top: none;
+    border-radius: 0 0 20px 20px;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.4),
+        rgba(207, 224, 240, 0.15)
+    );
+    box-shadow: inset 0 0 22px rgba(120, 150, 180, 0.25),
+        0 12px 26px rgba(40, 70, 110, 0.16);
+    overflow: hidden;
+}
+
+/* vertical glass highlight */
+.wt-tank::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 12%;
+    width: 14%;
+    height: 100%;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.55),
+        rgba(255, 255, 255, 0)
+    );
+    filter: blur(1px);
+    z-index: 3;
+    pointer-events: none;
+}
+
+/* ---------- Water ---------- */
+.wt-water {
+    position: absolute;
+    left: 0;
     bottom: 0;
+    width: 100%;
+    background: linear-gradient(180deg, #74bbf6 0%, #2f8ae0 55%, #1c68b8 100%);
+    transition: height 0.1s linear;
     z-index: 1;
+}
+
+/* animated shimmering surface */
+.wt-surface {
+    position: absolute;
+    top: -4px;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, 0.7),
+        rgba(255, 255, 255, 0)
+    );
+    background-size: 55% 100%;
+    background-repeat: no-repeat;
+    animation: wt-shimmer 2.4s linear infinite;
+}
+@keyframes wt-shimmer {
+    from {
+        background-position: -60% 0;
+    }
+    to {
+        background-position: 160% 0;
+    }
+}
+
+/* ---------- Level ticks ---------- */
+.wt-scale {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    z-index: 2;
+    pointer-events: none;
+}
+.wt-scale li {
+    position: absolute;
+    right: 0;
+    width: 12px;
+    height: 2px;
+    background: rgba(90, 120, 150, 0.45);
+}
+
+/* ---------- Height readout ---------- */
+.wt-readout {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
+    padding: 2px 9px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+    color: #256bad;
+    background: rgba(255, 255, 255, 0.72);
+    border-radius: 10px;
+}
+
+/* ---------- Inlet faucet ---------- */
+.wt-inlet {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+}
+.wt-inlet-pipe {
+    position: relative;
+    width: 2rem;
+    height: 2.4rem;
+    background: linear-gradient(90deg, #b9c4d1, #eef2f6 45%, #b9c4d1);
+    border-radius: 5px 5px 0 0;
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
+}
+.wt-inlet-pipe::after {
+    /* faucet mouth */
+    content: "";
+    position: absolute;
+    bottom: -0.35rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2.6rem;
+    height: 0.5rem;
+    background: linear-gradient(180deg, #aab5c3, #8b98a8);
+    border-radius: 4px;
+}
+
+/* ---------- Falling drops (inflow) ---------- */
+.wt-drops {
+    position: absolute;
+    top: 2.7rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 12rem;
+    z-index: 2;
+    pointer-events: none;
+}
+.wt-drop {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 8px;
+    height: 12px;
+    margin-left: -4px;
+    background: radial-gradient(circle at 50% 32%, #cfe8ff, #3b93e6);
+    border-radius: 50% 50% 50% 50% / 62% 62% 40% 40%;
+    opacity: 0;
+    animation-name: wt-fall;
+    animation-timing-function: cubic-bezier(0.45, 0, 0.85, 1);
+    animation-iteration-count: infinite;
+}
+@keyframes wt-fall {
+    0% {
+        transform: translateY(0) scaleY(0.8);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    82% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(8.5rem) scaleY(1.2);
+        opacity: 0;
+    }
+}
+
+/* ---------- Outlet valve ---------- */
+.wt-outlet {
+    position: absolute;
+    left: 9.9rem;
+    bottom: 4.4rem;
+    display: flex;
+    align-items: center;
+    z-index: 5;
+}
+.wt-outlet-pipe {
+    width: 1.3rem;
+    height: 0.85rem;
+    background: linear-gradient(180deg, #c2ccd8, #eef2f6 45%, #97a3b2);
+    border-radius: 0 3px 3px 0;
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.25);
+}
+.wt-valve {
+    width: 0.95rem;
+    height: 0.95rem;
+    margin-left: -2px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 32%, #ffab91, #e64a19);
+    box-shadow: 0 0 0 3px rgba(230, 74, 25, 0.22);
+}
+
+/* ---------- Draining stream (outflow) ---------- */
+.wt-stream {
+    position: absolute;
+    left: 10.75rem;
+    bottom: 0.6rem;
+    width: 6px;
+    height: 4rem;
+    z-index: 4;
+    border-radius: 3px;
+    background-color: #2f8ae0;
+    background-image: repeating-linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.6) 0 3px,
+        rgba(255, 255, 255, 0) 3px 11px
+    );
+    background-size: 100% 11px;
+    opacity: 0;
+    transform: scaleY(0);
+    transform-origin: top center;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.wt-stream.is-active {
+    opacity: 0.95;
+    transform: scaleY(1);
+    animation-name: wt-flow;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+}
+@keyframes wt-flow {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: 0 11px;
+    }
+}
+
+/* ============ Dark theme ============ */
+body[data-theme="dark"] .wt-tank {
+    border-color: rgba(130, 150, 190, 0.5);
+    background: linear-gradient(
+        180deg,
+        rgba(90, 110, 150, 0.18),
+        rgba(40, 55, 90, 0.12)
+    );
+    box-shadow: inset 0 0 22px rgba(10, 20, 40, 0.5),
+        0 12px 26px rgba(0, 0, 0, 0.35);
+}
+body[data-theme="dark"] .wt-water {
+    background: linear-gradient(180deg, #3f9be0 0%, #2170b8 55%, #164e86 100%);
+}
+body[data-theme="dark"] .wt-readout {
+    color: #cfe0ff;
+    background: rgba(17, 25, 54, 0.72);
+}
+body[data-theme="dark"] .wt-scale li {
+    background: rgba(150, 175, 210, 0.4);
+}
+body[data-theme="dark"] .wt-inlet-pipe,
+body[data-theme="dark"] .wt-outlet-pipe {
+    background: linear-gradient(90deg, #4a5570, #8792a8 45%, #4a5570);
+}
+body[data-theme="dark"] .wt-outlet-pipe {
+    background: linear-gradient(180deg, #6b768c, #9aa6ba 45%, #465065);
 }

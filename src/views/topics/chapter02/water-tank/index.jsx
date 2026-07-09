@@ -294,6 +294,8 @@ export default class WaterTankLevelExample extends TopicBaseComponent {
                                     dt={deltaX}
                                     y={currentY}
                                     max={calculus.max(currentY).value}
+                                    R={R}
+                                    Qin={Qin}
                                 />
                             )}
                         </Grid>

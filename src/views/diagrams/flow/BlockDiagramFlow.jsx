@@ -99,6 +99,12 @@ const IcoExport = () => (
         <path d="M5 19h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
 );
+const IcoImport = () => (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+        <path d="M12 14V4M8 8l4-4 4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M5 19h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+);
 const IcoCopy = () => (
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
         <rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.7" />
@@ -175,7 +181,6 @@ const TransferFunctionNode = ({ id, data }) => {
     );
 };
 
-// triangular gain element: multiplies the passing signal by k
 const GainNode = ({ id, data }) => {
     const ctx = useContext(EditorCtx);
     const updateNodeInternals = useUpdateNodeInternals();
@@ -280,7 +285,6 @@ const SummingJunctionNode = ({ id, data }) => {
     );
 };
 
-// takeoff / branch point — one input, any number of outgoing branches
 const TakeoffNode = ({ id, data }) => {
     const updateNodeInternals = useUpdateNodeInternals();
     const branches = data.branches || [];
@@ -450,6 +454,7 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
     const [equiv, setEquiv] = useState(null);
     const wrapperRef = useRef(null);
     const toastTimer = useRef(null);
+    const fileRef = useRef(null);
     const nextId = useRef(1);
     const { screenToFlowPosition, deleteElements, fitView } = useReactFlow();
 
@@ -526,17 +531,28 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
         run();
     }, [deleteElements, nodes, edges]);
 
-    const reset = useCallback(() => {
-        setNodes(sampleNodes);
-        setEdges(sampleEdges);
+    const refit = useCallback(() => {
         setTimeout(() => {
             try {
                 fitView({ padding: 0.22, duration: 250 });
             } catch (e) {
-                /* ignore */
+                /* canvas not ready yet */
             }
         }, 60);
-    }, [setNodes, setEdges, fitView]);
+    }, [fitView]);
+
+    const reset = useCallback(() => {
+        setConfirm({
+            message: "Reset the canvas to the sample diagram? Your current work will be lost.",
+            confirm: "Reset",
+            color: "warning",
+            onYes: () => {
+                setNodes(sampleNodes);
+                setEdges(sampleEdges);
+                refit();
+            },
+        });
+    }, [setNodes, setEdges, refit]);
 
     const exportJSON = useCallback(() => {
         const clean = {
@@ -563,6 +579,43 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
         a.click();
         URL.revokeObjectURL(url);
     }, [nodes, edges]);
+
+    const importJSON = useCallback(
+        () =>
+            setConfirm({
+                message: "Importing replaces the current diagram. Continue?",
+                confirm: "Import",
+                color: "warning",
+                onYes: () => fileRef.current?.click(),
+            }),
+        []
+    );
+
+    const onImportFile = useCallback(
+        (e) => {
+            const file = e.target.files?.[0];
+            e.target.value = "";
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const data = JSON.parse(reader.result);
+                    if (!Array.isArray(data.nodes)) throw new Error("bad");
+                    setNodes(data.nodes);
+                    setEdges(data.edges || []);
+                    setMenu(null);
+                    // keep the id counter ahead of any imported id so new nodes never collide
+                    const maxId = Math.max(0, ...data.nodes.map((n) => parseInt(String(n.id).replace(/\D/g, ""), 10) || 0));
+                    nextId.current = maxId + 1;
+                    refit();
+                } catch (err) {
+                    flash("Not a valid diagram file");
+                }
+            };
+            reader.readAsText(file);
+        },
+        [setNodes, setEdges, refit, flash]
+    );
 
     /* ---- node mutations ---- */
     const patchNode = useCallback(
@@ -1180,7 +1233,6 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                                         }
                                     >
                                         {t.icon}
-                                        <span>{t.label}</span>
                                     </button>
                                 </Tooltip>
                             ))}
@@ -1190,22 +1242,31 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                             <Tooltip title="Delete selected  (Del)" placement="right" arrow>
                                 <button type="button" className="bd-tool bd-tool--danger" onClick={deleteSelected}>
                                     <IcoDelete />
-                                    <span>Delete</span>
                                 </button>
                             </Tooltip>
                             <Tooltip title="Reset to sample diagram" placement="right" arrow>
                                 <button type="button" className="bd-tool" onClick={reset}>
                                     <IcoReset />
-                                    <span>Reset</span>
                                 </button>
                             </Tooltip>
                             <Tooltip title="Export diagram as JSON" placement="right" arrow>
                                 <button type="button" className="bd-tool" onClick={exportJSON}>
                                     <IcoExport />
-                                    <span>Export</span>
+                                </button>
+                            </Tooltip>
+                            <Tooltip title="Import diagram from JSON" placement="right" arrow>
+                                <button type="button" className="bd-tool" onClick={importJSON}>
+                                    <IcoImport />
                                 </button>
                             </Tooltip>
                         </div>
+                        <input
+                            ref={fileRef}
+                            type="file"
+                            accept="application/json,.json"
+                            style={{ display: "none" }}
+                            onChange={onImportFile}
+                        />
                     </div>
                 )}
 
@@ -1351,14 +1412,14 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                 <DialogActions>
                     <Button onClick={() => setConfirm(null)}>Cancel</Button>
                     <Button
-                        color="error"
+                        color={confirm?.color || "error"}
                         variant="contained"
                         onClick={() => {
                             confirm?.onYes();
                             setConfirm(null);
                         }}
                     >
-                        Delete
+                        {confirm?.confirm || "Delete"}
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -1383,7 +1444,6 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
     );
 };
 
-// ReactFlowProvider lets the inner component use the flow instance
 const BlockDiagramFlow = (props) => (
     <ReactFlowProvider>
         <BlockDiagramFlowInner {...props} />

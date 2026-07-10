@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+import { Navigate } from 'react-router-dom';
 
 // project imports
 import MainLayout from 'layout/MainLayout';
@@ -20,7 +21,7 @@ const MainRoutes = {
         },
         {
             path: `${routes.root}${routes.toolbox}`,
-            element: <ToolBox />
+            element: <Navigate to={`${routes.root}${routes.toolbox}/${routes.block_diagram_tool}`} replace />
         },
         {
             path: `${routes.root}${routes.toolbox}/:tool`,

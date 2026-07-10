@@ -96,7 +96,11 @@ class RootLocus extends TopicBaseComponent {
                         mode: "markers",
                         marker: {
                             size: 10,
-                            color: "black",
+                            // black vanishes on the dark plot surface, so track the theme
+                            color:
+                                localStorage.getItem("navType") === "dark"
+                                    ? "#e0e0e0"
+                                    : "black",
                             // symbol: 'diamond'
                         },
                         name: "Zero",

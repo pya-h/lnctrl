@@ -126,21 +126,14 @@ export default class WaterTankLevelExample extends TopicBaseComponent {
     $N = (N) => this.updateState("N", N);
     set3DPlotEnabled = (isIt) => this.updateState("is3DPlotEnabled", isIt);
 
-    componentDidUpdate(prevProps, prevState) {
-        const basicParamsChanged =
-        this.state.R !== prevState.R ||
-        this.state.C !== prevState.C ||
-        this.state.hi !== prevState.hi ||
-        this.state.Qin !== prevState.Qin;
-        if (
-            basicParamsChanged ||
-            this.state.ti !== prevState.ti ||
-            this.state.tf !== prevState.tf ||
-            this.state.is3DPlotEnabled !== prevState.is3DPlotEnabled ||
-            this.state.thickness !== prevState.thickness ||
-            this.state.systems !== prevState.systems || this.state.systems.length !== prevState.systems.length ||
-            this.state.N !== prevState.N
-        ) {
+    componentDidMount() {
+        super.componentDidMount();
+        // the traces are only built in componentDidUpdate, so a first visit with no
+        // cached state would render an empty plot until the user touched a field
+        this.recompute();
+    }
+
+    recompute() {
             const h_t = calculus.ODE.cc1ode(+this.state.R * +this.state.C, 1, +this.state.R * +this.state.Qin, +this.state.hi);
             const [x, y] = calculus.pointify(h_t, +this.state.ti, +this.state.tf, +this.state.N);
             this.setDeltaX(x[1] - x[0]);
@@ -190,6 +183,24 @@ export default class WaterTankLevelExample extends TopicBaseComponent {
                 });
 
             this.setTraces(all);
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        const basicParamsChanged =
+        this.state.R !== prevState.R ||
+        this.state.C !== prevState.C ||
+        this.state.hi !== prevState.hi ||
+        this.state.Qin !== prevState.Qin;
+        if (
+            basicParamsChanged ||
+            this.state.ti !== prevState.ti ||
+            this.state.tf !== prevState.tf ||
+            this.state.is3DPlotEnabled !== prevState.is3DPlotEnabled ||
+            this.state.thickness !== prevState.thickness ||
+            this.state.systems !== prevState.systems || this.state.systems.length !== prevState.systems.length ||
+            this.state.N !== prevState.N
+        ) {
+            this.recompute();
         }
 		if (basicParamsChanged) this.setGraphCaptured(false);
     }

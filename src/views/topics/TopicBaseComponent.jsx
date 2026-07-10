@@ -28,12 +28,15 @@ class TopicBaseComponent extends Component {
     componentDidMount() {
         const cache = getCache(this.state.topicKey);
         if (cache) this.setState(this.reviveState(cache));
-        window.onbeforeunload = () => this.saveState();
+        // a per-instance handler so a late unmount can only remove its own listener,
+        // never clobber the one a freshly-mounted topic just installed
+        this._saveOnUnload = () => this.saveState();
+        window.addEventListener("beforeunload", this._saveOnUnload);
     }
 
     componentWillUnmount() {
         this.saveState();
-        window.onbeforeunload = null;
+        window.removeEventListener("beforeunload", this._saveOnUnload);
     }
 }
 

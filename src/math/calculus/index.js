@@ -19,6 +19,8 @@ const precision = {
 
 const pointify = (f, ti, tf, N = 1000) => {
     // construct two arrays consisting inputs (t) and outputs[f(t)] of the function: f
+    N = Math.floor(+N);
+    if (!(N > 0)) N = 1000; // an empty/0/NaN N would make dt=Infinity and hang the step loop
     let dt = (tf - ti) / N; //time step size
     while (dt >= 1) {
         N *= 10;
@@ -38,6 +40,8 @@ export const pointifyAsync = async (
     N = 1000
 ) => {
     // construct two arrays consisting inputs (t) and outputs[f(t)] of the function: f
+    N = Math.floor(+N);
+    if (!(N > 0)) N = 1000; // an empty/0/NaN N would make dt=Infinity and hang the step loop
     let dt = (tf - ti) / N; //time step size
     while (dt >= 1) {
         N *= 10;

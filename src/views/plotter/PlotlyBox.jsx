@@ -87,7 +87,7 @@ const PlotlyBox = ({
                 hoverlabel: {
                     align: "auto",
                     boxmode: "overlay",
-                    font: { color: "#000000FF" },
+                    font: { color: textColor },
                     bgcolor: plotBg,
                 },
                 legend: { orientation: "h", font: { color: textColor } }, //, y: -0.3},

@@ -635,14 +635,21 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
             const n = nodes.find((x) => x.id === id);
             if (!n) return;
             const nid = `n${nextId.current++}`;
+            // a pinned child stores a parent-relative position; drop the group binding
+            // and use its absolute position so the copy lands free-standing beside it
+            const parent = n.parentNode ? nodes.find((x) => x.id === n.parentNode) : null;
+            const base = parent
+                ? { x: n.position.x + parent.position.x, y: n.position.y + parent.position.y }
+                : n.position;
+            const { parentNode, extent, width, height, positionAbsolute, ...rest } = n;
             setNodes((nds) =>
                 nds
                     .map((x) => ({ ...x, selected: false }))
                     .concat({
-                        ...n,
+                        ...rest,
                         id: nid,
                         selected: true,
-                        position: { x: n.position.x + 44, y: n.position.y + 44 },
+                        position: { x: base.x + 44, y: base.y + 44 },
                         data: clone(n.data),
                     })
             );

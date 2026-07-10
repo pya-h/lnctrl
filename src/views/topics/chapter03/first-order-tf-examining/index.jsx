@@ -119,9 +119,12 @@ class FirstOrderTransferFunctionExamining extends TopicBaseComponent {
         isGraphCatured: false,
         is3DPlotEnabled: false,
         N: 1000,
+        isAutoPlaying: false,
     };
 
     persistKeys = ["a", "k", "t_i", "t_f", "inputSignal", "thickness", "N"];
+
+    setAutoPlaying = (value) => this.setState({ isAutoPlaying: value });
 
     $a = (value) => this.setState({ a: value });
     $k = (value) => this.setState({ k: value });
@@ -289,6 +292,7 @@ class FirstOrderTransferFunctionExamining extends TopicBaseComponent {
             response,
             isGraphCatured,
             N,
+            isAutoPlaying,
         } = this.state;
 
         return (
@@ -389,6 +393,8 @@ class FirstOrderTransferFunctionExamining extends TopicBaseComponent {
                                         $inputSignal={this.$inputSignal}
                                         N={N}
                                         $N={this.$N}
+                                        isAutoPlaying={isAutoPlaying}
+                                        setAutoPlaying={this.setAutoPlaying}
                                     />
                                 </Grid>
                             </Grid>

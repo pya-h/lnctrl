@@ -59,7 +59,7 @@ export const evaluateEquivalent = (numerator, denominator, tfMap) => {
     if (!den.length || den.every((c) => c === 0)) return null;
     let latex;
     try {
-        latex = new TransferFunction([...num], [...den]).toString();
+        latex = new TransferFunction([...num], [...den], "s").toString();
     } catch (e) {
         latex = `\\frac{${Algebra.polynomial(num, "s")}}{${Algebra.polynomial(den, "s")}}`;
     }

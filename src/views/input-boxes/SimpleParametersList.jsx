@@ -2,7 +2,7 @@ import { Grid, InputAdornment, TextField } from "@mui/material";
 import { MathJax } from "better-react-mathjax";
 import { Fragment } from "react";
 
-const SimpleParametersList = ({ parameters, setters, labels, units }) => {
+const SimpleParametersList = ({ parameters, setters, labels, units, disabled }) => {
     return (
         <Fragment>
             {parameters instanceof Array &&
@@ -11,6 +11,7 @@ const SimpleParametersList = ({ parameters, setters, labels, units }) => {
                         <TextField
                             onChange={(e) => setters[i](e.target.value)}
                             value={param}
+                            disabled={disabled}
                             sx={{ width: "100%" }}
                             InputProps={{
                                 startAdornment: (

@@ -294,6 +294,16 @@
     border-radius: 14px;
     background: rgba(124, 100, 255, 0.06);
 }
+/* free frame: neutral annotation */
+.bd-group--free {
+    border-color: #9aa4c4;
+    background: rgba(120, 132, 170, 0.06);
+}
+/* bound frame: accent, signals pinned contents */
+.bd-group--bound {
+    border-color: #7c4dff;
+    background: rgba(124, 77, 255, 0.09);
+}
 .bd-group-label {
     pointer-events: auto;
     display: inline-block;
@@ -312,7 +322,33 @@
 }
 .react-flow__node-group.selected .bd-group {
     border-color: #7c4dff;
-    background: rgba(124, 77, 255, 0.1);
+    background: rgba(124, 77, 255, 0.14);
+    box-shadow: 0 0 0 2px rgba(124, 77, 255, 0.25);
+}
+
+/* ---- canvas resize grip ---- */
+.bd-resize {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 13px;
+    margin: 5px 10px 0;
+    cursor: ns-resize;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+}
+.bd-resize:hover {
+    background: rgba(91, 141, 239, 0.12);
+}
+.bd-resize-grip {
+    width: 48px;
+    height: 4px;
+    border-radius: 3px;
+    background: rgba(46, 84, 148, 0.35);
+    transition: background 0.15s ease;
+}
+.bd-resize:hover .bd-resize-grip {
+    background: #5b8def;
 }
 
 /* ---- transient toast ---- */
@@ -350,7 +386,7 @@
 }
 /* clip-path clips outlines, so flag a selected gain with a coloured glow */
 .react-flow__node.selected .bd-gain {
-    filter: drop-shadow(0 0 0 #7c4dff) drop-shadow(0 0 5px rgba(124, 77, 255, 0.9));
+    filter: drop-shadow(0 0 2px #7c4dff) drop-shadow(0 0 7px rgba(124, 77, 255, 0.85));
 }
 
 /* ---- editing hint ---- */
@@ -641,10 +677,27 @@ body[data-theme="dark"] .bd-group {
     border-color: #7f8cff;
     background: rgba(127, 140, 255, 0.09);
 }
+body[data-theme="dark"] .bd-group--free {
+    border-color: #5b6690;
+    background: rgba(120, 140, 200, 0.07);
+}
+body[data-theme="dark"] .bd-group--bound {
+    border-color: #9a7bff;
+    background: rgba(124, 90, 255, 0.13);
+}
 body[data-theme="dark"] .bd-group-label {
     color: #cdd7ff;
     background: #1c2450;
     border-color: #6f7cf0;
+}
+body[data-theme="dark"] .bd-resize:hover {
+    background: rgba(111, 155, 255, 0.15);
+}
+body[data-theme="dark"] .bd-resize-grip {
+    background: rgba(111, 155, 255, 0.4);
+}
+body[data-theme="dark"] .bd-resize:hover .bd-resize-grip {
+    background: #6f9bff;
 }
 body[data-theme="dark"] .bd-toast {
     background: rgba(230, 236, 250, 0.95);

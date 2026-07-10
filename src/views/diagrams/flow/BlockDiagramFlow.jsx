@@ -24,7 +24,15 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { useTheme } from "@mui/material/styles";
-import { Tooltip } from "@mui/material";
+import {
+    Tooltip,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    Button,
+} from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import "./blockDiagram.css";
 
@@ -326,8 +334,9 @@ const IONode = ({ id, data }) => {
     );
 };
 
-// dashed annotation frame drawn around a selection; only its label bar is
-// interactive so inner nodes stay clickable
+// dashed frame. A "free" group is a standalone annotation; a "bound" group pins
+// the elements inside it (React Flow parent). Only the label bar is interactive
+// so inner nodes stay clickable.
 const GroupNode = ({ id, data }) => {
     const ctx = useContext(EditorCtx);
     const editing = ctx?.editingId === id;
@@ -340,7 +349,7 @@ const GroupNode = ({ id, data }) => {
         ctx?.endEdit();
     };
     return (
-        <div className="bd-group">
+        <div className={`bd-group bd-group--${data.mode || "free"}`}>
             <div className="bd-group-label" onDoubleClick={() => ctx?.beginEdit(id)}>
                 {editing ? (
                     <input
@@ -407,6 +416,7 @@ const ADD_TOOLS = [
     { kind: "takeoff", label: "Takeoff", title: "Takeoff / branch point", icon: <IcoTakeoff /> },
     { kind: "io-in", label: "Input", title: "Input signal  R(s)", icon: <IcoInput /> },
     { kind: "io-out", label: "Output", title: "Output signal  C(s)", icon: <IcoOutput /> },
+    { kind: "group", label: "Group", title: "Empty group frame (moves freely)", icon: <IcoGroup /> },
 ];
 
 const clone = (v) => JSON.parse(JSON.stringify(v));
@@ -422,6 +432,8 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
     const [labelEdit, setLabelEdit] = useState(null);
     const [clip, setClip] = useState(null);
     const [toast, setToast] = useState(null);
+    const [sceneHeight, setSceneHeight] = useState(600);
+    const [confirm, setConfirm] = useState(null);
     const wrapperRef = useRef(null);
     const toastTimer = useRef(null);
     const nextId = useRef(1);
@@ -490,10 +502,19 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
     );
 
     const deleteSelected = useCallback(() => {
-        deleteElements({
-            nodes: nodes.filter((n) => n.selected),
-            edges: edges.filter((e) => e.selected),
-        });
+        const selNodes = nodes.filter((n) => n.selected);
+        const run = () =>
+            deleteElements({ nodes: selNodes, edges: edges.filter((e) => e.selected) });
+        const bound = selNodes.find((n) => n.type === "group" && n.data?.mode === "bound");
+        if (bound) {
+            const kids = nodes.filter((n) => n.parentNode === bound.id).length;
+            setConfirm({
+                message: `Delete this group and its ${kids} pinned item${kids !== 1 ? "s" : ""}?`,
+                onYes: run,
+            });
+            return;
+        }
+        run();
     }, [deleteElements, nodes, edges]);
 
     const reset = useCallback(() => {
@@ -510,7 +531,11 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
 
     const exportJSON = useCallback(() => {
         const clean = {
-            nodes: nodes.map(({ id, type, position, data }) => ({ id, type, position, data })),
+            nodes: nodes.map((n) => {
+                const base = { id: n.id, type: n.type, position: n.position, data: n.data };
+                if (n.type === "group") return { ...base, style: n.style, zIndex: n.zIndex };
+                return base;
+            }),
             edges: edges.map(({ id, source, target, sourceHandle, targetHandle, label, animated }) => ({
                 id,
                 source,
@@ -565,11 +590,14 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
     );
 
     const switchIO = useCallback(
-        (id) =>
+        (id) => {
             patchNode(id, (n) => ({
                 data: { ...n.data, kind: n.data.kind === "input" ? "output" : "input" },
-            })),
-        [patchNode]
+            }));
+            // the node's single handle flips type and side, so its links no longer apply
+            setEdges((eds) => eds.filter((e) => e.source !== id && e.target !== id));
+        },
+        [patchNode, setEdges]
     );
 
     const addSumInput = useCallback(
@@ -585,14 +613,17 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
     );
 
     const removeSumInput = useCallback(
-        (id) =>
+        (id) => {
+            const base = inputsOf(nodes.find((n) => n.id === id)?.data || {});
+            if (base.length <= 1) return;
+            const removed = base[base.length - 1].id;
             patchNode(id, (n) => {
-                const base = inputsOf(n.data);
-                if (base.length <= 1) return {};
                 const { signs, ...rest } = n.data;
-                return { data: { ...rest, inputs: base.slice(0, -1) } };
-            }),
-        [patchNode]
+                return { data: { ...rest, inputs: inputsOf(n.data).slice(0, -1) } };
+            });
+            setEdges((eds) => eds.filter((e) => !(e.target === id && e.targetHandle === removed)));
+        },
+        [nodes, patchNode, setEdges]
     );
 
     const addBranch = useCallback(
@@ -607,13 +638,16 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
     );
 
     const removeBranch = useCallback(
-        (id) =>
-            patchNode(id, (n) => {
-                const b = n.data.branches || [];
-                if (!b.length) return {};
-                return { data: { ...n.data, branches: b.slice(0, -1) } };
-            }),
-        [patchNode]
+        (id) => {
+            const b = nodes.find((n) => n.id === id)?.data.branches || [];
+            if (!b.length) return;
+            const removed = b[b.length - 1];
+            patchNode(id, (n) => ({
+                data: { ...n.data, branches: (n.data.branches || []).slice(0, -1) },
+            }));
+            setEdges((eds) => eds.filter((e) => !(e.source === id && e.sourceHandle === removed)));
+        },
+        [nodes, patchNode, setEdges]
     );
 
     const toggleEdgeAnimated = useCallback(
@@ -631,9 +665,18 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
     const copyNodes = useCallback(
         (ids, verb = "Copied") => {
             const set = new Set(ids);
+            // pinned children store a parent-relative position; copy them as absolute
+            // so they paste as free-standing nodes at the right spot
+            const abs = (n) => {
+                if (!n.parentNode) return { ...n.position };
+                const p = nodes.find((x) => x.id === n.parentNode);
+                return p
+                    ? { x: n.position.x + p.position.x, y: n.position.y + p.position.y }
+                    : { ...n.position };
+            };
             const ns = nodes
                 .filter((n) => set.has(n.id) && n.type !== "group")
-                .map((n) => ({ oid: n.id, type: n.type, position: { ...n.position }, data: clone(n.data) }));
+                .map((n) => ({ oid: n.id, type: n.type, position: abs(n), data: clone(n.data) }));
             if (!ns.length) return;
             // links are only carried when both endpoints are inside the copied set
             const es = edges
@@ -647,10 +690,14 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
 
     const cutNodes = useCallback(
         (ids) => {
-            copyNodes(ids, "Cut");
-            deleteElements({ nodes: ids.map((id) => ({ id })) });
+            // cut only what copy captures (group frames are never clipboarded), so
+            // paste can always restore exactly what was removed
+            const copyable = ids.filter((id) => nodes.find((n) => n.id === id)?.type !== "group");
+            if (!copyable.length) return;
+            copyNodes(copyable, "Cut");
+            deleteElements({ nodes: copyable.map((id) => ({ id })) });
         },
-        [copyNodes, deleteElements]
+        [nodes, copyNodes, deleteElements]
     );
 
     const paste = useCallback(
@@ -688,30 +735,122 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
     );
 
     /* ---- grouping ---- */
+    // free frame: pure annotation, pins nothing, moves on its own
+    const addEmptyGroup = useCallback(
+        (clientX, clientY) => {
+            const p = flowPos(clientX, clientY);
+            const w = 240;
+            const h = 160;
+            const id = `grp${nextId.current++}`;
+            setNodes((nds) => [
+                {
+                    id,
+                    type: "group",
+                    position: { x: p.x - w / 2, y: p.y - h / 2 },
+                    data: { label: "Group", mode: "free" },
+                    style: { width: w, height: h },
+                    zIndex: -1,
+                },
+                ...nds.map((n) => ({ ...n, selected: false })),
+            ]);
+            flash("Group added");
+        },
+        [flowPos, setNodes, flash]
+    );
+
+    // bound frame: pins the selected elements as React Flow children so the group
+    // moves them and `extent: parent` keeps them inside
     const groupSelected = useCallback(() => {
-        const sel = nodes.filter((n) => n.selected && n.type !== "group");
+        const sel = nodes.filter((n) => n.selected && n.type !== "group" && !n.parentNode);
         if (!sel.length) return;
-        const pad = 26;
+        const pad = 30;
         const left = Math.min(...sel.map((n) => n.position.x)) - pad;
-        const top = Math.min(...sel.map((n) => n.position.y)) - pad - 12;
+        const top = Math.min(...sel.map((n) => n.position.y)) - pad - 14;
         const right = Math.max(...sel.map((n) => n.position.x + (n.width || 72))) + pad;
         const bottom = Math.max(...sel.map((n) => n.position.y + (n.height || 46))) + pad;
         const id = `grp${nextId.current++}`;
-        setNodes((nds) => [
-            {
+        const selIds = new Set(sel.map((n) => n.id));
+        setNodes((nds) => {
+            const group = {
                 id,
                 type: "group",
                 position: { x: left, y: top },
-                data: { label: "Group" },
+                data: { label: "Group", mode: "bound" },
                 style: { width: right - left, height: bottom - top },
                 zIndex: -1,
-                selectable: true,
-                draggable: true,
-            },
-            ...nds.map((n) => ({ ...n, selected: false })),
-        ]);
+            };
+            // parent must precede its children in the array
+            const rest = nds.map((n) =>
+                selIds.has(n.id)
+                    ? {
+                          ...n,
+                          selected: false,
+                          parentNode: id,
+                          extent: "parent",
+                          position: { x: n.position.x - left, y: n.position.y - top },
+                      }
+                    : { ...n, selected: false }
+            );
+            return [group, ...rest];
+        });
         flash("Grouped");
     }, [nodes, setNodes, flash]);
+
+    // release pinned children back to absolute coordinates, then drop the frame
+    const ungroup = useCallback(
+        (groupId) => {
+            setNodes((nds) => {
+                const g = nds.find((n) => n.id === groupId);
+                if (!g) return nds;
+                const { x: gx, y: gy } = g.position;
+                return nds
+                    .filter((n) => n.id !== groupId)
+                    .map((n) => {
+                        if (n.parentNode !== groupId) return n;
+                        const { parentNode, extent, ...rest } = n;
+                        return {
+                            ...rest,
+                            selected: false,
+                            position: { x: n.position.x + gx, y: n.position.y + gy },
+                        };
+                    });
+            });
+            flash("Ungrouped");
+        },
+        [setNodes, flash]
+    );
+
+    // deleting a bound group takes its pinned children with it
+    const onNodesDelete = useCallback(
+        (deleted) => {
+            const gids = deleted
+                .filter((n) => n.type === "group" && n.data?.mode === "bound")
+                .map((n) => n.id);
+            if (!gids.length) return;
+            const kids = nodes
+                .filter((n) => gids.includes(n.parentNode))
+                .map((n) => ({ id: n.id }));
+            if (kids.length) deleteElements({ nodes: kids });
+        },
+        [nodes, deleteElements]
+    );
+
+    const startResize = useCallback(
+        (e) => {
+            e.preventDefault();
+            const startY = e.clientY;
+            const startH = sceneHeight;
+            const onMove = (ev) =>
+                setSceneHeight(Math.max(340, Math.min(1400, startH + (ev.clientY - startY))));
+            const onUp = () => {
+                window.removeEventListener("mousemove", onMove);
+                window.removeEventListener("mouseup", onUp);
+            };
+            window.addEventListener("mousemove", onMove);
+            window.addEventListener("mouseup", onUp);
+        },
+        [sceneHeight]
+    );
 
     const ctxValue = useMemo(
         () => ({
@@ -792,6 +931,7 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                 { label: "Add gain  k", icon: <IcoGain />, run: () => addNode("gain", menu.clientX, menu.clientY) },
                 { label: "Add summing  Σ", icon: <IcoSum />, run: () => addNode("sum", menu.clientX, menu.clientY) },
                 { label: "Add takeoff", icon: <IcoTakeoff />, run: () => addNode("takeoff", menu.clientX, menu.clientY) },
+                { label: "Add empty group", icon: <IcoGroup />, run: () => addEmptyGroup(menu.clientX, menu.clientY) },
                 { sep: true },
                 { label: "Paste", icon: <IcoPaste />, disabled: !clip, run: () => paste(menu.clientX, menu.clientY) },
             ];
@@ -876,11 +1016,32 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
             ];
         }
         if (menu.nodeType === "group") {
-            return [
-                { label: "Rename…", run: () => setEditingId(menu.id) },
-                { sep: true },
-                { label: "Delete", danger: true, icon: <IcoDelete />, run: del({ nodes: [{ id: menu.id }] }) },
-            ];
+            const bound = node?.data.mode === "bound";
+            const kids = nodes.filter((n) => n.parentNode === menu.id).length;
+            const items = [{ label: "Rename…", run: () => setEditingId(menu.id) }];
+            if (bound) {
+                items.push({ label: "Ungroup (release items)", run: () => ungroup(menu.id) });
+                items.push({ sep: true });
+                items.push({
+                    label: "Delete group + items",
+                    danger: true,
+                    icon: <IcoDelete />,
+                    run: () =>
+                        setConfirm({
+                            message: `Delete this group and its ${kids} pinned item${kids !== 1 ? "s" : ""}?`,
+                            onYes: () => deleteElements({ nodes: [{ id: menu.id }] }),
+                        }),
+                });
+            } else {
+                items.push({ sep: true });
+                items.push({
+                    label: "Delete",
+                    danger: true,
+                    icon: <IcoDelete />,
+                    run: del({ nodes: [{ id: menu.id }] }),
+                });
+            }
+            return items;
         }
         return common;
     };
@@ -905,7 +1066,13 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                         <div className="bd-palette-group">
                             {ADD_TOOLS.map((t) => (
                                 <Tooltip key={t.kind} title={t.title} placement="right" arrow>
-                                    <button type="button" className="bd-tool" onClick={() => addNode(t.kind)}>
+                                    <button
+                                        type="button"
+                                        className="bd-tool"
+                                        onClick={() =>
+                                            t.kind === "group" ? addEmptyGroup() : addNode(t.kind)
+                                        }
+                                    >
                                         {t.icon}
                                         <span>{t.label}</span>
                                     </button>
@@ -939,7 +1106,11 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                 <div
                     ref={wrapperRef}
                     className={`bd-flow ${editable ? "bd-flow--edit" : "bd-flow--view"}`}
-                    style={{ height: 460, background: isDark ? "#0f1630" : "#f6f8fc", borderRadius: 8 }}
+                    style={{
+                        height: editable ? sceneHeight : 460,
+                        background: isDark ? "#0f1630" : "#f6f8fc",
+                        borderRadius: 8,
+                    }}
                 >
                     <EditorCtx.Provider value={ctxValue}>
                         <ReactFlow
@@ -947,6 +1118,7 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                             edges={edges}
                             nodeTypes={nodeTypes}
                             onNodesChange={onNodesChange}
+                            onNodesDelete={onNodesDelete}
                             onEdgesChange={onEdgesChange}
                             onConnect={onConnect}
                             isValidConnection={isValidConnection}
@@ -971,7 +1143,7 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                             elementsSelectable={editable}
                             selectionOnDrag={editable}
                             selectionMode={SelectionMode.Partial}
-                            panOnDrag={editable ? [1, 2] : true}
+                            panOnDrag={editable ? [1] : true}
                             zoomOnScroll={editable}
                             zoomOnDoubleClick={editable}
                             fitView
@@ -1004,7 +1176,7 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                                     <li key={`sep${i}`} className="bd-ctx-sep" />
                                 ) : (
                                     <li
-                                        key={it.label}
+                                        key={`item${i}`}
                                         className={`bd-ctx-item${it.danger ? " bd-ctx-item--danger" : ""}${
                                             it.disabled ? " bd-ctx-item--disabled" : ""
                                         }`}
@@ -1048,12 +1220,42 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
             </div>
 
             {editable && (
-                <div className="bd-hint">
-                    Click a palette tool to drop a shape · drag on empty space to
-                    rubber-band select · double-click to rename · right-click anything for
-                    actions · drag between dots to connect
+                <div
+                    className="bd-resize"
+                    onMouseDown={startResize}
+                    title="Drag to resize the canvas"
+                >
+                    <span className="bd-resize-grip" />
                 </div>
             )}
+
+            {editable && (
+                <div className="bd-hint">
+                    Left-drag empty space to rubber-band select · middle-drag to pan ·
+                    double-click to rename · right-click anything for actions · drag
+                    between dots to connect · drag the bar below to resize
+                </div>
+            )}
+
+            <Dialog open={!!confirm} onClose={() => setConfirm(null)} maxWidth="xs">
+                <DialogTitle>Are you sure?</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>{confirm?.message}</DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setConfirm(null)}>Cancel</Button>
+                    <Button
+                        color="error"
+                        variant="contained"
+                        onClick={() => {
+                            confirm?.onYes();
+                            setConfirm(null);
+                        }}
+                    >
+                        Delete
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </SubCard>
     );
 };

@@ -1,16 +1,112 @@
 /* ===== React Flow block-diagram designer ===== */
 
+/* shell: palette rail + canvas side by side */
+.bd-shell {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    padding: 10px;
+}
 .bd-flow {
     position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(46, 84, 148, 0.08);
 }
+
+/* ---------- toolbox palette ---------- */
+.bd-palette {
+    flex: 0 0 auto;
+    width: 78px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px;
+    border-radius: 12px;
+    background: linear-gradient(180deg, #ffffff 0%, #eef3fb 100%);
+    box-shadow: 0 6px 18px rgba(46, 84, 148, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(91, 141, 239, 0.18);
+}
+.bd-palette-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.bd-palette-sep {
+    height: 1px;
+    margin: 3px 4px;
+    background: linear-gradient(90deg, transparent, rgba(46, 84, 148, 0.22), transparent);
+}
+.bd-tool {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 8px 4px 6px;
+    border: 1px solid rgba(91, 141, 239, 0.22);
+    border-radius: 10px;
+    background: #ffffff;
+    color: #33436b;
+    cursor: pointer;
+    font: inherit;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    transition: transform 0.12s ease, box-shadow 0.15s ease,
+        border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+.bd-tool svg {
+    color: #4778e6;
+    transition: transform 0.15s ease;
+}
+.bd-tool:hover {
+    transform: translateY(-2px);
+    border-color: #4778e6;
+    box-shadow: 0 6px 14px rgba(46, 84, 148, 0.2);
+    background: #f4f8ff;
+}
+.bd-tool:hover svg {
+    transform: scale(1.12);
+}
+.bd-tool:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(46, 84, 148, 0.18);
+}
+.bd-tool--danger {
+    color: #b3372f;
+}
+.bd-tool--danger svg {
+    color: #e0574d;
+}
+.bd-tool--danger:hover {
+    border-color: #e0574d;
+    background: #fff4f3;
+    box-shadow: 0 6px 14px rgba(200, 60, 50, 0.2);
+}
+
 .bd-node {
     font-family: inherit;
+    animation: bd-pop 0.26s cubic-bezier(0.2, 0.9, 0.35, 1.2) both;
     transition: transform 0.15s ease, box-shadow 0.15s ease,
         border-color 0.15s ease;
+}
+@keyframes bd-pop {
+    from {
+        opacity: 0;
+        transform: scale(0.82);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* ---- transfer-function block ---- */
 .bd-tf {
+    position: relative;
     min-width: 82px;
     height: 50px;
     padding: 0 12px;
@@ -32,6 +128,29 @@
     box-shadow: 0 7px 18px rgba(46, 84, 148, 0.26);
     border-color: #4778e6;
 }
+/* a block flagged as sitting on a feedback branch */
+.bd-tf--fb {
+    background: linear-gradient(160deg, #fff8ef 0%, #ffeed7 100%);
+    border-color: #eb922f;
+}
+.bd-tf--fb:hover {
+    border-color: #d9791a;
+}
+.bd-tf-fb-tag {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 8.5px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: #fff;
+    background: #eb922f;
+    border-radius: 6px;
+    padding: 1px 4px;
+    pointer-events: none;
+    box-shadow: 0 2px 5px rgba(148, 96, 40, 0.35);
+}
 .bd-tf-label {
     pointer-events: none;
 }
@@ -39,8 +158,8 @@
 /* ---- summing junction ---- */
 .bd-sum {
     position: relative;
-    width: 44px;
-    height: 44px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     background: radial-gradient(circle at 34% 30%, #ffffff, #fff2e2);
     border: 2px solid #eb922f;
@@ -58,6 +177,7 @@
 .bd-sum-glyph {
     font-size: 18px;
     font-weight: 700;
+    pointer-events: none;
 }
 .bd-sum-sign {
     position: absolute;
@@ -66,20 +186,17 @@
     color: #d9791a;
     cursor: pointer;
     line-height: 1;
+    user-select: none;
+    transition: transform 0.12s ease;
 }
-.bd-sign-in1 {
-    top: -1px;
-    left: 3px;
-}
-.bd-sign-in2 {
-    bottom: -2px;
-    left: 3px;
+.bd-sum-sign:hover {
+    transform: scale(1.35) translateY(-1px);
 }
 
 /* ---- takeoff / branch point ---- */
 .bd-takeoff {
-    width: 13px;
-    height: 13px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
     background: #24304e;
     box-shadow: 0 0 0 4px rgba(36, 48, 78, 0.14),
@@ -88,12 +205,22 @@
 
 /* ---- input / output signal label ---- */
 .bd-io {
-    padding: 4px 10px;
+    padding: 5px 11px;
     font-weight: 700;
     font-size: 15px;
     color: #17223d;
-    background: transparent;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid transparent;
+    border-radius: 8px;
     letter-spacing: 0.2px;
+}
+.bd-io--input {
+    border-color: rgba(46, 148, 92, 0.45);
+    background: linear-gradient(160deg, #f2fdf6, #e2f6ea);
+}
+.bd-io--output {
+    border-color: rgba(91, 141, 239, 0.45);
+    background: linear-gradient(160deg, #f2f7ff, #e2ecfb);
 }
 
 /* ---- inline label editing ---- */
@@ -111,15 +238,22 @@
 /* ---- selection feedback ---- */
 .react-flow__node.selected .bd-tf,
 .react-flow__node.selected .bd-sum,
-.react-flow__node.selected .bd-io,
+.react-flow__node.selected .bd-io {
+    outline: 2px solid #7c4dff;
+    outline-offset: 3px;
+    box-shadow: 0 0 0 4px rgba(124, 77, 255, 0.18),
+        0 8px 20px rgba(124, 77, 255, 0.28);
+}
 .react-flow__node.selected .bd-takeoff {
-    outline: 2px dashed #7c4dff;
+    box-shadow: 0 0 0 4px rgba(124, 77, 255, 0.35),
+        0 2px 6px rgba(0, 0, 0, 0.25);
+    outline: 2px solid #7c4dff;
     outline-offset: 3px;
 }
 
 /* ---- editing hint ---- */
 .bd-hint {
-    padding: 6px 12px 2px;
+    padding: 2px 14px 10px;
     font-size: 12px;
     opacity: 0.68;
 }
@@ -127,6 +261,21 @@
 /* ---- edges ---- */
 .react-flow__edge-path {
     stroke-linecap: round;
+    transition: stroke 0.12s ease, stroke-width 0.12s ease;
+}
+.bd-flow--edit .react-flow__edge:hover .react-flow__edge-path {
+    stroke: #6f86c0;
+    stroke-width: 3;
+    cursor: pointer;
+}
+/* make a selected link unmistakable */
+.react-flow__edge.selected .react-flow__edge-path {
+    stroke: #7c4dff !important;
+    stroke-width: 3.5 !important;
+    filter: drop-shadow(0 0 4px rgba(124, 77, 255, 0.55));
+}
+.react-flow__edge.selected .react-flow__arrowhead {
+    fill: #7c4dff !important;
 }
 .react-flow__edge-text {
     font-size: 11px;
@@ -139,11 +288,16 @@
 
 /* ---- handles ---- */
 .bd-flow .react-flow__handle {
-    width: 8px;
-    height: 8px;
+    width: 9px;
+    height: 9px;
     background: #5b8def;
     border: 1.5px solid #ffffff;
-    transition: opacity 0.15s ease;
+    transition: opacity 0.15s ease, transform 0.12s ease,
+        box-shadow 0.15s ease;
+}
+.bd-flow--edit .react-flow__handle:hover {
+    transform: scale(1.5);
+    box-shadow: 0 0 0 4px rgba(91, 141, 239, 0.25);
 }
 .bd-takeoff .react-flow__handle {
     background: #24304e;
@@ -154,7 +308,127 @@
     opacity: 0;
 }
 
+/* ---------- right-click context menu ---------- */
+.bd-ctx {
+    position: absolute;
+    z-index: 30;
+    min-width: 178px;
+    margin: 0;
+    padding: 5px;
+    list-style: none;
+    background: #ffffff;
+    border: 1px solid rgba(46, 84, 148, 0.16);
+    border-radius: 10px;
+    box-shadow: 0 12px 30px rgba(23, 34, 61, 0.22);
+    animation: bd-ctx-in 0.12s ease both;
+}
+@keyframes bd-ctx-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+.bd-ctx-item {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 7px 10px;
+    border-radius: 7px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #2a3859;
+    cursor: pointer;
+    transition: background 0.1s ease, color 0.1s ease;
+}
+.bd-ctx-item:hover {
+    background: #eef3fb;
+}
+.bd-ctx-ico {
+    display: inline-flex;
+    color: #4778e6;
+}
+.bd-ctx-ico svg {
+    width: 16px;
+    height: 16px;
+}
+.bd-ctx-item--danger {
+    color: #c53a30;
+}
+.bd-ctx-item--danger .bd-ctx-ico {
+    color: #e0574d;
+}
+.bd-ctx-item--danger:hover {
+    background: #fdecea;
+}
+.bd-ctx-item--disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+.bd-ctx-item--disabled:hover {
+    background: transparent;
+}
+.bd-ctx-sep {
+    height: 1px;
+    margin: 4px 6px;
+    background: rgba(46, 84, 148, 0.14);
+}
+
+/* ---------- inline edge-label editor ---------- */
+.bd-label-edit {
+    position: absolute;
+    z-index: 30;
+    width: 118px;
+    transform: translate(-50%, -50%);
+    padding: 4px 8px;
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+    color: #17223d;
+    background: #ffffff;
+    border: 1.5px solid #7c4dff;
+    border-radius: 7px;
+    outline: none;
+    box-shadow: 0 8px 20px rgba(124, 77, 255, 0.25);
+}
+
 /* ===== dark theme ===== */
+body[data-theme="dark"] .bd-palette {
+    background: linear-gradient(180deg, #161d3b 0%, #111834 100%);
+    border-color: rgba(111, 155, 255, 0.2);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+body[data-theme="dark"] .bd-tool {
+    background: #1a2244;
+    border-color: rgba(111, 155, 255, 0.24);
+    color: #cdd7f2;
+}
+body[data-theme="dark"] .bd-tool svg {
+    color: #8fb2ff;
+}
+body[data-theme="dark"] .bd-tool:hover {
+    background: #222c54;
+    border-color: #6f9bff;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+}
+body[data-theme="dark"] .bd-tool--danger {
+    color: #ff9a8f;
+}
+body[data-theme="dark"] .bd-tool--danger svg {
+    color: #ff8577;
+}
+body[data-theme="dark"] .bd-tool--danger:hover {
+    background: #3a1f22;
+    border-color: #ff8577;
+}
+body[data-theme="dark"] .bd-flow {
+    box-shadow: inset 0 0 0 1px rgba(111, 155, 255, 0.08);
+}
 body[data-theme="dark"] .bd-tf {
     background: linear-gradient(160deg, #1c2547 0%, #141b38 100%);
     border-color: #6f9bff;
@@ -165,6 +439,17 @@ body[data-theme="dark"] .bd-tf {
 body[data-theme="dark"] .bd-tf:hover {
     border-color: #8fb2ff;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.55);
+}
+body[data-theme="dark"] .bd-tf--fb {
+    background: linear-gradient(160deg, #33280f 0%, #241a08 100%);
+    border-color: #ffb060;
+}
+body[data-theme="dark"] .bd-tf--fb:hover {
+    border-color: #ffc98a;
+}
+body[data-theme="dark"] .bd-tf-fb-tag {
+    background: #ffb060;
+    color: #241a08;
 }
 body[data-theme="dark"] .bd-sum {
     background: radial-gradient(circle at 34% 30%, #26304f, #1a2240);
@@ -178,6 +463,15 @@ body[data-theme="dark"] .bd-sum-sign {
 }
 body[data-theme="dark"] .bd-io {
     color: #e3eaff;
+    background: rgba(255, 255, 255, 0.04);
+}
+body[data-theme="dark"] .bd-io--input {
+    border-color: rgba(90, 210, 150, 0.4);
+    background: linear-gradient(160deg, #12281c, #0e2016);
+}
+body[data-theme="dark"] .bd-io--output {
+    border-color: rgba(111, 155, 255, 0.4);
+    background: linear-gradient(160deg, #131f3a, #0f1830);
 }
 body[data-theme="dark"] .bd-takeoff {
     background: #dbe4ff;
@@ -193,6 +487,9 @@ body[data-theme="dark"] .react-flow__edge-text {
 body[data-theme="dark"] .react-flow__edge-textbg {
     fill: #111936;
 }
+body[data-theme="dark"] .bd-flow--edit .react-flow__edge:hover .react-flow__edge-path {
+    stroke: #aab8e0;
+}
 body[data-theme="dark"] .react-flow__controls-button {
     background: #1a223f;
     border-bottom: 1px solid #2a3554;
@@ -201,4 +498,33 @@ body[data-theme="dark"] .react-flow__controls-button {
 }
 body[data-theme="dark"] .react-flow__controls-button:hover {
     background: #29314f;
+}
+body[data-theme="dark"] .bd-ctx {
+    background: #161d3b;
+    border-color: rgba(111, 155, 255, 0.2);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.55);
+}
+body[data-theme="dark"] .bd-ctx-item {
+    color: #d3ddf6;
+}
+body[data-theme="dark"] .bd-ctx-item:hover {
+    background: #222c54;
+}
+body[data-theme="dark"] .bd-ctx-ico {
+    color: #8fb2ff;
+}
+body[data-theme="dark"] .bd-ctx-item--danger {
+    color: #ff9a8f;
+}
+body[data-theme="dark"] .bd-ctx-item--danger:hover {
+    background: #3a1f22;
+}
+body[data-theme="dark"] .bd-ctx-sep {
+    background: rgba(111, 155, 255, 0.16);
+}
+body[data-theme="dark"] .bd-label-edit {
+    background: #161d3b;
+    color: #e3eaff;
+    border-color: #9a7bff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }

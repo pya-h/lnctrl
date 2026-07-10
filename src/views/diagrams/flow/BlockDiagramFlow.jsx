@@ -15,10 +15,12 @@ import ReactFlow, {
     Handle,
     Position,
     MarkerType,
+    SelectionMode,
     addEdge,
     useNodesState,
     useEdgesState,
     useReactFlow,
+    useUpdateNodeInternals,
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { useTheme } from "@mui/material/styles";
@@ -26,15 +28,21 @@ import { Tooltip } from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import "./blockDiagram.css";
 
-// lets custom nodes edit / mutate themselves without stuffing callbacks into node
-// data (keeps node data serializable for export)
+// lets custom nodes mutate themselves without embedding callbacks in node data,
+// which keeps node data serializable for export
 const EditorCtx = createContext(null);
 
-/* ---------- tiny inline icons for the palette ---------- */
+/* ---------- palette / menu icons ---------- */
 const IcoBlock = () => (
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
         <rect x="4" y="7" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1.8" />
         <path d="M1 12h3M20 12h3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+);
+const IcoGain = () => (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+        <path d="M6 4l13 8-13 8V4z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+        <path d="M1 12h5M19 12h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
 );
 const IcoSum = () => (
@@ -66,11 +74,6 @@ const IcoDelete = () => (
         <path d="M5 7h14M10 7V5h4v2M6 7l1 12h10l1-12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
 );
-const IcoFit = () => (
-    <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
-        <path d="M4 8V5a1 1 0 011-1h3M20 8V5a1 1 0 00-1-1h-3M4 16v3a1 1 0 001 1h3M20 16v3a1 1 0 01-1 1h-3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-);
 const IcoReset = () => (
     <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
         <path d="M5 12a7 7 0 107-7 7 7 0 00-5 2.1L5 9" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -83,14 +86,40 @@ const IcoExport = () => (
         <path d="M5 19h14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
     </svg>
 );
+const IcoCopy = () => (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+        <rect x="9" y="9" width="11" height="11" rx="2" stroke="currentColor" strokeWidth="1.7" />
+        <path d="M5 15V6a2 2 0 012-2h9" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+);
+const IcoCut = () => (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+        <circle cx="6" cy="7" r="2.4" stroke="currentColor" strokeWidth="1.6" />
+        <circle cx="6" cy="17" r="2.4" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M8 8.4l12 8M8 15.6l12-8" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+    </svg>
+);
+const IcoPaste = () => (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+        <rect x="5" y="5" width="14" height="16" rx="2" stroke="currentColor" strokeWidth="1.6" />
+        <path d="M9 5V4a1 1 0 011-1h4a1 1 0 011 1v1" stroke="currentColor" strokeWidth="1.6" />
+    </svg>
+);
+const IcoGroup = () => (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+        <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="1.6" strokeDasharray="3 2.5" />
+    </svg>
+);
 
 /* ---------- custom control-notation nodes ---------- */
 
-// a transfer-function block: G(s). Double-click (or context menu) to rename;
-// data.flow === "rtl" mirrors it for a feedback branch.
+// G(s) block; data.flow === "rtl" mirrors it onto a feedback branch
 const TransferFunctionNode = ({ id, data }) => {
     const ctx = useContext(EditorCtx);
+    const updateNodeInternals = useUpdateNodeInternals();
     const rtl = data.flow === "rtl";
+    // flipping moves the handles to the opposite sides — refresh cached bounds
+    useEffect(() => updateNodeInternals(id), [id, rtl, updateNodeInternals]);
     const editing = ctx?.editingId === id;
     const [val, setVal] = useState(data.label);
     useEffect(() => {
@@ -127,17 +156,62 @@ const TransferFunctionNode = ({ id, data }) => {
     );
 };
 
-// which side each summing input sits on, cycled by index (0→left, 1→bottom, 2→top…)
+// triangular gain element: multiplies the passing signal by k
+const GainNode = ({ id, data }) => {
+    const ctx = useContext(EditorCtx);
+    const updateNodeInternals = useUpdateNodeInternals();
+    const rtl = data.flow === "rtl";
+    useEffect(() => updateNodeInternals(id), [id, rtl, updateNodeInternals]);
+    const editing = ctx?.editingId === id;
+    const [val, setVal] = useState(data.label);
+    useEffect(() => {
+        if (editing) setVal(data.label);
+    }, [editing, data.label]);
+    const commit = () => {
+        ctx?.updateNodeLabel(id, val.trim() || data.label);
+        ctx?.endEdit();
+    };
+    return (
+        <div
+            className={`bd-node bd-gain${rtl ? " bd-gain--fb" : ""}`}
+            onDoubleClick={() => ctx?.beginEdit(id)}
+        >
+            <Handle type="target" position={rtl ? Position.Right : Position.Left} />
+            {editing ? (
+                <input
+                    className="bd-edit bd-edit--gain nodrag"
+                    value={val}
+                    autoFocus
+                    onChange={(e) => setVal(e.target.value)}
+                    onBlur={commit}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") commit();
+                        if (e.key === "Escape") ctx?.endEdit();
+                    }}
+                />
+            ) : (
+                <span className="bd-gain-label">{data.label}</span>
+            )}
+            {rtl && <span className="bd-tf-fb-tag bd-tf-fb-tag--gain">fb</span>}
+            <Handle type="source" position={rtl ? Position.Left : Position.Right} />
+        </div>
+    );
+};
+
+// side each summing input sits on, cycled by index (0→left, 1→bottom, 2→top…)
 const SUM_SIDES = ["left", "bottom", "top"];
 const inputsOf = (data) =>
     data.inputs ||
     (data.signs || ["+", "−"]).map((s, i) => ({ id: `in${i + 1}`, sign: s }));
 
-// a summing junction with any number of signed inputs. Click a ± to flip it;
-// context menu adds / removes input points.
 const SummingJunctionNode = ({ id, data }) => {
     const ctx = useContext(EditorCtx);
+    const updateNodeInternals = useUpdateNodeInternals();
     const inputs = inputsOf(data);
+    const sig = inputs.map((i) => i.id).join(",");
+    // adding / removing inputs changes handle count and repositions the rest
+    useEffect(() => updateNodeInternals(id), [id, sig, updateNodeInternals]);
+
     const groups = { left: [], bottom: [], top: [] };
     inputs.forEach((inp, i) => groups[SUM_SIDES[i % 3]].push({ ...inp, i }));
 
@@ -185,9 +259,12 @@ const SummingJunctionNode = ({ id, data }) => {
     );
 };
 
-// a takeoff / branch point — one input, and any number of outgoing branches
-const TakeoffNode = ({ data }) => {
+// takeoff / branch point — one input, any number of outgoing branches
+const TakeoffNode = ({ id, data }) => {
+    const updateNodeInternals = useUpdateNodeInternals();
     const branches = data.branches || [];
+    const bsig = branches.join(",");
+    useEffect(() => updateNodeInternals(id), [id, bsig, updateNodeInternals]);
     return (
         <div className="bd-node bd-takeoff">
             <Handle type="target" position={Position.Left} />
@@ -209,9 +286,11 @@ const TakeoffNode = ({ data }) => {
     );
 };
 
-// an input / output signal label. Double-click (or context menu) to rename.
 const IONode = ({ id, data }) => {
     const ctx = useContext(EditorCtx);
+    const updateNodeInternals = useUpdateNodeInternals();
+    // switching input↔output swaps the handle side and type
+    useEffect(() => updateNodeInternals(id), [id, data.kind, updateNodeInternals]);
     const editing = ctx?.editingId === id;
     const [val, setVal] = useState(data.label);
     useEffect(() => {
@@ -226,9 +305,7 @@ const IONode = ({ id, data }) => {
             className={`bd-node bd-io bd-io--${data.kind}`}
             onDoubleClick={() => ctx?.beginEdit(id)}
         >
-            {data.kind === "output" && (
-                <Handle type="target" position={Position.Left} />
-            )}
+            {data.kind === "output" && <Handle type="target" position={Position.Left} />}
             {editing ? (
                 <input
                     className="bd-edit nodrag"
@@ -244,18 +321,54 @@ const IONode = ({ id, data }) => {
             ) : (
                 <span>{data.label}</span>
             )}
-            {data.kind === "input" && (
-                <Handle type="source" position={Position.Right} />
-            )}
+            {data.kind === "input" && <Handle type="source" position={Position.Right} />}
+        </div>
+    );
+};
+
+// dashed annotation frame drawn around a selection; only its label bar is
+// interactive so inner nodes stay clickable
+const GroupNode = ({ id, data }) => {
+    const ctx = useContext(EditorCtx);
+    const editing = ctx?.editingId === id;
+    const [val, setVal] = useState(data.label);
+    useEffect(() => {
+        if (editing) setVal(data.label);
+    }, [editing, data.label]);
+    const commit = () => {
+        ctx?.updateNodeLabel(id, val.trim() || data.label);
+        ctx?.endEdit();
+    };
+    return (
+        <div className="bd-group">
+            <div className="bd-group-label" onDoubleClick={() => ctx?.beginEdit(id)}>
+                {editing ? (
+                    <input
+                        className="bd-edit bd-edit--group nodrag"
+                        value={val}
+                        autoFocus
+                        onChange={(e) => setVal(e.target.value)}
+                        onBlur={commit}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") commit();
+                            if (e.key === "Escape") ctx?.endEdit();
+                        }}
+                    />
+                ) : (
+                    data.label || "Group"
+                )}
+            </div>
         </div>
     );
 };
 
 const nodeTypes = {
     tf: TransferFunctionNode,
+    gain: GainNode,
     sum: SummingJunctionNode,
     takeoff: TakeoffNode,
     io: IONode,
+    group: GroupNode,
 };
 
 /* ---------- default diagram: canonical closed-loop system ---------- */
@@ -280,6 +393,7 @@ const sampleEdges = [
 
 const NEW_NODE_DATA = {
     tf: () => ({ label: "G(s)" }),
+    gain: () => ({ label: "K" }),
     sum: () => ({ inputs: [{ id: "in1", sign: "+" }, { id: "in2", sign: "−" }] }),
     takeoff: () => ({ branches: [] }),
     "io-in": () => ({ label: "U(s)", kind: "input" }),
@@ -288,32 +402,34 @@ const NEW_NODE_DATA = {
 
 const ADD_TOOLS = [
     { kind: "tf", label: "Block", title: "Transfer-function block  G(s)", icon: <IcoBlock /> },
+    { kind: "gain", label: "Gain", title: "Gain element  k  (multiplier)", icon: <IcoGain /> },
     { kind: "sum", label: "Sum", title: "Summing junction  Σ", icon: <IcoSum /> },
     { kind: "takeoff", label: "Takeoff", title: "Takeoff / branch point", icon: <IcoTakeoff /> },
     { kind: "io-in", label: "Input", title: "Input signal  R(s)", icon: <IcoInput /> },
     { kind: "io-out", label: "Output", title: "Output signal  C(s)", icon: <IcoOutput /> },
 ];
 
+const clone = (v) => JSON.parse(JSON.stringify(v));
+
 const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
     const theme = useTheme();
     const isDark = theme.palette.mode === "dark";
 
-    const [nodes, setNodes, onNodesChange] = useNodesState(
-        diagram?.nodes || sampleNodes
-    );
-    const [edges, setEdges, onEdgesChange] = useEdgesState(
-        diagram?.edges || sampleEdges
-    );
+    const [nodes, setNodes, onNodesChange] = useNodesState(diagram?.nodes || sampleNodes);
+    const [edges, setEdges, onEdgesChange] = useEdgesState(diagram?.edges || sampleEdges);
     const [editingId, setEditingId] = useState(null);
-    const [menu, setMenu] = useState(null); // right-click context menu
-    const [labelEdit, setLabelEdit] = useState(null); // edge-label popover
+    const [menu, setMenu] = useState(null);
+    const [labelEdit, setLabelEdit] = useState(null);
+    const [clip, setClip] = useState(null);
+    const [toast, setToast] = useState(null);
     const wrapperRef = useRef(null);
+    const toastTimer = useRef(null);
     const nextId = useRef(1);
     const { screenToFlowPosition, deleteElements, fitView } = useReactFlow();
 
-    // load an externally supplied diagram (e.g. a lecture reduction step) via the `diagram`
-    // prop, then re-fit once the new nodes have been measured. We fit imperatively rather
-    // than remounting the canvas — remounting churns React Flow's ResizeObserver.
+    // load an externally supplied diagram (a lecture reduction step) then re-fit once
+    // measured. We fit imperatively rather than remounting to avoid churning React
+    // Flow's ResizeObserver.
     useEffect(() => {
         if (!diagram?.nodes) return undefined;
         setNodes(diagram.nodes);
@@ -329,6 +445,14 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
         return () => clearTimeout(t);
     }, [diagram, setNodes, setEdges, fitView]);
 
+    useEffect(() => () => clearTimeout(toastTimer.current), []);
+
+    const flash = useCallback((msg) => {
+        setToast(msg);
+        clearTimeout(toastTimer.current);
+        toastTimer.current = setTimeout(() => setToast(null), 1600);
+    }, []);
+
     const closeMenu = useCallback(() => setMenu(null), []);
 
     const onConnect = useCallback(
@@ -336,16 +460,15 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
         [setEdges]
     );
 
+    const isValidConnection = useCallback((c) => c.source !== c.target, []);
+
     const flowPos = useCallback(
         (clientX, clientY) => {
             if (clientX != null) return screenToFlowPosition({ x: clientX, y: clientY });
             const wrap = wrapperRef.current;
             if (wrap) {
                 const r = wrap.getBoundingClientRect();
-                return screenToFlowPosition({
-                    x: r.left + r.width / 2,
-                    y: r.top + r.height / 2,
-                });
+                return screenToFlowPosition({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
             }
             return { x: 120, y: 120 };
         },
@@ -361,9 +484,7 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                 position.x += (nextId.current % 5) * 18;
                 position.y += (nextId.current % 5) * 18;
             }
-            setNodes((nds) =>
-                nds.concat({ id, type, position, data: NEW_NODE_DATA[kind]() })
-            );
+            setNodes((nds) => nds.concat({ id, type, position, data: NEW_NODE_DATA[kind]() }));
         },
         [flowPos, setNodes]
     );
@@ -389,27 +510,18 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
 
     const exportJSON = useCallback(() => {
         const clean = {
-            nodes: nodes.map(({ id, type, position, data }) => ({
+            nodes: nodes.map(({ id, type, position, data }) => ({ id, type, position, data })),
+            edges: edges.map(({ id, source, target, sourceHandle, targetHandle, label, animated }) => ({
                 id,
-                type,
-                position,
-                data,
+                source,
+                target,
+                sourceHandle,
+                targetHandle,
+                label,
+                animated,
             })),
-            edges: edges.map(
-                ({ id, source, target, sourceHandle, targetHandle, label, animated }) => ({
-                    id,
-                    source,
-                    target,
-                    sourceHandle,
-                    targetHandle,
-                    label,
-                    animated,
-                })
-            ),
         };
-        const blob = new Blob([JSON.stringify(clean, null, 2)], {
-            type: "application/json",
-        });
+        const blob = new Blob([JSON.stringify(clean, null, 2)], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
@@ -418,12 +530,9 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
         URL.revokeObjectURL(url);
     }, [nodes, edges]);
 
-    /* ---- node mutations used by the context menu ---- */
+    /* ---- node mutations ---- */
     const patchNode = useCallback(
-        (id, fn) =>
-            setNodes((nds) =>
-                nds.map((n) => (n.id === id ? { ...n, ...fn(n) } : n))
-            ),
+        (id, fn) => setNodes((nds) => nds.map((n) => (n.id === id ? { ...n, ...fn(n) } : n))),
         [setNodes]
     );
 
@@ -440,14 +549,14 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                         id: nid,
                         selected: true,
                         position: { x: n.position.x + 44, y: n.position.y + 44 },
-                        data: { ...n.data },
+                        data: clone(n.data),
                     })
             );
         },
         [nodes, setNodes]
     );
 
-    const flipTf = useCallback(
+    const flipFlow = useCallback(
         (id) =>
             patchNode(id, (n) => ({
                 data: { ...n.data, flow: n.data.flow === "rtl" ? undefined : "rtl" },
@@ -458,10 +567,7 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
     const switchIO = useCallback(
         (id) =>
             patchNode(id, (n) => ({
-                data: {
-                    ...n.data,
-                    kind: n.data.kind === "input" ? "output" : "input",
-                },
+                data: { ...n.data, kind: n.data.kind === "input" ? "output" : "input" },
             })),
         [patchNode]
     );
@@ -512,19 +618,100 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
 
     const toggleEdgeAnimated = useCallback(
         (id) =>
-            setEdges((eds) =>
-                eds.map((e) => (e.id === id ? { ...e, animated: !e.animated } : e))
-            ),
+            setEdges((eds) => eds.map((e) => (e.id === id ? { ...e, animated: !e.animated } : e))),
         [setEdges]
     );
 
     const commitEdgeLabel = useCallback(
-        (id, label) =>
-            setEdges((eds) =>
-                eds.map((e) => (e.id === id ? { ...e, label } : e))
-            ),
+        (id, label) => setEdges((eds) => eds.map((e) => (e.id === id ? { ...e, label } : e))),
         [setEdges]
     );
+
+    /* ---- clipboard ---- */
+    const copyNodes = useCallback(
+        (ids, verb = "Copied") => {
+            const set = new Set(ids);
+            const ns = nodes
+                .filter((n) => set.has(n.id) && n.type !== "group")
+                .map((n) => ({ oid: n.id, type: n.type, position: { ...n.position }, data: clone(n.data) }));
+            if (!ns.length) return;
+            // links are only carried when both endpoints are inside the copied set
+            const es = edges
+                .filter((e) => set.has(e.source) && set.has(e.target))
+                .map((e) => ({ ...e }));
+            setClip({ nodes: ns, edges: es });
+            flash(`${verb} ${ns.length} item${ns.length > 1 ? "s" : ""}`);
+        },
+        [nodes, edges, flash]
+    );
+
+    const cutNodes = useCallback(
+        (ids) => {
+            copyNodes(ids, "Cut");
+            deleteElements({ nodes: ids.map((id) => ({ id })) });
+        },
+        [copyNodes, deleteElements]
+    );
+
+    const paste = useCallback(
+        (clientX, clientY) => {
+            if (!clip) return;
+            const target = flowPos(clientX, clientY);
+            const minX = Math.min(...clip.nodes.map((n) => n.position.x));
+            const minY = Math.min(...clip.nodes.map((n) => n.position.y));
+            const dx = target.x - minX;
+            const dy = target.y - minY;
+            const idMap = {};
+            const newNodes = clip.nodes.map((n) => {
+                const id = `n${nextId.current++}`;
+                idMap[n.oid] = id;
+                return {
+                    id,
+                    type: n.type,
+                    position: { x: n.position.x + dx, y: n.position.y + dy },
+                    data: clone(n.data),
+                    selected: true,
+                };
+            });
+            const newEdges = clip.edges.map((e) => ({
+                ...e,
+                id: `e${nextId.current++}`,
+                source: idMap[e.source],
+                target: idMap[e.target],
+                selected: false,
+            }));
+            setNodes((nds) => nds.map((x) => ({ ...x, selected: false })).concat(newNodes));
+            if (newEdges.length) setEdges((eds) => eds.concat(newEdges));
+            flash("Pasted");
+        },
+        [clip, flowPos, setNodes, setEdges, flash]
+    );
+
+    /* ---- grouping ---- */
+    const groupSelected = useCallback(() => {
+        const sel = nodes.filter((n) => n.selected && n.type !== "group");
+        if (!sel.length) return;
+        const pad = 26;
+        const left = Math.min(...sel.map((n) => n.position.x)) - pad;
+        const top = Math.min(...sel.map((n) => n.position.y)) - pad - 12;
+        const right = Math.max(...sel.map((n) => n.position.x + (n.width || 72))) + pad;
+        const bottom = Math.max(...sel.map((n) => n.position.y + (n.height || 46))) + pad;
+        const id = `grp${nextId.current++}`;
+        setNodes((nds) => [
+            {
+                id,
+                type: "group",
+                position: { x: left, y: top },
+                data: { label: "Group" },
+                style: { width: right - left, height: bottom - top },
+                zIndex: -1,
+                selectable: true,
+                draggable: true,
+            },
+            ...nds.map((n) => ({ ...n, selected: false })),
+        ]);
+        flash("Grouped");
+    }, [nodes, setNodes, flash]);
 
     const ctxValue = useMemo(
         () => ({
@@ -534,9 +721,7 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
             endEdit: () => setEditingId(null),
             updateNodeLabel: (id, label) =>
                 setNodes((nds) =>
-                    nds.map((n) =>
-                        n.id === id ? { ...n, data: { ...n.data, label } } : n
-                    )
+                    nds.map((n) => (n.id === id ? { ...n, data: { ...n.data, label } } : n))
                 ),
             toggleSign: (id, idx) => {
                 if (!editable) return;
@@ -544,9 +729,7 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                     nds.map((n) => {
                         if (n.id !== id) return n;
                         const base = inputsOf(n.data).map((inp, i) =>
-                            i === idx
-                                ? { ...inp, sign: inp.sign === "+" ? "−" : "+" }
-                                : inp
+                            i === idx ? { ...inp, sign: inp.sign === "+" ? "−" : "+" } : inp
                         );
                         const { signs, ...rest } = n.data;
                         return { ...n, data: { ...rest, inputs: base } };
@@ -570,53 +753,63 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                 nodeType,
                 clientX: event.clientX,
                 clientY: event.clientY,
-                top: Math.min(event.clientY - r.top, r.height - 200),
+                top: Math.min(event.clientY - r.top, r.height - 220),
                 left: Math.min(event.clientX - r.left, r.width - 190),
             });
         },
         [editable]
     );
 
+    const selectedCount = nodes.filter((n) => n.selected).length;
+
     const onNodeContextMenu = useCallback(
-        (e, node) => openMenu("node", node.id, node.type, e),
-        [openMenu]
+        (e, node) => {
+            if (node.selected && selectedCount > 1) openMenu("group", null, null, e);
+            else openMenu("node", node.id, node.type, e);
+        },
+        [openMenu, selectedCount]
     );
-    const onEdgeContextMenu = useCallback(
-        (e, edge) => openMenu("edge", edge.id, null, e),
-        [openMenu]
-    );
-    const onPaneContextMenu = useCallback(
-        (e) => openMenu("pane", null, null, e),
-        [openMenu]
-    );
+    const onEdgeContextMenu = useCallback((e, edge) => openMenu("edge", edge.id, null, e), [openMenu]);
+    const onPaneContextMenu = useCallback((e) => openMenu("pane", null, null, e), [openMenu]);
+    const onSelectionContextMenu = useCallback((e) => openMenu("group", null, null, e), [openMenu]);
 
     const beginEdgeLabelEdit = useCallback(
         (id, clientX, clientY) => {
             const r = wrapperRef.current.getBoundingClientRect();
             const edge = edges.find((x) => x.id === id);
-            setLabelEdit({
-                id,
-                value: edge?.label || "",
-                top: clientY - r.top,
-                left: clientX - r.left,
-            });
+            setLabelEdit({ id, value: edge?.label || "", top: clientY - r.top, left: clientX - r.left });
         },
         [edges]
     );
 
-    // build the item list for whatever was right-clicked
-    const menuItems = useMemo(() => {
+    const buildMenuItems = () => {
         if (!menu) return [];
         const del = (targets) => () => deleteElements(targets);
+
         if (menu.kind === "pane") {
             return [
                 { label: "Add block  G(s)", icon: <IcoBlock />, run: () => addNode("tf", menu.clientX, menu.clientY) },
+                { label: "Add gain  k", icon: <IcoGain />, run: () => addNode("gain", menu.clientX, menu.clientY) },
                 { label: "Add summing  Σ", icon: <IcoSum />, run: () => addNode("sum", menu.clientX, menu.clientY) },
                 { label: "Add takeoff", icon: <IcoTakeoff />, run: () => addNode("takeoff", menu.clientX, menu.clientY) },
                 { sep: true },
-                { label: "Fit view", icon: <IcoFit />, run: () => fitView({ padding: 0.22, duration: 250 }) },
+                { label: "Paste", icon: <IcoPaste />, disabled: !clip, run: () => paste(menu.clientX, menu.clientY) },
             ];
         }
+
+        if (menu.kind === "group") {
+            const ids = nodes.filter((n) => n.selected).map((n) => n.id);
+            return [
+                { label: "Copy", icon: <IcoCopy />, run: () => copyNodes(ids) },
+                { label: "Cut", icon: <IcoCut />, run: () => cutNodes(ids) },
+                { sep: true },
+                { label: "Group", icon: <IcoGroup />, run: groupSelected },
+                { label: "Equivalent", run: () => flash("Equivalent — coming soon") },
+                { sep: true },
+                { label: "Delete", danger: true, icon: <IcoDelete />, run: deleteSelected },
+            ];
+        }
+
         if (menu.kind === "edge") {
             const edge = edges.find((x) => x.id === menu.id);
             return [
@@ -629,28 +822,38 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                 { label: "Delete link", danger: true, icon: <IcoDelete />, run: del({ edges: [{ id: menu.id }] }) },
             ];
         }
-        // node
+
+        // single node
         const node = nodes.find((x) => x.id === menu.id);
         const common = [
+            { sep: true },
+            { label: "Copy", icon: <IcoCopy />, run: () => copyNodes([menu.id]) },
+            { label: "Cut", icon: <IcoCut />, run: () => cutNodes([menu.id]) },
             { label: "Duplicate", run: () => duplicateNode(menu.id) },
             { sep: true },
             { label: "Delete", danger: true, icon: <IcoDelete />, run: del({ nodes: [{ id: menu.id }] }) },
         ];
-        if (menu.nodeType === "tf") {
+
+        if (menu.nodeType === "tf" || menu.nodeType === "gain") {
             return [
                 { label: "Rename…", run: () => setEditingId(menu.id) },
                 {
                     label: node?.data.flow === "rtl" ? "Make forward (→)" : "Make feedback (←)",
-                    run: () => flipTf(menu.id),
+                    run: () => flipFlow(menu.id),
                 },
                 ...common,
             ];
         }
         if (menu.nodeType === "sum") {
-            const count = inputsOf(node?.data || {}).length;
+            const inps = inputsOf(node?.data || {});
             return [
                 { label: "Add input point", run: () => addSumInput(menu.id) },
-                { label: "Remove input point", disabled: count <= 1, run: () => removeSumInput(menu.id) },
+                { label: "Remove input point", disabled: inps.length <= 1, run: () => removeSumInput(menu.id) },
+                { sep: true },
+                ...inps.map((inp, idx) => ({
+                    label: `Flip input ${idx + 1} sign  (${inp.sign})`,
+                    run: () => ctxValue.toggleSign(menu.id, idx),
+                })),
                 ...common,
             ];
         }
@@ -672,36 +875,23 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                 ...common,
             ];
         }
+        if (menu.nodeType === "group") {
+            return [
+                { label: "Rename…", run: () => setEditingId(menu.id) },
+                { sep: true },
+                { label: "Delete", danger: true, icon: <IcoDelete />, run: del({ nodes: [{ id: menu.id }] }) },
+            ];
+        }
         return common;
-    }, [
-        menu,
-        nodes,
-        edges,
-        addNode,
-        fitView,
-        deleteElements,
-        beginEdgeLabelEdit,
-        toggleEdgeAnimated,
-        duplicateNode,
-        flipTf,
-        addSumInput,
-        removeSumInput,
-        addBranch,
-        removeBranch,
-        switchIO,
-    ]);
+    };
+    const menuItems = buildMenuItems();
 
     const edgeColor = isDark ? "#8aa0c8" : "#41527a";
     const defaultEdgeOptions = useMemo(
         () => ({
             type: "smoothstep",
             pathOptions: { borderRadius: 14 },
-            markerEnd: {
-                type: MarkerType.ArrowClosed,
-                color: edgeColor,
-                width: 15,
-                height: 15,
-            },
+            markerEnd: { type: MarkerType.ArrowClosed, color: edgeColor, width: 15, height: 15 },
             style: { stroke: edgeColor, strokeWidth: 2 },
         }),
         [edgeColor]
@@ -715,11 +905,7 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                         <div className="bd-palette-group">
                             {ADD_TOOLS.map((t) => (
                                 <Tooltip key={t.kind} title={t.title} placement="right" arrow>
-                                    <button
-                                        type="button"
-                                        className="bd-tool"
-                                        onClick={() => addNode(t.kind)}
-                                    >
+                                    <button type="button" className="bd-tool" onClick={() => addNode(t.kind)}>
                                         {t.icon}
                                         <span>{t.label}</span>
                                     </button>
@@ -732,12 +918,6 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                                 <button type="button" className="bd-tool bd-tool--danger" onClick={deleteSelected}>
                                     <IcoDelete />
                                     <span>Delete</span>
-                                </button>
-                            </Tooltip>
-                            <Tooltip title="Fit diagram to view" placement="right" arrow>
-                                <button type="button" className="bd-tool" onClick={() => fitView({ padding: 0.22, duration: 250 })}>
-                                    <IcoFit />
-                                    <span>Fit</span>
                                 </button>
                             </Tooltip>
                             <Tooltip title="Reset to sample diagram" placement="right" arrow>
@@ -759,11 +939,7 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                 <div
                     ref={wrapperRef}
                     className={`bd-flow ${editable ? "bd-flow--edit" : "bd-flow--view"}`}
-                    style={{
-                        height: 460,
-                        background: isDark ? "#0f1630" : "#f6f8fc",
-                        borderRadius: 8,
-                    }}
+                    style={{ height: 460, background: isDark ? "#0f1630" : "#f6f8fc", borderRadius: 8 }}
                 >
                     <EditorCtx.Provider value={ctxValue}>
                         <ReactFlow
@@ -773,9 +949,11 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                             onNodesChange={onNodesChange}
                             onEdgesChange={onEdgesChange}
                             onConnect={onConnect}
+                            isValidConnection={isValidConnection}
                             onNodeContextMenu={onNodeContextMenu}
                             onEdgeContextMenu={onEdgeContextMenu}
                             onPaneContextMenu={onPaneContextMenu}
+                            onSelectionContextMenu={onSelectionContextMenu}
                             onEdgeDoubleClick={(e, edge) =>
                                 editable && beginEdgeLabelEdit(edge.id, e.clientX, e.clientY)
                             }
@@ -791,6 +969,9 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                             nodesDraggable={editable}
                             nodesConnectable={editable}
                             elementsSelectable={editable}
+                            selectionOnDrag={editable}
+                            selectionMode={SelectionMode.Partial}
+                            panOnDrag={editable ? [1, 2] : true}
                             zoomOnScroll={editable}
                             zoomOnDoubleClick={editable}
                             fitView
@@ -798,25 +979,15 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                             minZoom={0.3}
                             proOptions={{ hideAttribution: true }}
                         >
-                            <Background
-                                gap={18}
-                                size={1}
-                                color={isDark ? "#28345a" : "#d3dcea"}
-                            />
+                            <Background gap={18} size={1} color={isDark ? "#28345a" : "#d3dcea"} />
                             <Controls showInteractive={false} />
                             {editable && (
                                 <MiniMap
                                     pannable
                                     zoomable
                                     nodeColor={isDark ? "#39456b" : "#c3d2ee"}
-                                    maskColor={
-                                        isDark
-                                            ? "rgba(10,16,36,0.6)"
-                                            : "rgba(230,236,245,0.6)"
-                                    }
-                                    style={{
-                                        background: isDark ? "#111936" : "#eef2f9",
-                                    }}
+                                    maskColor={isDark ? "rgba(10,16,36,0.6)" : "rgba(230,236,245,0.6)"}
+                                    style={{ background: isDark ? "#111936" : "#eef2f9" }}
                                 />
                             )}
                         </ReactFlow>
@@ -871,21 +1042,23 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                             }}
                         />
                     )}
+
+                    {toast && <div className="bd-toast">{toast}</div>}
                 </div>
             </div>
 
             {editable && (
                 <div className="bd-hint">
-                    Click a palette tool to drop a shape · double-click a block or label
-                    to rename · double-click a link to label it · right-click anything
-                    for actions · drag between dots to connect
+                    Click a palette tool to drop a shape · drag on empty space to
+                    rubber-band select · double-click to rename · right-click anything for
+                    actions · drag between dots to connect
                 </div>
             )}
         </SubCard>
     );
 };
 
-// ReactFlowProvider lets the toolbar use the flow instance (add/delete nodes)
+// ReactFlowProvider lets the inner component use the flow instance
 const BlockDiagramFlow = (props) => (
     <ReactFlowProvider>
         <BlockDiagramFlowInner {...props} />

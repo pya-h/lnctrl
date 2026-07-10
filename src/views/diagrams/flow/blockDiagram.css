@@ -155,6 +155,45 @@
     pointer-events: none;
 }
 
+/* ---- gain / multiplier (triangle) ---- */
+.bd-gain {
+    position: relative;
+    width: 62px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-right: 16px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+    background: linear-gradient(150deg, #6f9bff 0%, #4f79e6 100%);
+    clip-path: polygon(0 4%, 100% 50%, 0 96%);
+    filter: drop-shadow(0 3px 6px rgba(46, 84, 148, 0.32));
+    transition: filter 0.15s ease;
+}
+.bd-gain:hover {
+    filter: drop-shadow(0 5px 10px rgba(46, 84, 148, 0.42));
+}
+.bd-gain--fb {
+    padding-right: 0;
+    padding-left: 16px;
+    background: linear-gradient(150deg, #f4a94a 0%, #e58a24 100%);
+    clip-path: polygon(100% 4%, 0 50%, 100% 96%);
+}
+.bd-gain-label {
+    pointer-events: none;
+    text-shadow: 0 1px 2px rgba(20, 30, 60, 0.35);
+}
+.bd-tf-fb-tag--gain {
+    top: -6px;
+    right: -2px;
+}
+.bd-gain--fb .bd-tf-fb-tag--gain {
+    right: auto;
+    left: -2px;
+}
+
 /* ---- summing junction ---- */
 .bd-sum {
     position: relative;
@@ -234,6 +273,65 @@
     border: none;
     outline: none;
 }
+.bd-edit--gain {
+    width: 34px;
+    color: #fff;
+}
+.bd-edit--group {
+    width: 96px;
+    text-align: left;
+    color: inherit;
+}
+
+/* ---- group annotation frame ---- */
+.react-flow__node-group {
+    pointer-events: none;
+}
+.bd-group {
+    width: 100%;
+    height: 100%;
+    border: 2px dashed #7c86ff;
+    border-radius: 14px;
+    background: rgba(124, 100, 255, 0.06);
+}
+.bd-group-label {
+    pointer-events: auto;
+    display: inline-block;
+    position: absolute;
+    top: -12px;
+    left: 12px;
+    padding: 1px 9px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #4a54c8;
+    background: #f2f4ff;
+    border: 1px solid #7c86ff;
+    border-radius: 7px;
+    cursor: text;
+    user-select: none;
+}
+.react-flow__node-group.selected .bd-group {
+    border-color: #7c4dff;
+    background: rgba(124, 77, 255, 0.1);
+}
+
+/* ---- transient toast ---- */
+.bd-toast {
+    position: absolute;
+    z-index: 40;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    padding: 7px 16px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #fff;
+    background: rgba(26, 34, 66, 0.92);
+    border-radius: 20px;
+    box-shadow: 0 8px 22px rgba(23, 34, 61, 0.32);
+    animation: bd-ctx-in 0.14s ease both;
+    pointer-events: none;
+}
 
 /* ---- selection feedback ---- */
 .react-flow__node.selected .bd-tf,
@@ -249,6 +347,10 @@
         0 2px 6px rgba(0, 0, 0, 0.25);
     outline: 2px solid #7c4dff;
     outline-offset: 3px;
+}
+/* clip-path clips outlines, so flag a selected gain with a coloured glow */
+.react-flow__node.selected .bd-gain {
+    filter: drop-shadow(0 0 0 #7c4dff) drop-shadow(0 0 5px rgba(124, 77, 255, 0.9));
 }
 
 /* ---- editing hint ---- */
@@ -527,4 +629,25 @@ body[data-theme="dark"] .bd-label-edit {
     color: #e3eaff;
     border-color: #9a7bff;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+}
+body[data-theme="dark"] .bd-gain {
+    background: linear-gradient(150deg, #4f6bc4 0%, #38509e 100%);
+    filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
+}
+body[data-theme="dark"] .bd-gain--fb {
+    background: linear-gradient(150deg, #c98836 0%, #a5691f 100%);
+}
+body[data-theme="dark"] .bd-group {
+    border-color: #7f8cff;
+    background: rgba(127, 140, 255, 0.09);
+}
+body[data-theme="dark"] .bd-group-label {
+    color: #cdd7ff;
+    background: #1c2450;
+    border-color: #6f7cf0;
+}
+body[data-theme="dark"] .bd-toast {
+    background: rgba(230, 236, 250, 0.95);
+    color: #16203c;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.55);
 }

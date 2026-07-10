@@ -16,8 +16,11 @@
 }
 
 /* ---------- toolbox palette ---------- */
+/* align-self keeps the rail only as tall as its buttons instead of stretching
+   to match the (resizable) canvas height */
 .bd-palette {
     flex: 0 0 auto;
+    align-self: flex-start;
     width: 48px;
     display: flex;
     flex-direction: column;
@@ -340,24 +343,52 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 13px;
-    margin: 5px 10px 0;
+    height: 20px;
+    margin: 6px 10px 2px;
     cursor: ns-resize;
-    border-radius: 6px;
+    border-radius: 9px;
     transition: background 0.15s ease;
 }
 .bd-resize:hover {
-    background: rgba(91, 141, 239, 0.12);
+    background: rgba(91, 141, 239, 0.1);
 }
 .bd-resize-grip {
-    width: 48px;
-    height: 4px;
-    border-radius: 3px;
-    background: rgba(46, 84, 148, 0.35);
-    transition: background 0.15s ease;
+    position: relative;
+    width: 60px;
+    height: 6px;
+    border-radius: 4px;
+    background: rgba(46, 84, 148, 0.28);
+    transition: background 0.15s ease, width 0.15s ease;
 }
 .bd-resize:hover .bd-resize-grip {
+    width: 86px;
     background: #5b8def;
+}
+/* up / down chevrons hint the vertical drag on hover */
+.bd-resize-grip::before,
+.bd-resize-grip::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+.bd-resize-grip::before {
+    bottom: 10px;
+    border-bottom: 5px solid #5b8def;
+}
+.bd-resize-grip::after {
+    top: 10px;
+    border-top: 5px solid #5b8def;
+}
+.bd-resize:hover .bd-resize-grip::before,
+.bd-resize:hover .bd-resize-grip::after {
+    opacity: 1;
 }
 
 /* ---- transient toast ---- */

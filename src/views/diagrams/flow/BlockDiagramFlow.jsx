@@ -34,10 +34,14 @@ import {
     Button,
     Typography,
     Box,
+    Divider,
+    Collapse,
+    TextField,
 } from "@mui/material";
 import { MathJax } from "better-react-mathjax";
 import SubCard from "views/ui-component/cards/SubCard";
 import { computeEquivalent } from "./blockDiagramReduce";
+import { evaluateEquivalent } from "./blockDiagramEvaluate";
 import { applyScripts } from "./blockDiagramText";
 import "./blockDiagram.css";
 
@@ -452,6 +456,9 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
     const [sceneHeight, setSceneHeight] = useState(600);
     const [confirm, setConfirm] = useState(null);
     const [equiv, setEquiv] = useState(null);
+    const [paramVals, setParamVals] = useState({});
+    const [numeric, setNumeric] = useState(null);
+    const [showInputs, setShowInputs] = useState(false);
     const wrapperRef = useRef(null);
     const toastTimer = useRef(null);
     const fileRef = useRef(null);
@@ -991,10 +998,58 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                 flash(res.reason);
                 return;
             }
+            const vals = {};
+            res.params.forEach((p) => {
+                vals[p.label] = p.kind === "gain" ? { gain: "1" } : { num: "1", den: "1" };
+            });
+            setParamVals(vals);
+            setNumeric(null);
+            setShowInputs(false);
             setEquiv(res);
         },
         [edges, flash]
     );
+
+    const setParam = useCallback(
+        (label, field, value) =>
+            setParamVals((v) => ({ ...v, [label]: { ...v[label], [field]: value } })),
+        []
+    );
+
+    // parse a coefficient list like "1 2 1" or "1,2,1" (highest power first)
+    const parseCoefs = (str) => {
+        const arr = String(str).trim().split(/[\s,]+/).filter(Boolean).map(Number);
+        return arr.length && arr.every((x) => !Number.isNaN(x)) ? arr : null;
+    };
+
+    const computeNumeric = useCallback(() => {
+        const tfMap = {};
+        for (const p of equiv.params) {
+            const v = paramVals[p.label] || {};
+            if (p.kind === "gain") {
+                const g = Number(v.gain);
+                if (v.gain === "" || Number.isNaN(g)) {
+                    flash(`Enter a value for ${p.label}`);
+                    return;
+                }
+                tfMap[p.label] = { num: [g], den: [1] };
+            } else {
+                const num = parseCoefs(v.num);
+                const den = parseCoefs(v.den);
+                if (!num || !den) {
+                    flash(`Check the coefficients for ${p.label}`);
+                    return;
+                }
+                tfMap[p.label] = { num, den };
+            }
+        }
+        const res = evaluateEquivalent(equiv.numerator, equiv.den, tfMap);
+        if (!res) {
+            flash("Could not evaluate — check the denominators");
+            return;
+        }
+        setNumeric(`$$ T(s) = ${res.latex} $$`);
+    }, [equiv, paramVals, flash]);
 
     const ctxValue = useMemo(
         () => ({
@@ -1435,6 +1490,74 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                             <MathJax dynamic>{s.latex}</MathJax>
                         </Box>
                     ))}
+
+                    {equiv?.params?.length > 0 && (
+                        <>
+                            <Divider sx={{ my: 1.5 }} />
+                            <Button size="small" onClick={() => setShowInputs((s) => !s)}>
+                                {showInputs ? "Hide values" : "Plug in actual values"}
+                            </Button>
+                            <Collapse in={showInputs}>
+                                <Typography variant="caption" color="text.secondary" component="p" sx={{ mt: 1 }}>
+                                    Enter each block as coefficients, highest power first
+                                    (e.g. “1 2 1” means s² + 2s + 1).
+                                </Typography>
+                                {equiv.params.map((p) => (
+                                    <Box
+                                        key={p.label}
+                                        sx={{ display: "flex", alignItems: "center", gap: 1, mt: 1.5, flexWrap: "wrap" }}
+                                    >
+                                        <Typography sx={{ minWidth: 58, fontWeight: 600 }}>
+                                            {p.label}
+                                        </Typography>
+                                        {p.kind === "gain" ? (
+                                            <TextField
+                                                size="small"
+                                                label="value"
+                                                sx={{ width: 130 }}
+                                                value={paramVals[p.label]?.gain ?? ""}
+                                                onChange={(e) => setParam(p.label, "gain", e.target.value)}
+                                            />
+                                        ) : (
+                                            <>
+                                                <TextField
+                                                    size="small"
+                                                    label="numerator"
+                                                    sx={{ width: 150 }}
+                                                    value={paramVals[p.label]?.num ?? ""}
+                                                    onChange={(e) => setParam(p.label, "num", e.target.value)}
+                                                />
+                                                <Typography sx={{ fontWeight: 700 }}>/</Typography>
+                                                <TextField
+                                                    size="small"
+                                                    label="denominator"
+                                                    sx={{ width: 150 }}
+                                                    value={paramVals[p.label]?.den ?? ""}
+                                                    onChange={(e) => setParam(p.label, "den", e.target.value)}
+                                                />
+                                            </>
+                                        )}
+                                    </Box>
+                                ))}
+                                <Button
+                                    variant="contained"
+                                    size="small"
+                                    sx={{ mt: 2 }}
+                                    onClick={computeNumeric}
+                                >
+                                    Compute equivalent
+                                </Button>
+                                {numeric && (
+                                    <Box sx={{ mt: 2 }}>
+                                        <Typography variant="subtitle2" color="text.secondary">
+                                            Result with your values
+                                        </Typography>
+                                        <MathJax dynamic>{numeric}</MathJax>
+                                    </Box>
+                                )}
+                            </Collapse>
+                        </>
+                    )}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setEquiv(null)}>Close</Button>

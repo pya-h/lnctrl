@@ -205,5 +205,16 @@ export const computeEquivalent = (groupNodes, allEdges) => {
         { title: "Equivalent transfer function", latex: `$$ T(s) = ${final} $$` },
     ];
 
-    return { ok: true, steps, final };
+    // every block/gain label appearing in the result, so the caller can offer a
+    // field to plug in each element's actual transfer function or gain value
+    const labels = [];
+    [...numerator, ...den].forEach((t) =>
+        t.factors.forEach((f) => labels.includes(f) || labels.push(f))
+    );
+    const params = labels.map((label) => ({
+        label,
+        kind: nodes.find((n) => n.data.label === label)?.type === "gain" ? "gain" : "tf",
+    }));
+
+    return { ok: true, steps, final, numerator, den, params };
 };

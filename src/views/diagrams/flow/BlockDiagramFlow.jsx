@@ -32,8 +32,12 @@ import {
     DialogContentText,
     DialogActions,
     Button,
+    Typography,
+    Box,
 } from "@mui/material";
+import { MathJax } from "better-react-mathjax";
 import SubCard from "views/ui-component/cards/SubCard";
+import { computeEquivalent } from "./blockDiagramReduce";
 import "./blockDiagram.css";
 
 // lets custom nodes mutate themselves without embedding callbacks in node data,
@@ -118,6 +122,12 @@ const IcoGroup = () => (
         <rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" strokeWidth="1.6" strokeDasharray="3 2.5" />
     </svg>
 );
+const IcoEquiv = () => (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+        <path d="M4 9h16M4 15h16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <path d="M14 4l-4 16" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+);
 
 /* ---------- custom control-notation nodes ---------- */
 
@@ -185,21 +195,23 @@ const GainNode = ({ id, data }) => {
             onDoubleClick={() => ctx?.beginEdit(id)}
         >
             <Handle type="target" position={rtl ? Position.Right : Position.Left} />
-            {editing ? (
-                <input
-                    className="bd-edit bd-edit--gain nodrag"
-                    value={val}
-                    autoFocus
-                    onChange={(e) => setVal(e.target.value)}
-                    onBlur={commit}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") commit();
-                        if (e.key === "Escape") ctx?.endEdit();
-                    }}
-                />
-            ) : (
-                <span className="bd-gain-label">{data.label}</span>
-            )}
+            <div className="bd-gain-shape">
+                {editing ? (
+                    <input
+                        className="bd-edit bd-edit--gain nodrag"
+                        value={val}
+                        autoFocus
+                        onChange={(e) => setVal(e.target.value)}
+                        onBlur={commit}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") commit();
+                            if (e.key === "Escape") ctx?.endEdit();
+                        }}
+                    />
+                ) : (
+                    <span className="bd-gain-label">{data.label}</span>
+                )}
+            </div>
             {rtl && <span className="bd-tf-fb-tag bd-tf-fb-tag--gain">fb</span>}
             <Handle type="source" position={rtl ? Position.Left : Position.Right} />
         </div>
@@ -434,6 +446,7 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
     const [toast, setToast] = useState(null);
     const [sceneHeight, setSceneHeight] = useState(600);
     const [confirm, setConfirm] = useState(null);
+    const [equiv, setEquiv] = useState(null);
     const wrapperRef = useRef(null);
     const toastTimer = useRef(null);
     const nextId = useRef(1);
@@ -852,6 +865,18 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
         [sceneHeight]
     );
 
+    const showEquivalent = useCallback(
+        (list) => {
+            const res = computeEquivalent(list, edges);
+            if (!res.ok) {
+                flash(res.reason);
+                return;
+            }
+            setEquiv(res);
+        },
+        [edges, flash]
+    );
+
     const ctxValue = useMemo(
         () => ({
             editable,
@@ -938,13 +963,19 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
         }
 
         if (menu.kind === "group") {
-            const ids = nodes.filter((n) => n.selected).map((n) => n.id);
+            const sel = nodes.filter((n) => n.selected);
+            const ids = sel.map((n) => n.id);
             return [
                 { label: "Copy", icon: <IcoCopy />, run: () => copyNodes(ids) },
                 { label: "Cut", icon: <IcoCut />, run: () => cutNodes(ids) },
                 { sep: true },
                 { label: "Group", icon: <IcoGroup />, run: groupSelected },
-                { label: "Equivalent", run: () => flash("Equivalent — coming soon") },
+                {
+                    label: "Equivalent",
+                    icon: <IcoEquiv />,
+                    disabled: !computeEquivalent(sel, edges).ok,
+                    run: () => showEquivalent(sel),
+                },
                 { sep: true },
                 { label: "Delete", danger: true, icon: <IcoDelete />, run: deleteSelected },
             ];
@@ -1020,6 +1051,13 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
             const kids = nodes.filter((n) => n.parentNode === menu.id).length;
             const items = [{ label: "Rename…", run: () => setEditingId(menu.id) }];
             if (bound) {
+                const children = nodes.filter((n) => n.parentNode === menu.id);
+                items.push({
+                    label: "Equivalent",
+                    icon: <IcoEquiv />,
+                    disabled: !computeEquivalent(children, edges).ok,
+                    run: () => showEquivalent(children),
+                });
                 items.push({ label: "Ungroup (release items)", run: () => ungroup(menu.id) });
                 items.push({ sep: true });
                 items.push({
@@ -1254,6 +1292,23 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                     >
                         Delete
                     </Button>
+                </DialogActions>
+            </Dialog>
+
+            <Dialog open={!!equiv} onClose={() => setEquiv(null)} maxWidth="sm" fullWidth>
+                <DialogTitle>Equivalent block (block-diagram algebra)</DialogTitle>
+                <DialogContent dividers>
+                    {equiv?.steps.map((s) => (
+                        <Box key={s.title} sx={{ mb: 1.5 }}>
+                            <Typography variant="subtitle2" color="text.secondary">
+                                {s.title}
+                            </Typography>
+                            <MathJax dynamic>{s.latex}</MathJax>
+                        </Box>
+                    ))}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setEquiv(null)}>Close</Button>
                 </DialogActions>
             </Dialog>
         </SubCard>

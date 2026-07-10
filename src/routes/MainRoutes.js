@@ -19,7 +19,11 @@ const MainRoutes = {
             element: <HomePage />
         },
         {
-            path: `${routes.root}toolbox`,
+            path: `${routes.root}${routes.toolbox}`,
+            element: <ToolBox />
+        },
+        {
+            path: `${routes.root}${routes.toolbox}/:tool`,
             element: <ToolBox />
         },
     ]

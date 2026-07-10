@@ -158,28 +158,38 @@
 /* ---- gain / multiplier (triangle) ---- */
 .bd-gain {
     position: relative;
-    width: 62px;
+    width: 64px;
     height: 50px;
+    color: #fff;
+    font-weight: 700;
+    font-size: 15px;
+}
+/* the triangle itself; the clip lives here so the tip handle stays clickable */
+.bd-gain-shape {
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     padding-right: 16px;
-    color: #fff;
-    font-weight: 700;
-    font-size: 15px;
     background: linear-gradient(150deg, #6f9bff 0%, #4f79e6 100%);
     clip-path: polygon(0 4%, 100% 50%, 0 96%);
     filter: drop-shadow(0 3px 6px rgba(46, 84, 148, 0.32));
     transition: filter 0.15s ease;
 }
-.bd-gain:hover {
+.bd-gain:hover .bd-gain-shape {
     filter: drop-shadow(0 5px 10px rgba(46, 84, 148, 0.42));
 }
-.bd-gain--fb {
+.bd-gain--fb .bd-gain-shape {
     padding-right: 0;
     padding-left: 16px;
     background: linear-gradient(150deg, #f4a94a 0%, #e58a24 100%);
     clip-path: polygon(100% 4%, 0 50%, 100% 96%);
+}
+/* the output (tip) handle is easy to miss, so give it a larger hit target */
+.bd-gain .react-flow__handle.source {
+    width: 13px;
+    height: 13px;
 }
 .bd-gain-label {
     pointer-events: none;
@@ -284,8 +294,13 @@
 }
 
 /* ---- group annotation frame ---- */
+/* strip React Flow's default group box so only our dashed frame shows */
 .react-flow__node-group {
     pointer-events: none;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
 }
 .bd-group {
     width: 100%;
@@ -385,7 +400,7 @@
     outline-offset: 3px;
 }
 /* clip-path clips outlines, so flag a selected gain with a coloured glow */
-.react-flow__node.selected .bd-gain {
+.react-flow__node.selected .bd-gain-shape {
     filter: drop-shadow(0 0 2px #7c4dff) drop-shadow(0 0 7px rgba(124, 77, 255, 0.85));
 }
 
@@ -666,11 +681,11 @@ body[data-theme="dark"] .bd-label-edit {
     border-color: #9a7bff;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
 }
-body[data-theme="dark"] .bd-gain {
+body[data-theme="dark"] .bd-gain-shape {
     background: linear-gradient(150deg, #4f6bc4 0%, #38509e 100%);
     filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5));
 }
-body[data-theme="dark"] .bd-gain--fb {
+body[data-theme="dark"] .bd-gain--fb .bd-gain-shape {
     background: linear-gradient(150deg, #c98836 0%, #a5691f 100%);
 }
 body[data-theme="dark"] .bd-group {

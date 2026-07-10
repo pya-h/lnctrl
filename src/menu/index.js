@@ -281,6 +281,30 @@ const load = (pathname) => {
                 },
             ],
         };
+    else if (hierarchy[0] === routes.toolbox)
+        topics = {
+            id: "topics",
+            title: "Designers",
+            type: "group",
+            children: [
+                {
+                    id: routes.block_diagram_tool,
+                    title: "Block Diagram",
+                    type: "item",
+                    url: `${routes.toolbox}/${routes.block_diagram_tool}`,
+                    icon: icons.CropLandscapeIcon,
+                    breadcrumbs: false,
+                },
+                {
+                    id: routes.signal_flow_graph_tool,
+                    title: "Signal Flow Graph",
+                    type: "item",
+                    url: `${routes.toolbox}/${routes.signal_flow_graph_tool}`,
+                    icon: icons.WebhookIcon,
+                    breadcrumbs: false,
+                },
+            ],
+        };
     else if (hierarchy[0] === `${routes.chapter}07`)
         topics = {
             id: "topics",

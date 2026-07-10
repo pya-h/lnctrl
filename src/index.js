@@ -19,6 +19,19 @@ try {
     document.body.dataset.theme = 'light';
 }
 
+// The "ResizeObserver loop" notice is a benign browser warning (fired by some
+// layout/observer combinations, e.g. React Flow re-fitting). Stop it from reaching
+// the dev-server error overlay, which would otherwise present it as a crash.
+window.addEventListener(
+    'error',
+    (e) => {
+        if (e.message && e.message.indexOf('ResizeObserver loop') !== -1) {
+            e.stopImmediatePropagation();
+        }
+    },
+    true
+);
+
 // ==============================|| REACT DOM RENDER  ||============================== //
 
 ReactDOM.render(

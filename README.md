@@ -64,7 +64,7 @@ that end in a live tool are marked 🧪.
   - Water‑tank (hydraulic) level 🧪
   - Mass–spring–damper (mechanical) 🧪
   - State‑space representation 🧪
-  - Block‑diagram algebra (BPMN‑based interactive diagram) 🧪
+  - Block‑diagram algebra (React Flow interactive diagram) 🧪
   - Signal‑flow‑graph algebra (GoJS) 🧪
 - **Chapter 3 — Transfer functions & time response**
   - First‑order transfer functions 🧪
@@ -99,7 +99,9 @@ inputs between visits**.
   `better-react-mathjax`.
 - **Draggable pole placement** — the second‑order "by poles" sandbox and the damping
   designer use a custom `CoordinateSystem` complex‑plane widget you can drag points on.
-- **Diagram editors** — block diagrams use `bpmn-js`; signal‑flow graphs use `gojs`.
+- **Diagram editors** — block diagrams use a custom [React Flow](https://reactflow.dev)
+  designer (transfer‑function blocks, summing junctions, takeoff points, feedback links);
+  signal‑flow graphs use `gojs`.
 - **State persistence** — interactive sandboxes are class components extending
   [`TopicBaseComponent`](src/views/topics/TopicBaseComponent.jsx), which transparently
   saves each section's inputs to `localStorage` on unmount/refresh and restores them when
@@ -113,7 +115,7 @@ inputs between visits**.
 
 ## Tech stack
 
-React 17 (Create React App) · Redux · MUI v5 · Plotly.js · MathJax · bpmn-js · GoJS ·
+React 17 (Create React App) · Redux · MUI v5 · Plotly.js · MathJax · React Flow · GoJS ·
 Algebrite. Deployed to GitHub Pages under a `/lnctrl` base path.
 
 ## Running locally

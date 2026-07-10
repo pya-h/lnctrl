@@ -1,82 +1,104 @@
-/* ===== React Flow block-diagram prototype ===== */
+/* ===== React Flow block-diagram designer ===== */
 
+.bd-flow {
+    position: relative;
+}
 .bd-node {
     font-family: inherit;
+    transition: transform 0.15s ease, box-shadow 0.15s ease,
+        border-color 0.15s ease;
 }
 
-/* transfer-function block */
+/* ---- transfer-function block ---- */
 .bd-tf {
-    width: 78px;
-    height: 48px;
+    min-width: 82px;
+    height: 50px;
+    padding: 0 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #ffffff;
+    background: linear-gradient(160deg, #ffffff 0%, #eef4ff 100%);
     border: 2px solid #5b8def;
-    border-radius: 8px;
-    color: #1f2a44;
+    border-radius: 10px;
+    color: #17223d;
     font-weight: 600;
     font-size: 15px;
-    box-shadow: 0 2px 6px rgba(40, 70, 110, 0.15);
+    letter-spacing: 0.2px;
+    box-shadow: 0 4px 12px rgba(46, 84, 148, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+.bd-tf:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 18px rgba(46, 84, 148, 0.26);
+    border-color: #4778e6;
 }
 .bd-tf-label {
     pointer-events: none;
 }
 
-/* summing junction */
+/* ---- summing junction ---- */
 .bd-sum {
     position: relative;
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    background: #ffffff;
-    border: 2px solid #e58a2a;
+    background: radial-gradient(circle at 34% 30%, #ffffff, #fff2e2);
+    border: 2px solid #eb922f;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #1f2a44;
-    box-shadow: 0 2px 6px rgba(40, 70, 110, 0.15);
+    color: #17223d;
+    box-shadow: 0 4px 12px rgba(148, 96, 40, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+.bd-sum:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 7px 18px rgba(148, 96, 40, 0.28);
 }
 .bd-sum-glyph {
-    font-size: 17px;
+    font-size: 18px;
     font-weight: 700;
 }
 .bd-sum-sign {
     position: absolute;
     font-size: 13px;
-    font-weight: 700;
-    color: #e58a2a;
+    font-weight: 800;
+    color: #d9791a;
     cursor: pointer;
+    line-height: 1;
 }
 .bd-sign-in1 {
-    top: -3px;
-    left: 4px;
+    top: -1px;
+    left: 3px;
 }
 .bd-sign-in2 {
-    bottom: -4px;
-    left: 4px;
+    bottom: -2px;
+    left: 3px;
 }
 
-/* takeoff / branch point */
+/* ---- takeoff / branch point ---- */
 .bd-takeoff {
-    width: 12px;
-    height: 12px;
+    width: 13px;
+    height: 13px;
     border-radius: 50%;
-    background: #1f2a44;
+    background: #24304e;
+    box-shadow: 0 0 0 4px rgba(36, 48, 78, 0.14),
+        0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* input / output signal label */
+/* ---- input / output signal label ---- */
 .bd-io {
-    padding: 3px 6px;
+    padding: 4px 10px;
     font-weight: 700;
     font-size: 15px;
-    color: #1f2a44;
+    color: #17223d;
     background: transparent;
+    letter-spacing: 0.2px;
 }
 
-/* inline label editing */
+/* ---- inline label editing ---- */
 .bd-edit {
-    width: 64px;
+    width: 68px;
     text-align: center;
     font: inherit;
     font-weight: 600;
@@ -86,7 +108,7 @@
     outline: none;
 }
 
-/* selection feedback */
+/* ---- selection feedback ---- */
 .react-flow__node.selected .bd-tf,
 .react-flow__node.selected .bd-sum,
 .react-flow__node.selected .bd-io,
@@ -95,45 +117,72 @@
     outline-offset: 3px;
 }
 
-/* editing hint under the canvas */
+/* ---- editing hint ---- */
 .bd-hint {
-    padding: 6px 10px;
+    padding: 6px 12px 2px;
     font-size: 12px;
-    opacity: 0.7;
+    opacity: 0.68;
 }
 
-/* handles */
+/* ---- edges ---- */
+.react-flow__edge-path {
+    stroke-linecap: round;
+}
+.react-flow__edge-text {
+    font-size: 11px;
+    font-weight: 600;
+    fill: #41527a;
+}
+.react-flow__edge-textbg {
+    fill: #f6f8fc;
+}
+
+/* ---- handles ---- */
 .bd-flow .react-flow__handle {
     width: 8px;
     height: 8px;
     background: #5b8def;
-    border: none;
+    border: 1.5px solid #ffffff;
+    transition: opacity 0.15s ease;
 }
 .bd-takeoff .react-flow__handle {
-    background: #1f2a44;
+    background: #24304e;
+    border-color: transparent;
+}
+/* in view mode handles are non-interactive decoration only — keep them subtle */
+.bd-flow--view .react-flow__handle {
+    opacity: 0;
 }
 
 /* ===== dark theme ===== */
 body[data-theme="dark"] .bd-tf {
-    background: #1a223f;
+    background: linear-gradient(160deg, #1c2547 0%, #141b38 100%);
     border-color: #6f9bff;
-    color: #dbe4ff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    color: #e3eaff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+body[data-theme="dark"] .bd-tf:hover {
+    border-color: #8fb2ff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.55);
 }
 body[data-theme="dark"] .bd-sum {
-    background: #1a223f;
+    background: radial-gradient(circle at 34% 30%, #26304f, #1a2240);
     border-color: #ffb060;
-    color: #dbe4ff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    color: #e3eaff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 body[data-theme="dark"] .bd-sum-sign {
     color: #ffb060;
 }
 body[data-theme="dark"] .bd-io {
-    color: #dbe4ff;
+    color: #e3eaff;
 }
 body[data-theme="dark"] .bd-takeoff {
     background: #dbe4ff;
+    box-shadow: 0 0 0 4px rgba(219, 228, 255, 0.14),
+        0 2px 5px rgba(0, 0, 0, 0.4);
 }
 body[data-theme="dark"] .bd-takeoff .react-flow__handle {
     background: #dbe4ff;

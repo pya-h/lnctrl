@@ -37,12 +37,12 @@ const BlockDiagramsAlgebraExample = () => {
                             <IconButton
                                 color="secondary"
                                 sx={{ mx: 5 }}
-                                aria-label="next"
+                                aria-label="previous"
                                 component="span"
-                                onClick={next}
-                                disabled={step + 1 >= sfg_example.length}
+                                onClick={previous}
+                                disabled={step <= 0}
                             >
-                                <ArrowForwardIcon />
+                                <ArrowBackIcon />
                             </IconButton>
                             <IconButton
                                 color="secondary"
@@ -55,12 +55,12 @@ const BlockDiagramsAlgebraExample = () => {
                             <IconButton
                                 color="secondary"
                                 sx={{ mx: 5 }}
-                                aria-label="previous"
+                                aria-label="next"
                                 component="span"
-                                onClick={previous}
-                                disabled={step <= 0}
+                                onClick={next}
+                                disabled={step + 1 >= sfg_example.length}
                             >
-                                <ArrowBackIcon />
+                                <ArrowForwardIcon />
                             </IconButton>
                         </Grid>
                         <hr />

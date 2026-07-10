@@ -196,15 +196,24 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
     );
     const wrapperRef = useRef(null);
     const nextId = useRef(1);
-    const { screenToFlowPosition, deleteElements } = useReactFlow();
+    const { screenToFlowPosition, deleteElements, fitView } = useReactFlow();
 
-    // load an externally supplied diagram (e.g. lecture step) like the bpmn `diagram` prop
+    // load an externally supplied diagram (e.g. a lecture reduction step) via the `diagram`
+    // prop, then re-fit once the new nodes have been measured. We fit imperatively rather
+    // than remounting the canvas — remounting churns React Flow's ResizeObserver.
     useEffect(() => {
-        if (diagram?.nodes) {
-            setNodes(diagram.nodes);
-            setEdges(diagram.edges || []);
-        }
-    }, [diagram, setNodes, setEdges]);
+        if (!diagram?.nodes) return undefined;
+        setNodes(diagram.nodes);
+        setEdges(diagram.edges || []);
+        const t = setTimeout(() => {
+            try {
+                fitView({ padding: 0.22, duration: 250 });
+            } catch (e) {
+                /* canvas not ready yet */
+            }
+        }, 90);
+        return () => clearTimeout(t);
+    }, [diagram, setNodes, setEdges, fitView]);
 
     const onConnect = useCallback(
         (params) => setEdges((eds) => addEdge(params, eds)),
@@ -298,15 +307,16 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
         [setNodes]
     );
 
-    const edgeColor = isDark ? "#8aa0c8" : "#4d5f7e";
+    const edgeColor = isDark ? "#8aa0c8" : "#41527a";
     const defaultEdgeOptions = useMemo(
         () => ({
             type: "smoothstep",
+            pathOptions: { borderRadius: 14 },
             markerEnd: {
                 type: MarkerType.ArrowClosed,
                 color: edgeColor,
-                width: 16,
-                height: 16,
+                width: 15,
+                height: 15,
             },
             style: { stroke: edgeColor, strokeWidth: 2 },
         }),
@@ -349,7 +359,7 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
             )}
             <div
                 ref={wrapperRef}
-                className="bd-flow"
+                className={`bd-flow ${editable ? "bd-flow--edit" : "bd-flow--view"}`}
                 style={{
                     height: 460,
                     width: "100%",
@@ -366,9 +376,15 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                         onEdgesChange={onEdgesChange}
                         onConnect={onConnect}
                         defaultEdgeOptions={defaultEdgeOptions}
-                        deleteKeyCode={["Backspace", "Delete"]}
+                        deleteKeyCode={editable ? ["Backspace", "Delete"] : null}
+                        nodesDraggable={editable}
+                        nodesConnectable={editable}
+                        elementsSelectable={editable}
+                        zoomOnScroll={editable}
+                        zoomOnDoubleClick={editable}
                         fitView
-                        fitViewOptions={{ padding: 0.2 }}
+                        fitViewOptions={{ padding: 0.22 }}
+                        minZoom={0.3}
                         proOptions={{ hideAttribution: true }}
                     >
                         <Background
@@ -377,17 +393,21 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
                             color={isDark ? "#28345a" : "#d3dcea"}
                         />
                         <Controls showInteractive={false} />
-                        <MiniMap
-                            pannable
-                            zoomable
-                            nodeColor={isDark ? "#39456b" : "#c3d2ee"}
-                            maskColor={
-                                isDark
-                                    ? "rgba(10,16,36,0.6)"
-                                    : "rgba(230,236,245,0.6)"
-                            }
-                            style={{ background: isDark ? "#111936" : "#eef2f9" }}
-                        />
+                        {editable && (
+                            <MiniMap
+                                pannable
+                                zoomable
+                                nodeColor={isDark ? "#39456b" : "#c3d2ee"}
+                                maskColor={
+                                    isDark
+                                        ? "rgba(10,16,36,0.6)"
+                                        : "rgba(230,236,245,0.6)"
+                                }
+                                style={{
+                                    background: isDark ? "#111936" : "#eef2f9",
+                                }}
+                            />
+                        )}
                     </ReactFlow>
                 </EditorCtx.Provider>
             </div>

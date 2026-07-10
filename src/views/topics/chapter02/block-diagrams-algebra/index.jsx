@@ -1,12 +1,11 @@
 import { Grid, IconButton } from "@mui/material";
-import BlockDiagramDesigner from "views/diagrams/BlockDiagramDesigner";
+import BlockDiagramFlow from "views/diagrams/flow/BlockDiagramFlow";
 import SubCard from "views/ui-component/cards/SubCard";
-import example_diagram from "./visual/diagram.bpmn.xml";
+import example_diagram from "./visual/diagram.flow";
 import diagram_formulas from "./visual/diagram.formulas";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
-import SaveAltIcon from "@mui/icons-material/SaveAlt";
-import {useState } from "react";
+import { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { MathJax } from "better-react-mathjax";
 
@@ -15,10 +14,10 @@ const BlockDiagramsAlgebraExample = () => {
     const [step, $step] = useState(0);
 
     const next = () => {
-        $step((step + 1) % example_diagram.length);
+        if (step + 1 < example_diagram.length) $step(step + 1);
     };
     const previous = () => {
-        $step((step - 1) % example_diagram.length);
+        if (step > 0) $step(step - 1);
     };
     return (
         <Grid direction="column" container>
@@ -33,30 +32,22 @@ const BlockDiagramsAlgebraExample = () => {
                             <IconButton
                                 color="secondary"
                                 sx={{ mx: 5 }}
-                                aria-label="next"
-                                component="span"
-                                onClick={next}
-                                disabled={step + 1 >= example_diagram.length}
-                            >
-                                <ArrowForwardIcon />
-                            </IconButton>
-                            <IconButton
-                                color="secondary"
-                                aria-label="download diagram"
-                                component="span"
-                                onClick={null}
-                            >
-                                <SaveAltIcon />
-                            </IconButton>
-                            <IconButton
-                                color="secondary"
-                                sx={{ mx: 5 }}
                                 aria-label="previous"
                                 component="span"
                                 onClick={previous}
                                 disabled={step <= 0}
                             >
                                 <ArrowBackIcon />
+                            </IconButton>
+                            <IconButton
+                                color="secondary"
+                                sx={{ mx: 5 }}
+                                aria-label="next"
+                                component="span"
+                                onClick={next}
+                                disabled={step + 1 >= example_diagram.length}
+                            >
+                                <ArrowForwardIcon />
                             </IconButton>
                         </Grid>
                         <hr />
@@ -68,7 +59,7 @@ const BlockDiagramsAlgebraExample = () => {
             </Grid>
             <hr />
             <Grid item>
-                <BlockDiagramDesigner diagram={example_diagram[step]} />
+                <BlockDiagramFlow diagram={example_diagram[step]} editable={false} />
             </Grid>
         </Grid>
     );

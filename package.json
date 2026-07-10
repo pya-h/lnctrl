@@ -48,6 +48,7 @@
         "react-router": "^6.1.1",
         "react-router-dom": "^6.1.1",
         "react-scripts": "5.0.0",
+        "reactflow": "^11.11.4",
         "redux": "^4.0.5",
         "redux-thunk": "^2.4.1",
         "sass": "^1.54.4",

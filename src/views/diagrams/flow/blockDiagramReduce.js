@@ -2,10 +2,11 @@
 // function using Mason's gain formula, which subsumes the series, parallel and
 // feedback rules taught in the block-diagram-algebra chapter.
 
+import { scriptsToLatex } from "./blockDiagramText";
+
 const IN = "__IN__";
 
-const SUBS = { "₀": "0", "₁": "1", "₂": "2", "₃": "3", "₄": "4", "₅": "5", "₆": "6", "₇": "7", "₈": "8", "₉": "9" };
-const tex = (label) => label.replace(/[₀-₉]+/g, (run) => `_{${[...run].map((c) => SUBS[c]).join("")}}`);
+const tex = (label) => scriptsToLatex(label);
 
 const inputsOf = (data) =>
     data.inputs || (data.signs || ["+", "−"]).map((s, i) => ({ id: `in${i + 1}`, sign: s }));

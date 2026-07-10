@@ -38,6 +38,7 @@ import {
 import { MathJax } from "better-react-mathjax";
 import SubCard from "views/ui-component/cards/SubCard";
 import { computeEquivalent } from "./blockDiagramReduce";
+import { applyScripts } from "./blockDiagramText";
 import "./blockDiagram.css";
 
 // lets custom nodes mutate themselves without embedding callbacks in node data,
@@ -480,11 +481,6 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
 
     const closeMenu = useCallback(() => setMenu(null), []);
 
-    const onConnect = useCallback(
-        (params) => setEdges((eds) => addEdge(params, eds)),
-        [setEdges]
-    );
-
     const isValidConnection = useCallback((c) => c.source !== c.target, []);
 
     const flowPos = useCallback(
@@ -670,7 +666,8 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
     );
 
     const commitEdgeLabel = useCallback(
-        (id, label) => setEdges((eds) => eds.map((e) => (e.id === id ? { ...e, label } : e))),
+        (id, label) =>
+            setEdges((eds) => eds.map((e) => (e.id === id ? { ...e, label: applyScripts(label) } : e))),
         [setEdges]
     );
 
@@ -833,6 +830,75 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
         [setNodes, flash]
     );
 
+    // pull a free node into a bound group, growing the frame to contain it and
+    // keeping every child's on-screen position fixed
+    const attachToGroup = useCallback(
+        (nodeId, groupId) => {
+            setNodes((nds) => {
+                const group = nds.find((n) => n.id === groupId);
+                const node = nds.find((n) => n.id === nodeId);
+                if (!group || !node || node.parentNode) return nds;
+                const gx = group.position.x;
+                const gy = group.position.y;
+                const abs = (n) =>
+                    n.parentNode === groupId ? { x: n.position.x + gx, y: n.position.y + gy } : { ...n.position };
+                const members = nds.filter((n) => n.parentNode === groupId).concat(node);
+                const pad = 30;
+                const left = Math.min(...members.map((n) => abs(n).x)) - pad;
+                const top = Math.min(...members.map((n) => abs(n).y)) - pad - 14;
+                const right = Math.max(...members.map((n) => abs(n).x + (n.width || 72))) + pad;
+                const bottom = Math.max(...members.map((n) => abs(n).y + (n.height || 46))) + pad;
+                return nds.map((n) => {
+                    if (n.id === groupId)
+                        return { ...n, position: { x: left, y: top }, style: { width: right - left, height: bottom - top } };
+                    if (n.parentNode === groupId) {
+                        const a = abs(n);
+                        return { ...n, position: { x: a.x - left, y: a.y - top } };
+                    }
+                    if (n.id === nodeId)
+                        return {
+                            ...n,
+                            parentNode: groupId,
+                            extent: "parent",
+                            selected: false,
+                            position: { x: node.position.x - left, y: node.position.y - top },
+                        };
+                    return n;
+                });
+            });
+            flash("Added to group");
+        },
+        [setNodes, flash]
+    );
+
+    // a free node spliced into a bound group's circuit (fed by and feeding the same
+    // group) becomes part of that group
+    const onConnect = useCallback(
+        (params) => {
+            setEdges((eds) => addEdge(params, eds));
+            const links = [...edges, params];
+            [params.source, params.target].forEach((id) => {
+                const node = nodes.find((n) => n.id === id);
+                if (!node || node.parentNode || node.type === "group") return;
+                const from = new Set();
+                const to = new Set();
+                links.forEach((e) => {
+                    if (e.target === id) {
+                        const s = nodes.find((n) => n.id === e.source);
+                        if (s?.parentNode) from.add(s.parentNode);
+                    }
+                    if (e.source === id) {
+                        const t = nodes.find((n) => n.id === e.target);
+                        if (t?.parentNode) to.add(t.parentNode);
+                    }
+                });
+                const shared = [...from].find((g) => to.has(g));
+                if (shared) attachToGroup(id, shared);
+            });
+        },
+        [nodes, edges, setEdges, attachToGroup]
+    );
+
     // deleting a bound group takes its pinned children with it
     const onNodesDelete = useCallback(
         (deleted) => {
@@ -885,7 +951,9 @@ const BlockDiagramFlowInner = ({ editable = true, diagram }) => {
             endEdit: () => setEditingId(null),
             updateNodeLabel: (id, label) =>
                 setNodes((nds) =>
-                    nds.map((n) => (n.id === id ? { ...n, data: { ...n.data, label } } : n))
+                    nds.map((n) =>
+                        n.id === id ? { ...n, data: { ...n.data, label: applyScripts(label) } } : n
+                    )
                 ),
             toggleSign: (id, idx) => {
                 if (!editable) return;

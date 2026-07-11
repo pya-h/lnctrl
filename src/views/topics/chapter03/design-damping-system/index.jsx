@@ -71,14 +71,16 @@ class DesignSystemByCharacteristics extends TopicBaseComponent {
             TransferFunction.Shortcuts.$design(+tr, +mp).step().$;
         // captured curves are rebuilt exactly the way refreshTraces draws them,
         // so the frozen frame lines up with what's actually on screen
-        systems.forEach((e) => {
-            const M_p2 = e.M_p * e.M_p;
-            const tgtf = new TransferFunction(
-                [M_p2],
-                [1, 2 * e.t_rise * e.M_p, M_p2]
-            );
-            fold(calculus.pointify(tgtf.step().$, +t_i, +t_f, +N)[1]);
-        });
+        systems.forEach((e) =>
+            fold(
+                calculus.pointify(
+                    responseOf(e.M_p, e.t_rise),
+                    +t_i,
+                    +t_f,
+                    +N
+                )[1]
+            )
+        );
         // the last frame always lands exactly on `to`, so fold that in too
         const frames = Math.floor(Math.abs((to - from) / step));
         const foldAt = (value) =>
@@ -156,11 +158,9 @@ class DesignSystemByCharacteristics extends TopicBaseComponent {
             // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
             // so that the traces will be loaded with new conditions
             const all = systems.map((e, index) => {
-                const M_p2 = e.M_p * e.M_p;
-                let tgtf = new TransferFunction(
-                    [M_p2],
-                    [1, 2 * e.t_rise * e.M_p, M_p2]
-                );
+                // rebuild the captured system from its specs the same way the live
+                // curve is built, so a captured curve matches what produced it
+                let tgtf = TransferFunction.Shortcuts.$design(+e.t_rise, +e.M_p);
 
                 const [xi, yi] = calculus.pointify(
                     tgtf.step().$,

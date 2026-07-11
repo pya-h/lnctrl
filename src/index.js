@@ -19,9 +19,24 @@ try {
     document.body.dataset.theme = 'light';
 }
 
-// The "ResizeObserver loop" notice is a benign browser warning (fired by some
-// layout/observer combinations, e.g. React Flow re-fitting). Stop it from reaching
-// the dev-server error overlay, which would otherwise present it as a crash.
+// React Flow re-fits the viewport whenever the diagram swaps (e.g. stepping through
+// the block-diagram algebra example). That fit runs inside a ResizeObserver callback
+// and can resize the canvas again in the same frame, which the browser reports as the
+// benign "ResizeObserver loop completed with undelivered notifications" error — loud
+// enough to trip the dev error overlay. Deferring the callback to the next animation
+// frame breaks the synchronous re-entrancy so the notice is never generated.
+if (typeof window !== 'undefined' && window.ResizeObserver) {
+    const NativeResizeObserver = window.ResizeObserver;
+    window.ResizeObserver = class extends NativeResizeObserver {
+        constructor(callback) {
+            super((entries, observer) =>
+                window.requestAnimationFrame(() => callback(entries, observer))
+            );
+        }
+    };
+}
+
+// Belt-and-suspenders: if anything still emits the notice, keep it off the overlay.
 window.addEventListener(
     'error',
     (e) => {

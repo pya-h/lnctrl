@@ -65,7 +65,8 @@ const AutoPlayControl = ({ params, running, onRunningChange }) => {
             setValue: param.setValue,
             onStop: () => onRunningChange(false),
         });
-        onRunningChange(true);
+        // hand the parent the sweep so it can freeze the chart's y-range up front
+        onRunningChange(true, { key: param.key, from: +from, to: +to, step: +step });
         player.current.play();
     };
 
@@ -131,7 +132,7 @@ const AutoPlayControl = ({ params, running, onRunningChange }) => {
                         >
                             {params.map((p) => (
                                 <ToggleButton key={p.key} value={p.key} sx={{ px: 2 }}>
-                                    <MathJax>{`$${p.label}$`}</MathJax>
+                                    <MathJax>{`\\(${p.label}\\)`}</MathJax>
                                 </ToggleButton>
                             ))}
                         </ToggleButtonGroup>

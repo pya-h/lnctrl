@@ -120,11 +120,49 @@ class FirstOrderTransferFunctionExamining extends TopicBaseComponent {
         is3DPlotEnabled: false,
         N: 1000,
         isAutoPlaying: false,
+        autoYRange: undefined,
     };
 
     persistKeys = ["a", "k", "t_i", "t_f", "inputSignal", "thickness", "N"];
 
-    setAutoPlaying = (value) => this.setState({ isAutoPlaying: value });
+    setAutoPlaying = (value, sweep) =>
+        this.setState({
+            isAutoPlaying: value,
+            // freeze the y-axis over the whole sweep so the graph doesn't keep
+            // rescaling itself and hiding how much it is actually changing
+            autoYRange: value && sweep ? this.autoPlayYRange(sweep) : undefined,
+        });
+
+    autoPlayYRange = ({ key, from, to, step }) => {
+        const { k, a, inputSignal, t_i, t_f, N, systems } = this.state;
+        let lo = Infinity;
+        let hi = -Infinity;
+        const fold = (ys) =>
+            ys.forEach((v) => {
+                if (v < lo) lo = v;
+                if (v > hi) hi = v;
+            });
+        const responseOf = (kk, aa) =>
+            inputSignal ? calculus.LTI.ramp(1, kk, aa) : calculus.LTI.step(1, kk, aa);
+        // captured curves stay on the plot, so keep them inside the frozen frame
+        systems.forEach((e) => fold(calculus.pointify(responseOf(e.k, e.a), +t_i, +t_f, +N)[1]));
+        // and walk the swept parameter across its whole travel
+        const frames = Math.floor(Math.abs((to - from) / step));
+        for (let i = 0; i <= frames; i++) {
+            const value = from + i * step;
+            fold(
+                calculus.pointify(
+                    responseOf(key === "k" ? value : +k, key === "a" ? value : +a),
+                    +t_i,
+                    +t_f,
+                    +N
+                )[1]
+            );
+        }
+        if (!isFinite(lo) || !isFinite(hi)) return undefined;
+        const pad = (hi - lo) * 0.05 || 1;
+        return [lo - pad, hi + pad];
+    };
 
     $a = (value) => this.setState({ a: value });
     $k = (value) => this.setState({ k: value });
@@ -293,6 +331,7 @@ class FirstOrderTransferFunctionExamining extends TopicBaseComponent {
             isGraphCatured,
             N,
             isAutoPlaying,
+            autoYRange,
         } = this.state;
 
         return (
@@ -413,6 +452,7 @@ class FirstOrderTransferFunctionExamining extends TopicBaseComponent {
                                         <PlotlyBox
                                             title="Step/ramp response"
                                             traces={traces}
+                                            yRange={autoYRange}
                                         />
                                     </SubCard>
                                 </Grid>

@@ -26,7 +26,12 @@ import AutoPlay from "toolshed/autoplay";
 // meaningful to animate (graph-limit fields like ti/tf/N must be left out). While a
 // run is live the parent is told through `onRunningChange` so it can disable its
 // inputs, and this button turns into a stop control.
-const AutoPlayControl = ({ params, running, onRunningChange }) => {
+//
+// When `paced` is false the sandbox recomputes too slowly for a fixed timer (PID),
+// so no interval is asked for: the parent owns the loop and advances one frame each
+// time its own async computation finishes. Here we only hand it the sweep and flip
+// the running flag; the Stop button just clears that flag.
+const AutoPlayControl = ({ params, running, onRunningChange, paced = true }) => {
     const [open, setOpen] = useState(false);
     const [selected, setSelected] = useState(params[0]?.key);
     const [from, setFrom] = useState("");
@@ -53,24 +58,31 @@ const AutoPlayControl = ({ params, running, onRunningChange }) => {
     const start = () => {
         const settings = { from, to, step, interval };
         const err =
-            AutoPlay.validate(settings) ||
+            AutoPlay.validate(settings, paced) ||
             (param.validate && param.validate(+from, +to));
         if (err) {
             setError(err);
             return;
         }
         setOpen(false);
+        const sweep = { key: param.key, from: +from, to: +to, step: +step };
+        if (!paced) {
+            // async sandbox: the parent drives the sweep off its own compute loop
+            onRunningChange(true, sweep);
+            return;
+        }
         player.current = new AutoPlay({
             ...settings,
             setValue: param.setValue,
             onStop: () => onRunningChange(false),
         });
         // hand the parent the sweep so it can freeze the chart's y-range up front
-        onRunningChange(true, { key: param.key, from: +from, to: +to, step: +step });
+        onRunningChange(true, sweep);
         player.current.play();
     };
 
-    const stop = () => player.current && player.current.stop();
+    const stop = () =>
+        player.current ? player.current.stop() : onRunningChange(false);
 
     if (running)
         return (
@@ -122,7 +134,7 @@ const AutoPlayControl = ({ params, running, onRunningChange }) => {
                         Sweep one parameter automatically to see how the graph
                         reacts. The other inputs keep their current values.
                     </Typography>
-                    {params.length > 1 && (
+                    {params.length > 1 ? (
                         <ToggleButtonGroup
                             value={selected}
                             exclusive
@@ -136,13 +148,28 @@ const AutoPlayControl = ({ params, running, onRunningChange }) => {
                                 </ToggleButton>
                             ))}
                         </ToggleButtonGroup>
+                    ) : (
+                        // with a single sweepable parameter there is no picker, so name
+                        // it explicitly instead of leaving the modal ambiguous
+                        <Typography
+                            variant="body2"
+                            sx={{ mb: 1, display: "flex", alignItems: "center", gap: 0.5 }}
+                        >
+                            Parameter:
+                            <MathJax inline>{`\\(${param.label}\\)`}</MathJax>
+                        </Typography>
                     )}
                     <Grid container>
                         {field("Start", from, setFrom)}
                         {field("End", to, setTo)}
                         {field("Step", step, setStep)}
-                        {field("Interval", interval, setIntervalMs, "ms")}
+                        {paced && field("Interval", interval, setIntervalMs, "ms")}
                     </Grid>
+                    {!paced && (
+                        <Typography variant="caption" color="textSecondary">
+                            Each frame is drawn as soon as its computation finishes.
+                        </Typography>
+                    )}
                     {error && (
                         <Alert severity="error" sx={{ mt: 1.5 }}>
                             {error}

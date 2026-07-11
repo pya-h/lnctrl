@@ -12,17 +12,20 @@ export default class AutoPlay {
         return MIN_INTERVAL;
     }
 
-    // returns an error message when the settings can't produce a safe run, else null
-    static validate({ from, to, step, interval }) {
-        const fields = { from, to, step, interval };
+    // returns an error message when the settings can't produce a safe run, else null.
+    // `needsInterval` is false for async sandboxes (e.g. PID) that step on their own
+    // computation finishing instead of on a fixed timer, so no interval is asked for.
+    static validate({ from, to, step, interval }, needsInterval = true) {
+        const fields = needsInterval
+            ? { from, to, step, interval }
+            : { from, to, step };
         for (const value of Object.values(fields))
             if (value === "" || value === null || value === undefined || Number.isNaN(+value))
                 return "Please fill every field with a valid number.";
         from = +from;
         to = +to;
         step = +step;
-        interval = +interval;
-        if (interval < MIN_INTERVAL)
+        if (needsInterval && +interval < MIN_INTERVAL)
             return `Interval must be at least ${MIN_INTERVAL} ms so the animation stays smooth.`;
         if (step === 0) return "Step can't be zero.";
         if (from === to) return "Start and end values must differ.";

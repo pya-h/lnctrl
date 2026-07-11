@@ -59,10 +59,11 @@ class SOTFExamineByPoles extends TopicBaseComponent {
             autoYRange: value && sweep ? this.autoPlayYRange(sweep) : undefined,
         });
 
-    // only k is a plain number here; the poles are complex and stay put, so the
-    // sweep just walks the gain and folds every frame's response into one range
-    autoPlayYRange = ({ from, to, step }) => {
-        const { alpha, beta, t_i, t_f, N, systems } = this.state;
+    // the gain k sweeps directly; the poles are a conjugate pair, so sweeping their
+    // real or imaginary part moves both symmetrically (alpha = re + j·im, beta its
+    // conjugate). Every frame's response is folded into one frozen range.
+    autoPlayYRange = ({ key, from, to, step }) => {
+        const { alpha, beta, k, t_i, t_f, N, systems } = this.state;
         if (!alpha.hasSameTypeWith(beta)) return undefined;
         let lo = Infinity;
         let hi = -Infinity;
@@ -88,17 +89,25 @@ class SOTFExamineByPoles extends TopicBaseComponent {
                 )[1]
             )
         );
+        // whichever component is not being swept keeps its current value
+        const re0 = alpha.real();
+        const im0 = alpha.imaginary();
+        const foldAt = (value) => {
+            let kk = +k;
+            let a = alpha;
+            let b = beta;
+            if (key === "k") kk = value;
+            else if (key === "re") {
+                a = new Complex(value, im0);
+                b = new Complex(value, -im0);
+            } else if (key === "im") {
+                a = new Complex(re0, value);
+                b = new Complex(re0, -value);
+            }
+            fold(calculus.pointify(responseOf(kk, a, b), +t_i, +t_f, +N)[1]);
+        };
         // the last frame always lands exactly on `to`, so fold that in too
         const frames = Math.floor(Math.abs((to - from) / step));
-        const foldAt = (value) =>
-            fold(
-                calculus.pointify(
-                    responseOf(value, alpha, beta),
-                    +t_i,
-                    +t_f,
-                    +N
-                )[1]
-            );
         for (let i = 0; i <= frames; i++) foldAt(from + i * step);
         foldAt(to);
         if (!isFinite(lo) || !isFinite(hi)) return undefined;
@@ -132,6 +141,8 @@ class SOTFExamineByPoles extends TopicBaseComponent {
 
     $alpha = (value) => this.setState({ alpha: value });
     $beta = (value) => this.setState({ beta: value });
+    // set both poles in one render so a sweep never flashes a mismatched pair
+    $poles = (alpha, beta) => this.setState({ alpha, beta });
     $k = (value) => this.setState({ k: value });
     $t_i = (value) => this.setState({ t_i: value });
     $t_f = (value) => this.setState({ t_f: value });
@@ -386,6 +397,7 @@ class SOTFExamineByPoles extends TopicBaseComponent {
                                 t_f={t_f}
                                 $alpha={this.$alpha}
                                 $beta={this.$beta}
+                                $poles={this.$poles}
                                 $k={this.$k}
                                 $t_i={this.$t_i}
                                 $t_f={this.$t_f}

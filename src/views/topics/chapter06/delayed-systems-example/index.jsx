@@ -38,6 +38,7 @@ class DelayedSystemsExample extends TopicBaseComponent {
         is3DPlotEnabled: false,
         phaseInRadianScale: true, // for degree => 180 / PI, for radian scale => 1.0
         N: 1000,
+        isAutoPlaying: false,
     };
 
     persistKeys = [
@@ -50,6 +51,10 @@ class DelayedSystemsExample extends TopicBaseComponent {
         "phaseInRadianScale",
         "N",
     ];
+
+    // bode/phase/nyquist are frequency-domain curves, so we only lock the inputs
+    // while the delay sweeps rather than freezing any y-axis
+    setAutoPlaying = (value) => this.setState({ isAutoPlaying: value });
 
     $T_d = (value) => this.setState({ T_d: value });
     $rawDenominator = (value) => this.setState({ rawDenominator: value });
@@ -234,6 +239,7 @@ class DelayedSystemsExample extends TopicBaseComponent {
             responses,
             phaseInRadianScale,
             N,
+            isAutoPlaying,
         } = this.state;
         return (
             <MainCard>
@@ -314,6 +320,8 @@ class DelayedSystemsExample extends TopicBaseComponent {
                                         }
                                         N={N}
                                         $N={this.$N}
+                                        isAutoPlaying={isAutoPlaying}
+                                        setAutoPlaying={this.setAutoPlaying}
                                     />
                                 </Grid>
                             </Grid>

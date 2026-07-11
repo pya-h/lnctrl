@@ -1,6 +1,7 @@
 import { Grid, Button, Typography } from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
+import AutoPlayControl from "views/input-boxes/AutoPlayControl";
 import { gridSpacing } from "store/constant";
 
 const parameterFormulas = [
@@ -25,11 +26,32 @@ const DelayedSystemsExampleParameters = ({
     setPhaseInRadianScale,
     N,
     $N,
+    isAutoPlaying,
+    setAutoPlaying,
 }) => {
+    // only the delay is a plain number to sweep; the denominator is a coefficient
+    // list and the omega range only frames the graph. T_d is kept a string so the
+    // refresh reads it the same way the text field does.
+    const autoPlayParams = [
+        {
+            key: "T_d",
+            label: "T_d",
+            value: T_d,
+            setValue: (v) => $T_d(String(v)),
+        },
+    ];
+
     return (
         <SubCard
             darkBorder
             title="Parameters"
+            secondary={
+                <AutoPlayControl
+                    params={autoPlayParams}
+                    running={isAutoPlaying}
+                    onRunningChange={setAutoPlaying}
+                />
+            }
             sx={{
                 direction: "ltr",
                 textAlign: "left",
@@ -42,6 +64,7 @@ const DelayedSystemsExampleParameters = ({
                     setters={[$T_d, $rawDenominator, $w_min, $w_max, $N]}
                     labels={parameterFormulas}
                     units={parameterUnits}
+                    disabled={isAutoPlaying}
                 />
                 <Grid xs={12} item>
                     <hr />
@@ -55,6 +78,7 @@ const DelayedSystemsExampleParameters = ({
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button
                             onClick={() => setPhaseInRadianScale(false)}
+                            disabled={isAutoPlaying}
                             style={{ width: "100%", textTransform: "none" }}
                             variant={
                                 !phaseInRadianScale ? "contained" : "outlined"
@@ -66,6 +90,7 @@ const DelayedSystemsExampleParameters = ({
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button
                             onClick={() => setPhaseInRadianScale("rad")}
+                            disabled={isAutoPlaying}
                             style={{ width: "100%", textTransform: "none" }}
                             variant={
                                 phaseInRadianScale ? "contained" : "outlined"

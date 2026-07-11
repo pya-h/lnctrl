@@ -22,6 +22,7 @@ const SOTFByPolesInputs = ({
     $k,
     $alpha,
     $beta,
+    $poles,
     t_i,
     t_f,
     $t_i,
@@ -33,9 +34,26 @@ const SOTFByPolesInputs = ({
 }) => {
     const grids = 10;
 
-    // the poles are complex and set on the plane; only the gain k is a plain
-    // number that makes sense to sweep automatically
-    const autoPlayParams = [{ key: "k", label: "k", value: k, setValue: $k }];
+    // the gain k sweeps on its own; the poles are a conjugate pair, so their real
+    // and imaginary parts can be swept too by moving both symmetrically. The part
+    // that isn't swept keeps its current value (captured here at play time).
+    const re0 = alpha.real();
+    const im0 = alpha.imaginary();
+    const autoPlayParams = [
+        { key: "k", label: "k", value: k, setValue: $k },
+        {
+            key: "re",
+            label: "\\mathrm{Re}\\{p\\}",
+            value: re0,
+            setValue: (v) => $poles(new Complex(v, im0), new Complex(v, -im0)),
+        },
+        {
+            key: "im",
+            label: "\\mathrm{Im}\\{p\\}",
+            value: im0,
+            setValue: (v) => $poles(new Complex(re0, v), new Complex(re0, -v)),
+        },
+    ];
 
     const updatePoles = (newPole, other, $newPole, $other) => {
         $newPole(newPole);

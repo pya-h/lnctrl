@@ -43,6 +43,7 @@ class BodePlotExample extends TopicBaseComponent {
         is3DPlotEnabled: false,
         phaseInRadianScale: true, // for degree => 180 / PI, for radian scale => 1.0
         N: 1000,
+        isAutoPlaying: false,
     };
 
     persistKeys = [
@@ -59,6 +60,10 @@ class BodePlotExample extends TopicBaseComponent {
         "phaseInRadianScale",
         "N",
     ];
+
+    // magnitude/phase are frequency-domain curves, not one monotone response, so we
+    // only lock the inputs while a parameter sweeps
+    setAutoPlaying = (value) => this.setState({ isAutoPlaying: value });
 
     $K = (value) => this.setState({ K: value });
     $t_a = (value) => this.setState({ t_a: value });
@@ -318,6 +323,7 @@ class BodePlotExample extends TopicBaseComponent {
             isGraphCatured,
             response,
             traces,
+            isAutoPlaying,
         } = this.state;
         return (
             <MainCard>
@@ -407,6 +413,8 @@ class BodePlotExample extends TopicBaseComponent {
                                         N={N}
                                         $N={this.$N}
                                         multiplier={this.multiplyPlotBy}
+                                        isAutoPlaying={isAutoPlaying}
+                                        setAutoPlaying={this.setAutoPlaying}
                                     />
                                 </Grid>
                             </Grid>

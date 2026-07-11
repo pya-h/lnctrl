@@ -15,6 +15,9 @@ const symbols = {
     in: "jw",
     out: "G",
 };
+// keep a swept value on a clean track instead of accumulating float error, matching
+// the rounding the timer-based AutoPlay engine uses
+const round6 = (v) => Math.round(v * 1e6) / 1e6;
 let currentRawNum = "",
     currentRawDen = "";
 // ********************* SYSTEMS THAT HAVE BUG ****************************//
@@ -41,6 +44,7 @@ class PIDController extends TopicBaseComponent {
         is3DPlotEnabled: false,
         N: 1000,
         responseTime: 0,
+        isAutoPlaying: false,
     };
 
     persistKeys = [
@@ -75,79 +79,109 @@ class PIDController extends TopicBaseComponent {
         this.setState((state) => ({ is3DPlotEnabled: !state.is3DPlotEnabled }));
     // const [currentProgressSignal, currentProgressSignal] = useState(new AbortController());
     // EDIT J * J
-    refreshTraces = () => {
-        const {
-            G_s,
-            t_initial,
-            t_final,
-            controller,
-            is3DPlotEnabled,
-            thickness,
-            N,
-        } = this.state;
-        // plot
-        if (G_s instanceof TransferFunction) {
-            (async () => {
-                try {
-                    const lp = G_s.stepify().laplaceInverse();
-                    const controlledSystem = G_s.controlFeedback(controller);
-                    const clp = controlledSystem.stepify().laplaceInverse();
-                    this.$solution([
-                        "$$" + G_s.label(symbols.out) + "$$",
-                        "$$" + lp.$s.label("H") + "$$",
-                        `$$h(t) = ${lp.$t.toString()}$$`,
-                        <hr />,
-                        `$$C_{PID}(s) = ${controller.toString()}$$`,
-                        `$$C(s) = ${clp.$s.toString()}$$`,
-                        `$$c(t) = ${clp.$t.toString()}$$`,
-                    ]);
-                    // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
-                    // so that the traces will be loaded with new conditions
-                    const startTime = new Date();
+    refreshTraces = () => this.computeTraces(this.state.controller);
 
-                    // const c_t = G_s.step();
-                    let [x, y] = await calculus.pointifyAsync(
-                        // c_t.$,
-                        lp.$t.$,
-                        +t_initial,
-                        +t_final,
-                        document.getElementById("pid_tune_progress"),
-                        500,
-                        +N
-                    );
-                    const main = calculus.arrayToTrace(
-                        x,
-                        y,
-                        thickness,
-                        `${symbols.out}(${symbols.in})`,
-                        is3DPlotEnabled
-                    );
-                    // const c_pid = controlledSystem.step();
-                    [x, y] = await calculus.pointifyAsync(
-                        // c_pid.$,
-                        clp.$t.$,
-                        +t_initial,
-                        +t_final,
-                        document.getElementById("pid_tune_progress"),
-                        500,
-                        +N
-                    );
-                    const controlled = calculus.arrayToTrace(
-                        x,
-                        y,
-                        thickness,
-                        `${symbols.out}(${symbols.in})`,
-                        is3DPlotEnabled
-                    );
+    // draws both step responses for a given controller and returns when done. It is
+    // awaitable so the autoplay loop can advance one frame per finished computation
+    // (this section is too heavy for a fixed timer), and refreshTraces just feeds it
+    // the current controller for ordinary parameter edits.
+    computeTraces = async (controller) => {
+        const { G_s, t_initial, t_final, is3DPlotEnabled, thickness, N } =
+            this.state;
+        if (!(G_s instanceof TransferFunction) || !controller) return;
+        try {
+            const lp = G_s.stepify().laplaceInverse();
+            const controlledSystem = G_s.controlFeedback(controller);
+            const clp = controlledSystem.stepify().laplaceInverse();
+            this.$solution([
+                "$$" + G_s.label(symbols.out) + "$$",
+                "$$" + lp.$s.label("H") + "$$",
+                `$$h(t) = ${lp.$t.toString()}$$`,
+                <hr />,
+                `$$C_{PID}(s) = ${controller.toString()}$$`,
+                `$$C(s) = ${clp.$s.toString()}$$`,
+                `$$c(t) = ${clp.$t.toString()}$$`,
+            ]);
+            // parameters changed => load again all traces(traces); this is for when shared params changes(ti, tf, ...),
+            // so that the traces will be loaded with new conditions
+            const startTime = new Date();
 
-                    this.$traces({ main: [main], controlled: [controlled] });
-                    const endTime = new Date();
-                    this.setResponseTime((+endTime - +startTime) / 1000);
-                } catch (err) {
-                    console.log(err);
-                }
-            })();
+            // const c_t = G_s.step();
+            let [x, y] = await calculus.pointifyAsync(
+                // c_t.$,
+                lp.$t.$,
+                +t_initial,
+                +t_final,
+                document.getElementById("pid_tune_progress"),
+                500,
+                +N
+            );
+            const main = calculus.arrayToTrace(
+                x,
+                y,
+                thickness,
+                `${symbols.out}(${symbols.in})`,
+                is3DPlotEnabled
+            );
+            // const c_pid = controlledSystem.step();
+            [x, y] = await calculus.pointifyAsync(
+                // c_pid.$,
+                clp.$t.$,
+                +t_initial,
+                +t_final,
+                document.getElementById("pid_tune_progress"),
+                500,
+                +N
+            );
+            const controlled = calculus.arrayToTrace(
+                x,
+                y,
+                thickness,
+                `${symbols.out}(${symbols.in})`,
+                is3DPlotEnabled
+            );
+
+            if (this._unmounted) return;
+            this.$traces({ main: [main], controlled: [controlled] });
+            const endTime = new Date();
+            this.setResponseTime((+endTime - +startTime) / 1000);
+        } catch (err) {
+            console.log(err);
         }
+    };
+
+    setAutoPlaying = (value, sweep) =>
+        this.setState({ isAutoPlaying: value }, () => {
+            if (value && sweep) this.autoPlayStepped(sweep);
+        });
+
+    // K_p, T_i and T_d are the sweepable numbers here (the numerator/denominator are
+    // coefficient lists). Rather than a timer, each frame waits for its own heavy
+    // recompute to finish, so the animation naturally paces itself; the recompute
+    // time per frame is nearly constant for a fixed plant, which keeps it smooth.
+    autoPlayStepped = async ({ key, from, to, step }) => {
+        const base = {
+            K_p: +this.state.K_p,
+            T_i: +this.state.T_i,
+            T_d: +this.state.T_d,
+        };
+        const frames = Math.floor(Math.abs((to - from) / step));
+        for (let i = 0; i <= frames; i++) {
+            if (this._unmounted || !this.state.isAutoPlaying) return;
+            // rebuild from the frame index so float drift never creeps in, and land
+            // the final frame exactly on `to`
+            const value = round6(i === frames ? +to : +from + i * +step);
+            const controller = TransferFunction.Shortcuts.$PID(
+                key === "K_p" ? value : base.K_p,
+                key === "T_i" ? value : base.T_i,
+                key === "T_d" ? value : base.T_d
+            );
+            // reflect the swept value + controller in one render; componentDidUpdate
+            // is short-circuited while autoplaying so it won't fire a second recompute
+            this.setState({ [key]: value, controller });
+            await this.computeTraces(controller);
+        }
+        if (!this._unmounted) this.setAutoPlaying(false);
     };
 
     refreshController = () => {
@@ -183,7 +217,15 @@ class PIDController extends TopicBaseComponent {
         this.refreshTransferFunction();
     }
 
+    componentWillUnmount() {
+        this._unmounted = true;
+        super.componentWillUnmount();
+    }
+
     componentDidUpdate(prevProps, prevState) {
+        // while autoplaying, the stepped loop sets K_p/T_i/T_d and recomputes on its
+        // own, so skip the usual diff-driven recompute to avoid a second run per frame
+        if (this.state.isAutoPlaying) return;
         const {
             G_s,
             t_initial,
@@ -241,6 +283,7 @@ class PIDController extends TopicBaseComponent {
             responseTime,
             traces,
             solution,
+            isAutoPlaying,
         } = this.state;
         return (
             <MainCard>
@@ -307,6 +350,8 @@ class PIDController extends TopicBaseComponent {
                                         N={N}
                                         $N={this.$N}
                                         responseTime={responseTime}
+                                        isAutoPlaying={isAutoPlaying}
+                                        setAutoPlaying={this.setAutoPlaying}
                                     />
                                 </Grid>
                             </Grid>

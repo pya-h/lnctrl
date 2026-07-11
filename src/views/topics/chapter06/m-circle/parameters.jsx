@@ -1,6 +1,7 @@
 import { Grid } from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
+import AutoPlayControl from "views/input-boxes/AutoPlayControl";
 import { gridSpacing } from "store/constant";
 
 const parameterFormulas = [
@@ -19,10 +20,19 @@ const MNCircleParameters = ({
     $x_f,
     iterations,
     $iterations,
+    isAutoPlaying,
+    setAutoPlaying,
 }) => (
     <SubCard
         darkBorder
         title="Parameters"
+        secondary={
+            <AutoPlayControl
+                params={[{ key: "M", label: "M", value: M, setValue: $M }]}
+                running={isAutoPlaying}
+                onRunningChange={setAutoPlaying}
+            />
+        }
         sx={{
             direction: "ltr",
             textAlign: "left",
@@ -35,6 +45,7 @@ const MNCircleParameters = ({
                 setters={[$M, $x_i, $x_f, $iterations]}
                 labels={parameterFormulas}
                 units={[null, null, null, null]}
+                disabled={isAutoPlaying}
             />
         </Grid>
     </SubCard>

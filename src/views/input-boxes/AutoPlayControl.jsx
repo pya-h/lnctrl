@@ -128,7 +128,7 @@ const AutoPlayControl = ({ params, running, onRunningChange }) => {
                             exclusive
                             size="small"
                             onChange={(e, val) => val && setSelected(val)}
-                            sx={{ mb: 1 }}
+                            sx={{ mb: 1, flexWrap: "wrap" }}
                         >
                             {params.map((p) => (
                                 <ToggleButton key={p.key} value={p.key} sx={{ px: 2 }}>

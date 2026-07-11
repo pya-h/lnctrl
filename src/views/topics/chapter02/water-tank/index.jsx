@@ -47,6 +47,60 @@ export default class WaterTankLevelExample extends TopicBaseComponent {
         isGraphCatured: false,
         N: 1000,
         is3DPlotEnabled: false,
+        isAutoPlaying: false,
+        autoYRange: undefined,
+    };
+
+    setAutoPlaying = (value, sweep) =>
+        this.setState({
+            isAutoPlaying: value,
+            // freeze the y-axis over the whole sweep so the graph doesn't keep
+            // rescaling itself and hiding how much it is actually changing
+            autoYRange: value && sweep ? this.autoPlayYRange(sweep) : undefined,
+        });
+
+    autoPlayYRange = ({ key, from, to, step }) => {
+        const { R, C, Qin, hi: h0, ti, tf, N, systems } = this.state;
+        let lo = Infinity;
+        let hi = -Infinity;
+        const fold = (ys) =>
+            ys.forEach((v) => {
+                if (v < lo) lo = v;
+                if (v > hi) hi = v;
+            });
+        const responseOf = (rr, cc, q, h) =>
+            calculus.ODE.cc1ode(rr * cc, 1, rr * q, h);
+        // captured curves stay on the plot, so keep them inside the frozen frame
+        systems.forEach((e) =>
+            fold(
+                calculus.pointify(
+                    responseOf(e.R, e.C, e.Qin, e.hi),
+                    +ti,
+                    +tf,
+                    +N
+                )[1]
+            )
+        );
+        // hold every parameter at its current value and only move the swept one;
+        // the last frame always lands exactly on `to`, so fold that in too
+        const at = { R: +R, C: +C, Qin: +Qin, hi: +h0 };
+        const frames = Math.floor(Math.abs((to - from) / step));
+        const foldAt = (value) => {
+            const p = { ...at, [key]: value };
+            fold(
+                calculus.pointify(
+                    responseOf(p.R, p.C, p.Qin, p.hi),
+                    +ti,
+                    +tf,
+                    +N
+                )[1]
+            );
+        };
+        for (let i = 0; i <= frames; i++) foldAt(from + i * step);
+        foldAt(to);
+        if (!isFinite(lo) || !isFinite(hi)) return undefined;
+        const pad = (hi - lo) * 0.05 || 1;
+        return [lo - pad, hi + pad];
     };
 
     saveState() {
@@ -219,6 +273,8 @@ export default class WaterTankLevelExample extends TopicBaseComponent {
             systems,
             isGraphCatured,
             N,
+            isAutoPlaying,
+            autoYRange,
         } = this.state;
 
         return (
@@ -297,6 +353,8 @@ export default class WaterTankLevelExample extends TopicBaseComponent {
                                 setTf={this.setTf}
                                 N={N}
                                 $N={this.$N}
+                                isAutoPlaying={isAutoPlaying}
+                                setAutoPlaying={this.setAutoPlaying}
                             />
                         </Grid>
                         <Grid sx={{ marginTop: "3%" }} xs={12}>
@@ -326,6 +384,7 @@ export default class WaterTankLevelExample extends TopicBaseComponent {
                                 <PlotlyBox
                                     title="Water tank height"
                                     traces={traces}
+                                    yRange={autoYRange}
                                 />
                             </SubCard>
                         </Grid>

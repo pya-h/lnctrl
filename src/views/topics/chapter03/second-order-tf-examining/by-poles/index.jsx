@@ -47,6 +47,63 @@ class SOTFExamineByPoles extends TopicBaseComponent {
         GInfo: "",
         N: 1000,
         response: null,
+        isAutoPlaying: false,
+        autoYRange: undefined,
+    };
+
+    setAutoPlaying = (value, sweep) =>
+        this.setState({
+            isAutoPlaying: value,
+            // freeze the y-axis over the whole sweep so the graph doesn't keep
+            // rescaling itself and hiding how much it is actually changing
+            autoYRange: value && sweep ? this.autoPlayYRange(sweep) : undefined,
+        });
+
+    // only k is a plain number here; the poles are complex and stay put, so the
+    // sweep just walks the gain and folds every frame's response into one range
+    autoPlayYRange = ({ from, to, step }) => {
+        const { alpha, beta, t_i, t_f, N, systems } = this.state;
+        if (!alpha.hasSameTypeWith(beta)) return undefined;
+        let lo = Infinity;
+        let hi = -Infinity;
+        const fold = (ys) =>
+            ys.forEach((v) => {
+                if (v < lo) lo = v;
+                if (v > hi) hi = v;
+            });
+        const responseOf = (kk, a, b) =>
+            TransferFunction.Shortcuts.$2(
+                +kk,
+                a instanceof Algebra ? a.negation() : -a,
+                b instanceof Algebra ? b.negation() : -b
+            ).step().$;
+        // captured curves stay on the plot, so keep them inside the frozen frame
+        systems.forEach((e) =>
+            fold(
+                calculus.pointify(
+                    responseOf(e.k, e.alpha, e.beta),
+                    +t_i,
+                    +t_f,
+                    +N
+                )[1]
+            )
+        );
+        // the last frame always lands exactly on `to`, so fold that in too
+        const frames = Math.floor(Math.abs((to - from) / step));
+        const foldAt = (value) =>
+            fold(
+                calculus.pointify(
+                    responseOf(value, alpha, beta),
+                    +t_i,
+                    +t_f,
+                    +N
+                )[1]
+            );
+        for (let i = 0; i <= frames; i++) foldAt(from + i * step);
+        foldAt(to);
+        if (!isFinite(lo) || !isFinite(hi)) return undefined;
+        const pad = (hi - lo) * 0.05 || 1;
+        return [lo - pad, hi + pad];
     };
 
     // alpha/beta are Complex instances, so they can't be JSON-cached directly;
@@ -252,6 +309,8 @@ class SOTFExamineByPoles extends TopicBaseComponent {
             GInfo,
             N,
             response,
+            isAutoPlaying,
+            autoYRange,
         } = this.state;
         return (
             <Grid container direction="column" spacing={gridSpacing}>
@@ -332,6 +391,8 @@ class SOTFExamineByPoles extends TopicBaseComponent {
                                 $t_f={this.$t_f}
                                 N={N}
                                 $N={this.$N}
+                                isAutoPlaying={isAutoPlaying}
+                                setAutoPlaying={this.setAutoPlaying}
                             />
                         </Grid>
                     </Grid>
@@ -347,7 +408,11 @@ class SOTFExamineByPoles extends TopicBaseComponent {
                         <hr />
                         <Grid xs={12} item>
                             <SubCard>
-                                <PlotlyBox title="Step response" traces={traces} />
+                                <PlotlyBox
+                                    title="Step response"
+                                    traces={traces}
+                                    yRange={autoYRange}
+                                />
                             </SubCard>
                         </Grid>
                         <hr />

@@ -43,9 +43,56 @@ class SOTFExamineByParams extends TopicBaseComponent {
         GInfo: "",
         N: 1000,
         response: null,
+        isAutoPlaying: false,
+        autoYRange: undefined,
     };
 
     persistKeys = ["w_n", "zeta", "t_i", "t_f", "thickness", "N"];
+
+    setAutoPlaying = (value, sweep) =>
+        this.setState({
+            isAutoPlaying: value,
+            // freeze the y-axis over the whole sweep so the graph doesn't keep
+            // rescaling itself and hiding how much it is actually changing
+            autoYRange: value && sweep ? this.autoPlayYRange(sweep) : undefined,
+        });
+
+    autoPlayYRange = ({ key, from, to, step }) => {
+        const { w_n, zeta, t_i, t_f, N, systems } = this.state;
+        let lo = Infinity;
+        let hi = -Infinity;
+        const fold = (ys) =>
+            ys.forEach((v) => {
+                if (v < lo) lo = v;
+                if (v > hi) hi = v;
+            });
+        const responseOf = (wn, z) =>
+            TransferFunction.Shortcuts.$WnZ(wn, z).step().$;
+        // captured curves stay on the plot, so keep them inside the frozen frame
+        systems.forEach((e) =>
+            fold(calculus.pointify(responseOf(e.w_n, e.zeta), +t_i, +t_f, +N)[1])
+        );
+        // walk the swept parameter across its whole travel; the last frame always
+        // lands exactly on `to`, so fold that in too or it can clip past the frame
+        const frames = Math.floor(Math.abs((to - from) / step));
+        const foldAt = (value) =>
+            fold(
+                calculus.pointify(
+                    responseOf(
+                        key === "w_n" ? value : +w_n,
+                        key === "zeta" ? value : +zeta
+                    ),
+                    +t_i,
+                    +t_f,
+                    +N
+                )[1]
+            );
+        for (let i = 0; i <= frames; i++) foldAt(from + i * step);
+        foldAt(to);
+        if (!isFinite(lo) || !isFinite(hi)) return undefined;
+        const pad = (hi - lo) * 0.05 || 1;
+        return [lo - pad, hi + pad];
+    };
 
     $w_n = (value) => this.setState({ w_n: value });
     $zeta = (value) => this.setState({ zeta: value });
@@ -187,6 +234,8 @@ class SOTFExamineByParams extends TopicBaseComponent {
             GInfo,
             N,
             response,
+            isAutoPlaying,
+            autoYRange,
         } = this.state;
         return (
             <Grid container direction="column" spacing={gridSpacing}>
@@ -265,6 +314,8 @@ class SOTFExamineByParams extends TopicBaseComponent {
                                 $t_f={this.$t_f}
                                 N={N}
                                 $N={this.$N}
+                                isAutoPlaying={isAutoPlaying}
+                                setAutoPlaying={this.setAutoPlaying}
                             />
                         </Grid>
                     </Grid>
@@ -280,7 +331,11 @@ class SOTFExamineByParams extends TopicBaseComponent {
                         <hr />
                         <Grid xs={12} item>
                             <SubCard>
-                                <PlotlyBox title="Step response" traces={traces} />
+                                <PlotlyBox
+                                    title="Step response"
+                                    traces={traces}
+                                    yRange={autoYRange}
+                                />
                             </SubCard>
                         </Grid>
                         <hr />

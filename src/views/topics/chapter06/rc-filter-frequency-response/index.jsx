@@ -38,6 +38,7 @@ class RCFilterFrequencyResponseExample extends TopicBaseComponent {
         is3DPlotEnabled: false,
         phaseInRadianScale: true, // for degree => 180 / PI, for radian scale => 1.0
         N: 1000,
+        isAutoPlaying: false,
     };
 
     persistKeys = [
@@ -49,6 +50,10 @@ class RCFilterFrequencyResponseExample extends TopicBaseComponent {
         "phaseInRadianScale",
         "N",
     ];
+
+    // magnitude/phase are frequency-domain curves, not a single monotone
+    // response, so we only lock the inputs while a parameter sweeps
+    setAutoPlaying = (value) => this.setState({ isAutoPlaying: value });
 
     $R = (value) => this.setState({ R: value });
     $C = (value) => this.setState({ C: value });
@@ -208,6 +213,7 @@ class RCFilterFrequencyResponseExample extends TopicBaseComponent {
             isGraphCatured,
             phaseInRadianScale,
             N,
+            isAutoPlaying,
         } = this.state;
         return (
             <MainCard>
@@ -302,6 +308,8 @@ class RCFilterFrequencyResponseExample extends TopicBaseComponent {
                                         }
                                         N={N}
                                         $N={this.$N}
+                                        isAutoPlaying={isAutoPlaying}
+                                        setAutoPlaying={this.setAutoPlaying}
                                     />
                                 </Grid>
                             </Grid>

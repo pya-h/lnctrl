@@ -22,9 +22,14 @@ class MCircle extends TopicBaseComponent {
         thickness: 1.0, // graph line thickness
         is3DPlotEnabled: false,
         iterations: 10000,
+        isAutoPlaying: false,
     };
 
     persistKeys = ["M", "x_i", "x_f", "thickness", "iterations"];
+
+    // this is a locus in the complex plane, not a monotone response, so there is
+    // nothing to freeze here; we only need to lock the inputs while it sweeps
+    setAutoPlaying = (value) => this.setState({ isAutoPlaying: value });
 
     $M = (value) => this.setState({ M: value });
     $x_i = (value) => this.setState({ x_i: value });
@@ -123,7 +128,7 @@ class MCircle extends TopicBaseComponent {
     };
 
     render() {
-        const { M, x_i, x_f, iterations, traces } = this.state;
+        const { M, x_i, x_f, iterations, traces, isAutoPlaying } = this.state;
         return (
             <MainCard>
                 <Grid item spacing={gridSpacing}>
@@ -172,6 +177,8 @@ class MCircle extends TopicBaseComponent {
                                         $x_f={this.$x_f}
                                         iterations={iterations}
                                         $iterations={this.$iterations}
+                                        isAutoPlaying={isAutoPlaying}
+                                        setAutoPlaying={this.setAutoPlaying}
                                     />
                                 </Grid>
                             </Grid>

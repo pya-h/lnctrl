@@ -1,6 +1,7 @@
 import { Grid } from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
+import AutoPlayControl from "views/input-boxes/AutoPlayControl";
 
 const parameterFormulas = [
     "$$R = $$",
@@ -36,11 +37,28 @@ const WaterTankParameters = ({
     setTf,
     N,
     $N,
+    isAutoPlaying,
+    setAutoPlaying,
 }) => {
+    // the tank's physical parameters all animate nicely; ti/tf/N only frame the graph
+    const autoPlayParams = [
+        { key: "R", label: "R", value: R, setValue: setR },
+        { key: "C", label: "C", value: C, setValue: setC },
+        { key: "Qin", label: "Q_{in}", value: Qin, setValue: setQin },
+        { key: "hi", label: "h_i", value: hi, setValue: setHi },
+    ];
+
     return (
         <SubCard
             darkBorder
             title="Parameters"
+            secondary={
+                <AutoPlayControl
+                    params={autoPlayParams}
+                    running={isAutoPlaying}
+                    onRunningChange={setAutoPlaying}
+                />
+            }
             sx={{
                 direction: "ltr",
                 textAlign: "left",
@@ -53,6 +71,7 @@ const WaterTankParameters = ({
                     setters={[setR, setC, setQin, setHi, setTi, setTf, $N]}
                     labels={parameterFormulas}
                     units={parameterUnits}
+                    disabled={isAutoPlaying}
                 />
             </Grid>
         </SubCard>

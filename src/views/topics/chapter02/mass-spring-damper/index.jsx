@@ -62,6 +62,8 @@ class MassSpringDamperExample extends TopicBaseComponent {
         output: null, // y or null as x(t) | dy as v(t) | d2y as a(t)
         is3DPlotEnabled: false,
         N: 1000,
+        isAutoPlaying: false,
+        autoYRange: undefined,
     };
 
     persistKeys = [
@@ -77,6 +79,52 @@ class MassSpringDamperExample extends TopicBaseComponent {
         "thickness",
         "N",
     ];
+
+    setAutoPlaying = (value, sweep) =>
+        this.setState({
+            isAutoPlaying: value,
+            // freeze the y-axis over the whole sweep so the graph doesn't keep
+            // rescaling itself and hiding how much it is actually changing
+            autoYRange: value && sweep ? this.autoPlayYRange(sweep) : undefined,
+        });
+
+    autoPlayYRange = ({ key, from, to, step }) => {
+        const { m, c, k, F_t, x_i, v_i, output, t_i, t_f, N, systems } =
+            this.state;
+        let lo = Infinity;
+        let hi = -Infinity;
+        const fold = (ys) =>
+            ys.forEach((v) => {
+                if (v < lo) lo = v;
+                if (v > hi) hi = v;
+            });
+        // mirror exactly what refreshTraces draws, including the a(t) post-step
+        const yOf = (p) => {
+            const fyt = (t, x, v) => Number((p.F_t - +p.c * v - +p.k * x) / +p.m);
+            const [xs, ys, dys] = calculus.ODE.euiler(
+                2,
+                t_i,
+                t_f,
+                { y0: +p.x_i, dy_dt0: +p.v_i, fyt, output: p.output },
+                +N
+            );
+            if (p.output && p.output.toLowerCase() === "d2y")
+                return xs.map((t, i) => fyt(t, ys[i], dys[i]));
+            return ys;
+        };
+        // captured curves stay on the plot, so keep them inside the frozen frame
+        systems.forEach((e) => fold(yOf(e)));
+        // hold every parameter at its current value and only move the swept one;
+        // the last frame always lands exactly on `to`, so fold that in too
+        const at = { m, c, k, F_t, x_i, v_i, output };
+        const frames = Math.floor(Math.abs((to - from) / step));
+        const foldAt = (value) => fold(yOf({ ...at, [key]: value }));
+        for (let i = 0; i <= frames; i++) foldAt(from + i * step);
+        foldAt(to);
+        if (!isFinite(lo) || !isFinite(hi)) return undefined;
+        const pad = (hi - lo) * 0.05 || 1;
+        return [lo - pad, hi + pad];
+    };
 
     $m = (value) => this.setState({ m: value });
     $c = (value) => this.setState({ c: value });
@@ -305,6 +353,8 @@ class MassSpringDamperExample extends TopicBaseComponent {
             isGraphCatured,
             output,
             N,
+            isAutoPlaying,
+            autoYRange,
         } = this.state;
         return (
             <Grid container direction="column" spacing={1}>
@@ -402,6 +452,8 @@ class MassSpringDamperExample extends TopicBaseComponent {
                                 $output={this.$output}
                                 N={N}
                                 $N={this.$N}
+                                isAutoPlaying={isAutoPlaying}
+                                setAutoPlaying={this.setAutoPlaying}
                             />
                         </Grid>
                     </Grid>
@@ -420,6 +472,7 @@ class MassSpringDamperExample extends TopicBaseComponent {
                                 <PlotlyBox
                                     title="Cart characteristic curves"
                                     traces={traces}
+                                    yRange={autoYRange}
                                 />
                             </SubCard>
                         </Grid>

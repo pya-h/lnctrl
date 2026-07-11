@@ -1,6 +1,7 @@
 import { Grid, Button, Typography } from "@mui/material";
 import SubCard from "views/ui-component/cards/SubCard";
 import SimpleParametersList from "views/input-boxes/SimpleParametersList";
+import AutoPlayControl from "views/input-boxes/AutoPlayControl";
 import { gridSpacing } from "store/constant";
 
 const parameterFormulas = [
@@ -14,6 +15,8 @@ const NCircleParameters = ({
     setPhaseInRadianScale,
     iterations,
     $iterations,
+    isAutoPlaying,
+    setAutoPlaying,
 }) => {
     // const grids = 10;
     // const selectR = (point) => {
@@ -27,6 +30,13 @@ const NCircleParameters = ({
         <SubCard
             darkBorder
             title="Parameters"
+            secondary={
+                <AutoPlayControl
+                    params={[{ key: "N", label: "N", value: N, setValue: $N }]}
+                    running={isAutoPlaying}
+                    onRunningChange={setAutoPlaying}
+                />
+            }
             sx={{
                 direction: "ltr",
                 textAlign: "left",
@@ -39,6 +49,7 @@ const NCircleParameters = ({
                     setters={[$N, $iterations]}
                     labels={parameterFormulas}
                     units={[phaseInRadianScale ? "$$rad$$" : "$$deg$$", null]}
+                    disabled={isAutoPlaying}
                 />
                 <Grid xs={12} item>
                 <hr />
@@ -50,6 +61,7 @@ const NCircleParameters = ({
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button
                             onClick={() => setPhaseInRadianScale(false)}
+                            disabled={isAutoPlaying}
                             style={{ width: "100%", textTransform: "none" }}
                             variant={
                                 !phaseInRadianScale ? "contained" : "outlined"
@@ -61,6 +73,7 @@ const NCircleParameters = ({
                     <Grid xs={6} sx={{ p: 1 }} item>
                         <Button
                             onClick={() => setPhaseInRadianScale("rad")}
+                            disabled={isAutoPlaying}
                             style={{ width: "100%", textTransform: "none" }}
                             variant={
                                 phaseInRadianScale ? "contained" : "outlined"

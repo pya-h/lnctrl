@@ -146,10 +146,10 @@ class FirstOrderTransferFunctionExamining extends TopicBaseComponent {
             inputSignal ? calculus.LTI.ramp(1, kk, aa) : calculus.LTI.step(1, kk, aa);
         // captured curves stay on the plot, so keep them inside the frozen frame
         systems.forEach((e) => fold(calculus.pointify(responseOf(e.k, e.a), +t_i, +t_f, +N)[1]));
-        // and walk the swept parameter across its whole travel
+        // walk the swept parameter across its whole travel; the last frame always
+        // lands exactly on `to`, so fold that in too or it can clip past the frame
         const frames = Math.floor(Math.abs((to - from) / step));
-        for (let i = 0; i <= frames; i++) {
-            const value = from + i * step;
+        const foldAt = (value) =>
             fold(
                 calculus.pointify(
                     responseOf(key === "k" ? value : +k, key === "a" ? value : +a),
@@ -158,7 +158,8 @@ class FirstOrderTransferFunctionExamining extends TopicBaseComponent {
                     +N
                 )[1]
             );
-        }
+        for (let i = 0; i <= frames; i++) foldAt(from + i * step);
+        foldAt(to);
         if (!isFinite(lo) || !isFinite(hi)) return undefined;
         const pad = (hi - lo) * 0.05 || 1;
         return [lo - pad, hi + pad];

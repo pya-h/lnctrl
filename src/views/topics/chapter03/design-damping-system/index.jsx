@@ -44,9 +44,61 @@ class DesignSystemByCharacteristics extends TopicBaseComponent {
         GInfo: "",
         N: 1000,
         response: null,
+        isAutoPlaying: false,
+        autoYRange: undefined,
     };
 
     persistKeys = ["M_p", "t_rise", "t_i", "t_f", "thickness", "N"];
+
+    setAutoPlaying = (value, sweep) =>
+        this.setState({
+            isAutoPlaying: value,
+            // freeze the y-axis over the whole sweep so the graph doesn't keep
+            // rescaling itself and hiding how much it is actually changing
+            autoYRange: value && sweep ? this.autoPlayYRange(sweep) : undefined,
+        });
+
+    autoPlayYRange = ({ key, from, to, step }) => {
+        const { M_p, t_rise, t_i, t_f, N, systems } = this.state;
+        let lo = Infinity;
+        let hi = -Infinity;
+        const fold = (ys) =>
+            ys.forEach((v) => {
+                if (v < lo) lo = v;
+                if (v > hi) hi = v;
+            });
+        const responseOf = (mp, tr) =>
+            TransferFunction.Shortcuts.$design(+tr, +mp).step().$;
+        // captured curves are rebuilt exactly the way refreshTraces draws them,
+        // so the frozen frame lines up with what's actually on screen
+        systems.forEach((e) => {
+            const M_p2 = e.M_p * e.M_p;
+            const tgtf = new TransferFunction(
+                [M_p2],
+                [1, 2 * e.t_rise * e.M_p, M_p2]
+            );
+            fold(calculus.pointify(tgtf.step().$, +t_i, +t_f, +N)[1]);
+        });
+        // the last frame always lands exactly on `to`, so fold that in too
+        const frames = Math.floor(Math.abs((to - from) / step));
+        const foldAt = (value) =>
+            fold(
+                calculus.pointify(
+                    responseOf(
+                        key === "M_p" ? value : +M_p,
+                        key === "t_rise" ? value : +t_rise
+                    ),
+                    +t_i,
+                    +t_f,
+                    +N
+                )[1]
+            );
+        for (let i = 0; i <= frames; i++) foldAt(from + i * step);
+        foldAt(to);
+        if (!isFinite(lo) || !isFinite(hi)) return undefined;
+        const pad = (hi - lo) * 0.05 || 1;
+        return [lo - pad, hi + pad];
+    };
 
     $M_p = (value) => this.setState({ M_p: value });
     $t_rise = (value) => this.setState({ t_rise: value });
@@ -209,6 +261,8 @@ class DesignSystemByCharacteristics extends TopicBaseComponent {
             GInfo,
             N,
             response,
+            isAutoPlaying,
+            autoYRange,
         } = this.state;
         return (
             <MainCard>
@@ -294,6 +348,8 @@ class DesignSystemByCharacteristics extends TopicBaseComponent {
                                         $t_f={this.$t_f}
                                         N={N}
                                         $N={this.$N}
+                                        isAutoPlaying={isAutoPlaying}
+                                        setAutoPlaying={this.setAutoPlaying}
                                     />
                                 </Grid>
                             </Grid>
@@ -312,6 +368,7 @@ class DesignSystemByCharacteristics extends TopicBaseComponent {
                                         <PlotlyBox
                                             title="Step response"
                                             traces={traces}
+                                            yRange={autoYRange}
                                         />
                                     </SubCard>
                                 </Grid>

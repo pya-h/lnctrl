@@ -23,9 +23,14 @@ class NCircle extends TopicBaseComponent {
         is3DPlotEnabled: false,
         phaseInRadianScale: false, // for degree => 180 / PI, for radian scale => 1.0
         iterations: 10000,
+        isAutoPlaying: false,
     };
 
     persistKeys = ["N", "thickness", "phaseInRadianScale", "iterations"];
+
+    // this is a locus in the complex plane, not a monotone response, so there is
+    // nothing to freeze here; we only need to lock the inputs while it sweeps
+    setAutoPlaying = (value) => this.setState({ isAutoPlaying: value });
 
     $N = (value) => this.setState({ N: value });
     $systems = (value) => this.setState({ systems: value });
@@ -131,7 +136,8 @@ class NCircle extends TopicBaseComponent {
     };
 
     render() {
-        const { N, phaseInRadianScale, iterations, traces } = this.state;
+        const { N, phaseInRadianScale, iterations, traces, isAutoPlaying } =
+            this.state;
         return (
             <MainCard>
                 <Grid item spacing={gridSpacing}>
@@ -180,6 +186,8 @@ class NCircle extends TopicBaseComponent {
                                         }
                                         iterations={iterations}
                                         $iterations={this.$iterations}
+                                        isAutoPlaying={isAutoPlaying}
+                                        setAutoPlaying={this.setAutoPlaying}
                                     />
                                 </Grid>
                             </Grid>

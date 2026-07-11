@@ -66,7 +66,13 @@ class BodePlotExample extends TopicBaseComponent {
     setAutoPlaying = (value, sweep) => {
         // freeze both charts over the whole sweep, otherwise Plotly keeps rescaling
         // each axis to the current frame and the curves look like they barely move
-        const ranges = value && sweep ? this.autoPlayRanges(sweep) : {};
+        let ranges = {};
+        try {
+            if (value && sweep) ranges = this.autoPlayRanges(sweep);
+        } catch (ex) {
+            // a range failure must never block the animation from starting
+            console.log(ex);
+        }
         this.setState({
             isAutoPlaying: value,
             autoAmpRange: ranges.amplitude,
@@ -147,10 +153,18 @@ class BodePlotExample extends TopicBaseComponent {
             const p = { ...base, [key]: value };
             foldSystem(this.buildH_s(p.K, p.t_a, p.t_b, [p.t_1, p.t_2, p.t_3, p.t_4]));
         };
-        // the last frame always lands exactly on `to`, so fold that in too
+        // sample the sweep at a bounded number of points (each fold is two 1000-point
+        // bode/phase passes, so a fine step could otherwise freeze the tab up front);
+        // the 5% padded envelope still covers every in-between frame
         const frames = Math.floor(Math.abs((to - from) / step));
-        for (let i = 0; i <= frames; i++) foldAt(from + i * step);
-        foldAt(to);
+        const samples = Math.min(frames, 60);
+        if (samples <= 0) {
+            foldAt(from);
+            foldAt(to);
+        } else {
+            for (let i = 0; i <= samples; i++)
+                foldAt(from + ((to - from) * i) / samples);
+        }
         const range = (lo, hi) => {
             if (!isFinite(lo) || !isFinite(hi)) return undefined;
             const pad = (hi - lo) * 0.05 || 1;

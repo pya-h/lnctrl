@@ -87,8 +87,14 @@ class SOTFExamineByParams extends TopicBaseComponent {
                     +N
                 )[1]
             );
-        for (let i = 0; i <= frames; i++) foldAt(from + i * step);
-        foldAt(to);
+        const samples = Math.min(frames, 60);
+        if (samples <= 0) {
+            foldAt(from);
+            foldAt(to);
+        } else {
+            for (let i = 0; i <= samples; i++)
+                foldAt(from + ((to - from) * i) / samples);
+        }
         if (!isFinite(lo) || !isFinite(hi)) return undefined;
         const pad = (hi - lo) * 0.05 || 1;
         return [lo - pad, hi + pad];

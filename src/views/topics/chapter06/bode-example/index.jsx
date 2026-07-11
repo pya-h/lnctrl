@@ -44,6 +44,8 @@ class BodePlotExample extends TopicBaseComponent {
         phaseInRadianScale: true, // for degree => 180 / PI, for radian scale => 1.0
         N: 1000,
         isAutoPlaying: false,
+        autoAmpRange: undefined,
+        autoPhaseRange: undefined,
     };
 
     persistKeys = [
@@ -61,9 +63,104 @@ class BodePlotExample extends TopicBaseComponent {
         "N",
     ];
 
-    // magnitude/phase are frequency-domain curves, not one monotone response, so we
-    // only lock the inputs while a parameter sweeps
-    setAutoPlaying = (value) => this.setState({ isAutoPlaying: value });
+    setAutoPlaying = (value, sweep) => {
+        // freeze both charts over the whole sweep, otherwise Plotly keeps rescaling
+        // each axis to the current frame and the curves look like they barely move
+        const ranges = value && sweep ? this.autoPlayRanges(sweep) : {};
+        this.setState({
+            isAutoPlaying: value,
+            autoAmpRange: ranges.amplitude,
+            autoPhaseRange: ranges.phase,
+        });
+    };
+
+    // walk the swept parameter across its whole travel and fold every frame's
+    // magnitude and phase (in the scale currently shown) into one range each, so the
+    // frozen frame matches exactly what refreshTraces draws
+    autoPlayRanges = ({ key, from, to, step }) => {
+        const {
+            K,
+            t_a,
+            t_b,
+            t_1,
+            t_2,
+            t_3,
+            t_4,
+            w_min,
+            w_max,
+            N,
+            systems,
+            phaseInRadianScale,
+        } = this.state;
+        let ampLo = Infinity,
+            ampHi = -Infinity,
+            phLo = Infinity,
+            phHi = -Infinity;
+        const foldAmp = (ys) =>
+            ys.forEach((v) => {
+                if (v < ampLo) ampLo = v;
+                if (v > ampHi) ampHi = v;
+            });
+        const foldPhase = (ys) =>
+            ys.forEach((v) => {
+                if (v < phLo) phLo = v;
+                if (v > phHi) phHi = v;
+            });
+        const foldSystem = (h_s) => {
+            if (!(h_s instanceof TransferFunction)) return;
+            const amp = calculus.systemToTrace(
+                h_s.bode,
+                +w_min,
+                +w_max,
+                1,
+                "",
+                false,
+                +N
+            ).y;
+            let ph = calculus.systemToTrace(
+                h_s.phase,
+                +w_min,
+                +w_max,
+                1,
+                "",
+                false,
+                +N
+            ).y.map((phi) => (phi - 2 * Math.PI) % (2 * Math.PI));
+            if (!phaseInRadianScale)
+                ph = ph.map((yi) => yi * calculus.RadianToDegree);
+            foldAmp(amp);
+            foldPhase(ph);
+        };
+        // captured systems stay on the plot, so keep them inside the frozen frame
+        systems.forEach((e) => foldSystem(e.H_s));
+        // the non-swept parameters hold their current value throughout the sweep
+        const base = {
+            K: +K,
+            t_a: +t_a,
+            t_b: +t_b,
+            t_1: +t_1,
+            t_2: +t_2,
+            t_3: +t_3,
+            t_4: +t_4,
+        };
+        const foldAt = (value) => {
+            const p = { ...base, [key]: value };
+            foldSystem(this.buildH_s(p.K, p.t_a, p.t_b, [p.t_1, p.t_2, p.t_3, p.t_4]));
+        };
+        // the last frame always lands exactly on `to`, so fold that in too
+        const frames = Math.floor(Math.abs((to - from) / step));
+        for (let i = 0; i <= frames; i++) foldAt(from + i * step);
+        foldAt(to);
+        const range = (lo, hi) => {
+            if (!isFinite(lo) || !isFinite(hi)) return undefined;
+            const pad = (hi - lo) * 0.05 || 1;
+            return [lo - pad, hi + pad];
+        };
+        return {
+            amplitude: range(ampLo, ampHi),
+            phase: range(phLo, phHi),
+        };
+    };
 
     $K = (value) => this.setState({ K: value });
     $t_a = (value) => this.setState({ t_a: value });
@@ -210,34 +307,36 @@ class BodePlotExample extends TopicBaseComponent {
         this.$H_s(multipliedSystem);
     };
 
+    // builds the plant from its gain and time constants; shared by the live refresh
+    // and the autoplay range so a swept frame is rebuilt exactly as it's drawn
+    buildH_s = (K, t_a, t_b, tau) => {
+        const k = +K,
+            ta = +t_a,
+            tb = +t_b;
+        const t = tau.map(Number);
+
+        const num = [k * ta * tb, k * (ta + tb), k],
+            den = Array(6).fill(0);
+        den[4] = 1;
+        den[0] = 1;
+
+        for (let i = 0; i <= 3; i++) {
+            den[0] *= t[i];
+
+            for (let j = i + 1; j <= 3; j++) {
+                den[2] += t[i] * t[j];
+            }
+
+            den[3] += t[i];
+        }
+        den[1] += (t[0] + t[1]) * t[2] * t[3] + (t[2] + t[3]) * t[0] * t[1];
+        return new TransferFunction(num, den);
+    };
+
     refreshH_s = () => {
         const { K, t_a, t_b, t_1, t_2, t_3, t_4 } = this.state;
         try {
-            const k = +K,
-                ta = +t_a,
-                tb = +t_b;
-            const tau = [+t_1, +t_2, +t_3, +t_4];
-
-            const num = [k * ta * tb, k * (ta + tb), k],
-                den = Array(6).fill(0);
-            den[5] = 0;
-            den[4] = 1;
-            den[0] = 1;
-
-            for (let i = 0; i <= 3; i++) {
-                den[0] *= tau[i];
-
-                for (let j = i + 1; j <= 3; j++) {
-                    den[2] += tau[i] * tau[j];
-                }
-
-                den[3] += tau[i];
-            }
-            den[1] +=
-                (tau[0] + tau[1]) * tau[2] * tau[3] +
-                (tau[2] + tau[3]) * tau[0] * tau[1];
-            const h_s = new TransferFunction(num, den);
-            this.$H_s(h_s);
+            this.$H_s(this.buildH_s(K, t_a, t_b, [t_1, t_2, t_3, t_4]));
         } catch (ex) {
             console.log(ex);
         }
@@ -324,6 +423,8 @@ class BodePlotExample extends TopicBaseComponent {
             response,
             traces,
             isAutoPlaying,
+            autoAmpRange,
+            autoPhaseRange,
         } = this.state;
         return (
             <MainCard>
@@ -435,6 +536,7 @@ class BodePlotExample extends TopicBaseComponent {
                                                 logX={true}
                                                 title="Bode plot"
                                                 traces={traces.amplitude}
+                                                yRange={autoAmpRange}
                                             />
                                         </Grid>
                                         <Grid xs={12} item>
@@ -446,6 +548,7 @@ class BodePlotExample extends TopicBaseComponent {
                                                         ? traces.phase
                                                         : traces.degreePhase
                                                 }
+                                                yRange={autoPhaseRange}
                                             />
                                         </Grid>
                                     </SubCard>

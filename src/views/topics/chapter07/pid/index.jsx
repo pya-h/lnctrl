@@ -89,6 +89,11 @@ class PIDController extends TopicBaseComponent {
         const { G_s, t_initial, t_final, is3DPlotEnabled, thickness, N } =
             this.state;
         if (!(G_s instanceof TransferFunction) || !controller) return;
+        // these runs are async and can overlap (an edit made just before autoplay can
+        // still be resolving when the sweep starts); tag each one and let only the
+        // latest write the chart, so a stale result can't snap it back to an old frame
+        const token = (this._computeToken || 0) + 1;
+        this._computeToken = token;
         try {
             const lp = G_s.stepify().laplaceInverse();
             const controlledSystem = G_s.controlFeedback(controller);
@@ -141,7 +146,7 @@ class PIDController extends TopicBaseComponent {
                 is3DPlotEnabled
             );
 
-            if (this._unmounted) return;
+            if (this._unmounted || token !== this._computeToken) return;
             this.$traces({ main: [main], controlled: [controlled] });
             const endTime = new Date();
             this.setResponseTime((+endTime - +startTime) / 1000);

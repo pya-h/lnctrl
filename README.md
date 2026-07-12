@@ -86,8 +86,8 @@ that end in a live tool are marked 🧪.
   - PID controller tuning 🧪
 
 Every 🧪 sandbox lets you capture multiple systems on one plot to compare them, toggle a
-pseudo‑3D view, adjust the sampling resolution `N`, and (see below) **remembers your
-inputs between visits**.
+pseudo‑3D view, adjust the sampling resolution `N`, **autoplay** a single parameter so the
+plot animates as it sweeps, and (see below) **remembers your inputs between visits**.
 
 ---
 
@@ -99,17 +99,25 @@ inputs between visits**.
   `better-react-mathjax`.
 - **Draggable pole placement** — the second‑order "by poles" sandbox and the damping
   designer use a custom `CoordinateSystem` complex‑plane widget you can drag points on.
+- **Autoplay** — a shared [`AutoPlayControl`](src/views/input-boxes/AutoPlayControl.jsx)
+  lets you pick one system parameter and sweep it from a start to an end value in fixed
+  steps, redrawing the chart on every frame so the response animates. Timer‑paced sandboxes
+  take an interval (ms); async ones (e.g. PID) advance one frame each time their own
+  computation finishes. The engine ([`toolshed/autoplay.js`](src/toolshed/autoplay.js))
+  rebuilds each value from its frame index so floating‑point drift never nudges the
+  parameter off track, and caps runaway runs.
 - **Diagram editors** — block diagrams use a custom [React Flow](https://reactflow.dev)
-  designer (transfer‑function blocks, summing junctions, takeoff points, feedback links);
-  signal‑flow graphs use `gojs`.
+  designer (transfer‑function blocks, summing junctions, takeoff points, feedback links)
+  that reduces the diagram to its **equivalent transfer function** and lets you plug in real
+  input values to see the result; signal‑flow graphs use `gojs`.
 - **State persistence** — interactive sandboxes are class components extending
   [`TopicBaseComponent`](src/views/topics/TopicBaseComponent.jsx), which transparently
   saves each section's inputs to `localStorage` on unmount/refresh and restores them when
   you return. Components declare a `persistKeys` list of the (serializable) fields to keep;
   a section holding non‑serializable objects (e.g. `Complex` poles) can override
   `saveState`/`reviveState` to (de)serialize them.
-- **UI theme** — MUI v5 with the "Berry" template, custom typography/font switching, and a
-  Redux‑backed customization drawer.
+- **UI theme** — MUI v5 with the "Berry" template, a light/dark theme toggle, custom
+  typography/font switching, and a Redux‑backed customization drawer.
 
 ---
 
